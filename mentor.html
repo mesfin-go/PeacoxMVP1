@@ -3,256 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peacox Mentor Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Peacox Manager Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        :root {
-            var(--peacox-purple): #5A2E8E;
-            var(--peacox-teal): #008080;
-            var(--bg-color): #F8FAFC;
-            var(--card-bg): #FFFFFF;
-            var(--text-main): #1F2937;
-            var(--text-muted): #6B7280;
-            var(--border-color): #E5E7EB;
-            var(--status-green): #10B981;
-            var(--status-yellow): #F59E0B;
-            var(--status-red): #EF4444;
-        }
-
+        :root { --peacox-purple: #5A2E8E; --peacox-teal: #008080; --bg-color: #F8FAFC; --card-bg: #FFFFFF; --text-main: #1F2937; --text-muted: #6B7280; --border-color: #E5E7EB; }
         html { font-size: clamp(12px, 0.7vw + 0.4rem, 18px); }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #F8FAFC; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { background-color: var(--bg-color); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: #FFFFFF; border-bottom: 1px solid #E5E7EB; flex-shrink: 0; height: auto; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 100; position: relative;}
         .header-profile { display: flex; align-items: center; gap: 1.25rem; }
-        .avatar { width: 3.5rem; height: 3.5rem; border-radius: 0.5rem; background-color: #5A2E8E; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.25rem; flex-shrink: 0; }
+        .avatar-wrapper { position: relative; cursor: pointer; transition: transform 0.2s; }
+        .avatar-wrapper:hover { transform: scale(1.05); }
+        .avatar { width: 3.5rem; height: 3.5rem; border-radius: 0.5rem; background-color: #1F2937; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.25rem; background-size: cover; background-position: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .upload-badge { position: absolute; bottom: -5px; right: -5px; background-color: var(--peacox-teal); border-radius: 50%; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center; border: 2px solid white; cursor: pointer; color: white;}
+        
         .header-info { display: flex; flex-direction: column; justify-content: center;}
-        .header-tags { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
-        .tag { padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: bold; border: 1px solid; white-space: nowrap; }
-        
-        .tag-success { background-color: #ECFDF5; color: #047857; border-color: #A7F3D0; display: flex; align-items: center; gap: 0.5rem;}
-        .tag-success::before { content: ""; display: block; width: 0.5rem; height: 0.5rem; background-color: #10B981; border-radius: 50%; }
-        
-        .tag-alert { background-color: #FFF7ED; color: #C2410C; border-color: #FFEDD5; display: flex; align-items: center; gap: 0.5rem;}
-        .tag-alert::before { content: ""; display: block; width: 0.5rem; height: 0.5rem; background-color: #F59E0B; border-radius: 50%; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        .btn-add-user { background-color: var(--peacox-purple); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.875rem; }
 
-        .logout-btn { background: none; border: 1px solid #E5E7EB; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: bold; color: #6B7280; cursor: pointer; transition: all 0.2s; }
-        .logout-btn:hover { background: #FEF2F2; color: #DC2626; border-color: #FEE2E2; }
-
-        main { flex: 1; padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 1.25rem; overflow: hidden; min-height: 0; }
-        .card { background-color: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 1rem; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; overflow: hidden; justify-content: space-between; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px -2px rgba(0,0,0,0.1); }
+        main { flex: 1; padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 1.25rem; overflow: hidden; min-height: 0; }
+        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 1rem; padding: 1.25rem; display: flex; flex-direction: column; overflow: hidden; justify-content: space-between; }
         .card-header { font-size: 0.75rem; font-weight: bold; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; flex-shrink: 0;}
+        .col-1 { grid-column: span 1; } .col-2 { grid-column: span 2; } .row-1 { grid-row: span 1; } .row-2 { grid-row: span 2; }
+
+        .stat-block { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; flex: 1; border-bottom: 1px solid var(--border-color); }
+        .stat-block:last-child { border-bottom: none; }
+        .stat-val { font-size: 2rem; font-weight: 900; color: var(--text-main); margin: 0.25rem 0; line-height: 1.1;}
+
+        .progress-group { width: 100%; display: flex; flex-direction: column; justify-content: center; flex: 1;}
+        .progress-header { display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.875rem; font-weight: bold; margin-bottom: 0.35rem; }
+        .progress-track { width: 100%; height: 0.75rem; background-color: #F3F4F6; border-radius: 0.375rem; overflow: hidden; }
+        .progress-fill { height: 100%; background-color: var(--peacox-teal); border-radius: 0.375rem; }
+        .progress-fill.purple { background-color: var(--peacox-purple); }
+
+        .side-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.4); z-index: 40; display: none; }
+        .side-pane { position: fixed; top: 0; left: 0; bottom: 0; width: 320px; background: white; z-index: 50; transform: translateX(-100%); transition: transform 0.3s; display: flex; flex-direction: column; padding-top: 5.5rem; }
+        .side-overlay.active { display: block; } .side-pane.active { transform: translateX(0); }
+        .side-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .menu-list { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+        .menu-item { padding: 1rem; border-radius: 0.5rem; background-color: var(--bg-color); border: 1px solid var(--border-color); font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .menu-item:hover { background-color: #F0FDFA; border-color: #99F6E4; color: var(--peacox-teal); }
         
-        .col-1 { grid-column: span 1; }
-        .col-2 { grid-column: span 2; }
-        .row-1 { grid-row: span 1; }
-        .row-2 { grid-row: span 2; }
-        .card-accent { border-top: 0.25rem solid #008080; }
-        
-        .btn-primary { width: 100%; padding: 0.5rem; border-radius: 0.5rem; background-color: #5A2E8E; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 0.75rem; transition: opacity 0.2s;}
-        .btn-primary:hover { opacity: 0.9; }
-        .btn-outline { width: 100%; padding: 0.5rem; border-radius: 0.5rem; background-color: transparent; color: #5A2E8E; border: 1px solid #5A2E8E; font-weight: bold; cursor: pointer; font-size: 0.75rem; transition: all 0.2s;}
-        .btn-outline:hover { background-color: #F3E8FF; }
-
-        .text-purple { color: #5A2E8E; }
-        .text-teal { color: #008080; }
-        .text-xs { font-size: 0.75rem; }
-        .text-sm { font-size: 0.875rem; }
-        .font-bold { font-weight: bold; }
-        .text-muted { color: #6B7280; }
-        .text-main { color: #1F2937; }
-
-        .progress-group { width: 100%; margin-bottom: 0.75rem; }
-        .progress-header { display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.875rem; font-weight: bold; margin-bottom: 0.25rem; }
-        .progress-track { width: 100%; height: 0.5rem; background-color: #F3F4F6; border-radius: 0.25rem; overflow: hidden; }
-        .progress-fill { height: 100%; background-color: #008080; border-radius: 0.25rem; }
-
-        .roster-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; height: 100%; }
-        .roster-card { border: 1px solid #E5E7EB; border-radius: 0.5rem; padding: 0.75rem; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; background-color: #F9FAFB; transition: background-color 0.2s; }
-        .roster-card:hover { background-color: #F3F4F6; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; position: absolute; top: 0.5rem; right: 0.5rem; }
-        .roster-avatar { width: 2rem; height: 2rem; border-radius: 50%; background-color: #008080; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; margin-bottom: 0.5rem; }
-
-        .session-item { border-bottom: 1px solid #E5E7EB; padding-bottom: 0.75rem; margin-bottom: 0.75rem; }
-        .session-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        
-        .pipeline-track { height: 6px; background-color: #F3F4F6; border-radius: 3px; overflow: hidden;}
-        
-        .link-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-radius: 0.375rem; color: #1F2937; font-size: 0.875rem; font-weight: 500; transition: background-color 0.2s; }
-        .link-item:hover { background-color: #F3F4F6; color: #5A2E8E; }
-
-        #modalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 50; }
-        .modal-content { background-color: white; width: 66%; height: 66%; border-radius: 1rem; padding: 2rem; position: relative; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
-        .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; background: #F3F4F6; border: none; width: 2rem; height: 2rem; border-radius: 50%; cursor: pointer; font-weight: bold; color: #9CA3AF; }
-        .modal-close:hover { background: #E5E7EB; color: #374151; }
-        .modal-body { flex: 1; border: 2px dashed #E5E7EB; border-radius: 0.75rem; background-color: #F9FAFB; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin-top: 1.5rem; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); display: none; justify-content: center; align-items: center; z-index: 60; padding: 1rem;}
+        .modal-container { background: white; width: 100%; max-width: 500px; max-height: 90vh; border-radius: 1rem; display: flex; flex-direction: column; overflow: hidden; }
+        .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; background-color: var(--bg-color); }
+        .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+        .btn-primary { width: 100%; padding: 0.75rem; border-radius: 0.5rem; background-color: var(--peacox-purple); color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 1rem;}
+        .input-full { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; margin-bottom: 0.75rem; }
+        .logout-btn { background: none; border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: bold; color: var(--text-muted); cursor: pointer; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="header-profile">
-            <div class="avatar" id="mentor-avatar">--</div>
+            <div class="avatar-wrapper" onclick="toggleSidePane()">
+                <div class="avatar" id="pm-avatar">--</div>
+                <label for="avatar-upload" class="upload-badge" onclick="event.stopPropagation()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                </label>
+                <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onclick="event.stopPropagation()">
+            </div>
             <div class="header-info">
-                <h1 id="mentor-name" style="font-size: 1.25rem; color: #1F2937; margin-bottom: 0.125rem;">Loading...</h1>
-                <p class="text-sm text-muted">Peacox Helping Hands Mentor</p>
-                <div class="header-tags">
-                    <span class="tag tag-success">Caseload: 4/4 On Track</span>
-                    <span class="tag tag-alert">1 Session Overdue</span>
-                </div>
+                <h1 id="pm-name" style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 0.125rem;">Loading...</h1>
+                <p style="font-size: 0.875rem; color: var(--text-muted);">Program Manager Dashboard</p>
             </div>
         </div>
-        <button class="logout-btn" id="logout-btn">Sign Out</button>
+        <div class="header-actions">
+            <button class="btn-add-user" onclick="openModal('add-user')">+ Add User</button>
+            <button class="logout-btn" id="logout-btn">Sign Out</button>
+        </div>
     </header>
 
     <main>
-        <div class="card col-1 row-2 card-accent" onclick="openModal('Mentorship Scheduling & Notes')">
-            <h3 class="card-header" style="margin-bottom: 1rem;">Upcoming Sessions</h3>
-            <div style="display: flex; flex-direction: column; flex: 1; overflow-y: auto; padding-right: 0.25rem;">
-                <div class="session-item">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem;">
-                        <span style="font-weight: bold; color: #1F2937; font-size: 0.875rem;">Kannan Johnson</span>
-                        <span class="text-xs text-purple font-bold">Today</span>
-                    </div>
-                    <p class="text-xs text-muted" style="margin-bottom: 0.5rem;">4:00 PM • Virtual Check-in</p>
-                    <button class="btn-primary" onclick="event.stopPropagation(); alert('Launching Virtual Room...');">Launch Video</button>
-                </div>
-                <div class="session-item">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem;">
-                        <span style="font-weight: bold; color: #1F2937; font-size: 0.875rem;">Marcus Smith</span>
-                        <span class="text-xs text-muted font-bold">Tomorrow</span>
-                    </div>
-                    <p class="text-xs text-muted" style="margin-bottom: 0.5rem;">5:30 PM • In-Person</p>
-                    <button class="btn-outline" onclick="event.stopPropagation(); alert('Opening Note Logger...');">Prepare Notes</button>
-                </div>
+        <div class="card col-1 row-2">
+            <h3 class="card-header">Cohort Health (Q1 2026)</h3>
+            <div class="stat-block"><p style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">AVG GPA</p><p class="stat-val">3.05</p><p style="font-size: 0.75rem; color: #10B981; font-weight: bold;">+0.15 ↑</p></div>
+            <div class="stat-block"><p style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">AVG ATTENDANCE</p><p class="stat-val">91%</p><p style="font-size: 0.75rem; color: #10B981; font-weight: bold;">Stable</p></div>
+            <div class="stat-block"><p style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">DISCIPLINE RATIO</p><p class="stat-val" style="color: #F59E0B;">14</p><p style="font-size: 0.75rem; color: #EF4444; font-weight: bold;">2 Escalated</p></div>
+        </div>
+
+        <div class="card col-2 row-2">
+            <h3 class="card-header">Global GRO-WORK Pipeline (N=150)</h3>
+            <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">1. Pre-employment</span><span style="color: var(--peacox-teal);">150 (100%)</span></div><div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div></div>
+            <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">2. Resume & Cover Letter</span><span style="color: var(--peacox-teal);">112 (74%)</span></div><div class="progress-track"><div class="progress-fill" style="width: 74%;"></div></div></div>
+            <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">3. Job Skill Training</span><span style="color: var(--peacox-purple);">68 (45%)</span></div><div class="progress-track"><div class="progress-fill purple" style="width: 45%;"></div></div></div>
+            <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">4. Career Assessment</span><span style="color: var(--peacox-purple);">32 (21%)</span></div><div class="progress-track"><div class="progress-fill purple" style="width: 21%;"></div></div></div>
+        </div>
+
+        <div class="card col-1 row-1" style="border-left: 4px solid #EF4444;">
+            <h3 class="card-header" style="color: #EF4444;">Urgent Escalations</h3>
+            <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; gap: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;"><span style="font-size: 0.875rem; font-weight: bold;">Formal Write-ups</span><span style="background: #EF4444; color: white; padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: bold;">2 Pending</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.875rem; font-weight: bold;">Food Support Req.</span><span style="background: #F59E0B; color: white; padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: bold;">1 New</span></div>
             </div>
         </div>
 
-        <div class="card col-2 row-2" onclick="openModal('Caseload Curriculum Details')">
-            <h3 class="card-header">Caseload Engagement (4 Students)</h3>
-            <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-between; margin-top: 0.5rem;">
-                <div class="progress-group">
-                    <div class="progress-header">
-                        <span style="color: #1F2937;">Youth Programs <span style="font-weight: normal;" class="text-muted text-xs">(Monthly Reqs)</span></span>
-                        <span class="text-teal text-sm">3/4 Completed</span>
-                    </div>
-                    <div class="progress-track"><div class="progress-fill" style="width: 75%;"></div></div>
-                    <p class="text-xs text-muted" style="margin-top: 0.35rem;">Action: David L. pending selection.</p>
-                </div>
-                <div class="progress-group">
-                    <div class="progress-header">
-                        <span style="color: #1F2937;">Community Engagement <span style="font-weight: normal;" class="text-muted text-xs">(Monthly Reqs)</span></span>
-                        <span class="text-teal text-sm">4/4 Completed</span>
-                    </div>
-                    <div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div>
-                    <p class="text-xs text-muted" style="margin-top: 0.35rem;">Status: All mentees engaged this month.</p>
-                </div>
-            </div>
+        <div class="card col-1 row-1" style="justify-content: center; align-items: center; text-align: center;">
+            <h3 class="card-header">Mentor Compliance</h3>
+            <p style="font-size: 2.5rem; font-weight: 900; color: var(--peacox-purple); line-height: 1;">83%</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Meeting 3 sessions/mo requirement</p>
         </div>
 
-        <div class="card col-1 row-2" onclick="openModal('Workforce Pipeline')">
-            <h3 class="card-header">GRO-WORK Pipeline</h3>
-            <p class="text-xs text-muted" style="margin-bottom: 1.25rem;">Current distribution.</p>
-            <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; gap: 1rem;">
-                <div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem;"><span>Pre-employment</span><span class="text-purple">1 Mentee</span></div>
-                    <div class="pipeline-track"><div style="height: 100%; background-color: #5A2E8E; width: 25%;"></div></div>
-                </div>
-                <div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem;"><span>Resume & Cover Letter</span><span class="text-purple">2 Mentees</span></div>
-                    <div class="pipeline-track"><div style="height: 100%; background-color: #5A2E8E; width: 50%;"></div></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card col-1 row-1" style="justify-content: center; align-items: center; text-align: center;" onclick="openModal('Action Items')">
-            <h3 class="card-header" style="margin-bottom: 0.25rem;">Action Items</h3>
-            <p class="text-sm font-bold" style="color: #1F2937;">2 Session Logs Overdue</p>
-        </div>
-
-        <div class="card col-2 row-1" onclick="openModal('Mentee Roster Details')">
-            <h3 class="card-header">My Mentees</h3>
-            <div class="roster-grid">
-                <div class="roster-card"><div class="status-dot" style="background-color: #10B981;"></div><div class="roster-avatar">KJ</div><span class="text-xs font-bold text-main text-center">Kannan J.</span></div>
-                <div class="roster-card"><div class="status-dot" style="background-color: #10B981;"></div><div class="roster-avatar" style="background-color: #3B82F6;">MS</div><span class="text-xs font-bold text-main text-center">Marcus S.</span></div>
-                <div class="roster-card"><div class="status-dot" style="background-color: #10B981;"></div><div class="roster-avatar" style="background-color: #8B5CF6;">SJ</div><span class="text-xs font-bold text-main text-center">Sarah J.</span></div>
-                <div class="roster-card" style="border-color: #FCA5A5; background-color: #FEF2F2;"><div class="status-dot" style="background-color: #EF4444;"></div><div class="roster-avatar" style="background-color: #F87171;">DL</div><span class="text-xs font-bold text-main text-center">David L.</span></div>
-            </div>
-        </div>
-
-        <div class="card col-1 row-1" onclick="openModal('Resource Library')">
-            <h3 class="card-header" style="margin-bottom: 0.5rem;">Quick Links</h3>
-            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                <div class="link-item">Submit Write-up</div>
-                <div class="link-item">Support Request</div>
-            </div>
-        </div>
     </main>
 
-    <div id="modalOverlay" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeModal()">✕</button>
-            <h2 id="modalTitle" style="font-size: 1.5rem; font-weight: 900; color: #1F2937;">Details</h2>
-            <div class="modal-body">
-                <h3 style="font-size: 1.125rem; color: #9CA3AF; margin-bottom: 0.5rem;">Detailed View Expanded</h3>
+    <div class="side-overlay" id="side-overlay" onclick="toggleSidePane()"></div>
+    <aside class="side-pane" id="side-pane">
+        <div class="side-header"><h2 style="font-size: 1.125rem; font-weight: 900;">Manager Settings</h2><button onclick="toggleSidePane()" style="background:none;border:none;font-size:1.25rem;cursor:pointer;">✕</button></div>
+        <div class="menu-list">
+            <div class="menu-item" onclick="openModal('basic-info')">Basic Information <span>→</span></div>
+            <div class="menu-item" onclick="alert('Exporting Q2 Report to CSV...')">Export Full Roster <span>→</span></div>
+            <div class="menu-item" onclick="alert('Opening System Settings...')">System Configuration <span>→</span></div>
+        </div>
+    </aside>
+
+    <div class="modal-overlay" id="master-modal">
+        <div class="modal-container">
+            <div class="modal-header"><h2 id="modal-title">Title</h2><button onclick="closeModal()" style="background:none;border:none;font-size:1.25rem;cursor:pointer;">✕</button></div>
+            <div class="modal-body" id="modal-body-content">
+                
+                <div id="content-basic-info" style="display: none;">
+                    <label style="font-size: 0.75rem; font-weight: bold;">Full Name</label><input type="text" class="input-full" id="info-name" disabled>
+                    <label style="font-size: 0.75rem; font-weight: bold;">Email Address</label><input type="text" class="input-full" id="info-email" disabled>
+                </div>
+
+                <div id="content-add-user" style="display: none;">
+                    <form id="add-user-form">
+                        <div style="display: flex; gap: 1rem;">
+                            <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold;">First Name</label><input type="text" class="input-full" id="new-first" required></div>
+                            <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold;">Last Name</label><input type="text" class="input-full" id="new-last" required></div>
+                        </div>
+                        <label style="font-size: 0.75rem; font-weight: bold;">Email Address</label><input type="email" class="input-full" id="new-email" required>
+                        <div style="display: flex; gap: 1rem;">
+                            <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold;">Password</label><input type="password" class="input-full" id="new-pass" required></div>
+                            <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold;">Role</label><select class="input-full" id="new-role" required><option value="student">Student</option><option value="mentor">Mentor</option><option value="manager">Manager</option></select></div>
+                        </div>
+                        <button type="submit" class="btn-primary" id="create-user-btn">Create Account</button>
+                        <p id="form-msg" style="text-align: center; margin-top: 1rem; font-weight: bold; font-size: 0.875rem; display: none;"></p>
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://lgmzqktvkvyfycyrhrbt.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
-        
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let GLOBAL_USER_ID = null; 
+        document.getElementById('avatar-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(file && GLOBAL_USER_ID) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const b64 = event.target.result;
+                    document.getElementById('pm-avatar').innerText = ''; 
+                    document.getElementById('pm-avatar').style.backgroundImage = `url("${b64}")`;
+                    localStorage.setItem(`avatar_${GLOBAL_USER_ID}`, b64); 
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-        async function loadDashboard() {
-            const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-            if (authError || !user) { window.location.href = 'index.html'; return; }
+        function toggleSidePane() { document.getElementById('side-pane').classList.toggle('active'); document.getElementById('side-overlay').classList.toggle('active'); }
+        function openModal(type) {
+            document.getElementById('side-pane').classList.remove('active'); document.getElementById('side-overlay').classList.remove('active');
+            ['basic-info', 'add-user'].forEach(id => document.getElementById(`content-${id}`).style.display = 'none');
+            document.getElementById(`content-${type}`).style.display = 'block';
+            document.getElementById('modal-title').innerText = type.replace('-', ' ').toUpperCase();
+            document.getElementById('master-modal').style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('master-modal').style.display = 'none'; }
+    </script>
 
-            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+    <script>
+        try {
+            const SUPABASE_URL = 'https://lgmzqktvkvyfycyrhrbt.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
+            const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            if (profile && profile.role !== 'mentor') {
-                window.location.href = profile.role === 'manager' ? 'pm.html' : 'student.html';
-                return;
+            async function loadDatabaseData() {
+                const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+                if (authError || !user) { if(window.location.protocol !== 'file:') window.location.href = 'index.html'; return; }
+                GLOBAL_USER_ID = user.id;
+
+                const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+                if (profile) {
+                    const fn = profile.first_name || 'Peacox'; const ln = profile.last_name || 'Manager';
+                    document.getElementById('pm-name').innerText = `${fn} ${ln}`;
+                    document.getElementById('info-name').value = `${fn} ${ln}`; document.getElementById('info-email').value = user.email || '';
+                    
+                    const avatar = localStorage.getItem(`avatar_${GLOBAL_USER_ID}`);
+                    if(avatar) { document.getElementById('pm-avatar').innerText = ''; document.getElementById('pm-avatar').style.backgroundImage = `url("${avatar}")`; }
+                    else { document.getElementById('pm-avatar').innerText = (profile.avatar_initials || (fn[0]+ln[0])).toUpperCase(); }
+                }
             }
 
-            if (profile) {
-                const firstName = profile.first_name || 'Peacox';
-                const lastName = profile.last_name || 'Mentor';
-                document.getElementById('mentor-name').innerText = `Dr. ${firstName} ${lastName}`;
-                document.getElementById('mentor-avatar').innerText = (profile.avatar_initials || (firstName[0]+lastName[0])).toUpperCase();
-            }
-        }
+            // ADD USER LOGIC
+            document.getElementById('add-user-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('create-user-btn'); const msg = document.getElementById('form-msg');
+                const fn = document.getElementById('new-first').value; const ln = document.getElementById('new-last').value;
+                const email = document.getElementById('new-email').value; const pass = document.getElementById('new-pass').value;
+                const role = document.getElementById('new-role').value; const initials = (fn[0] + ln[0]).toUpperCase();
 
-        function openModal(title) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalOverlay').style.display = 'flex';
-        }
-        function closeModal() {
-            document.getElementById('modalOverlay').style.display = 'none';
-        }
+                btn.innerText = 'Creating...'; msg.style.display = 'none';
 
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', async () => {
-                logoutBtn.innerText = 'Signing out...';
-                try {
-                    await supabaseClient.auth.signOut();
-                } catch (error) {
-                    console.error("Logout error:", error);
-                } finally {
-                    window.location.replace('index.html');
+                const { error } = await supabaseClient.auth.signUp({
+                    email: email, password: pass, options: { data: { first_name: fn, last_name: ln, role: role, avatar_initials: initials } }
+                });
+
+                if (error) { msg.innerText = error.message; msg.style.color = '#DC2626'; msg.style.display = 'block'; btn.innerText = 'Create Account'; } 
+                else {
+                    msg.innerText = `Account created successfully!`; msg.style.color = '#10B981'; msg.style.display = 'block'; btn.innerText = 'Create Account';
+                    document.getElementById('add-user-form').reset(); setTimeout(() => { closeModal(); msg.style.display = 'none'; }, 2000);
                 }
             });
-        }
 
-        loadDashboard();
+            document.getElementById('logout-btn').addEventListener('click', async () => {
+                document.getElementById('logout-btn').innerText = 'Signing out...';
+                try { await supabaseClient.auth.signOut(); } catch(e){} finally { window.location.replace('index.html'); }
+            });
+
+            loadDatabaseData();
+        } catch (error) { console.warn("Supabase bypassed locally."); }
     </script>
 </body>
 </html>
