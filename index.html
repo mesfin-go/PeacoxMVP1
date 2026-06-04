@@ -10,20 +10,43 @@
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #F8FAFC; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        
+        /* 1. BULLETPROOF CENTERING FIX */
+        body { 
+            background-color: #F8FAFC; 
+            min-height: 100vh; /* Changed from height to min-height */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 1.5rem; /* Prevents the card from hitting the edges on small screens */
+        }
         
         .login-card { 
             background: white; padding: 2.5rem; border-radius: 1rem; 
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 400px; border: 1px solid #E5E7EB; 
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); 
+            width: 100%; max-width: 400px; border: 1px solid #E5E7EB; 
+            margin: auto; /* Ensures flexbox centers it vertically/horizontally */
         }
+        
         .login-card h1 { color: #1F2937; font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem; text-align: center; }
         .login-card p { color: #6B7280; font-size: 0.875rem; text-align: center; margin-bottom: 1.5rem; }
         
         .input-group { margin-bottom: 1.25rem; }
         .input-group label { display: block; font-size: 0.75rem; font-weight: bold; color: #4B5563; margin-bottom: 0.5rem; text-transform: uppercase; }
-        .input-group input { width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; font-size: 0.875rem; }
         
-        .btn-primary { width: 100%; padding: 0.75rem; border-radius: 0.5rem; background-color: #5A2E8E; color: white; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; }
+        /* 2. PASSWORD TOGGLE CSS */
+        .password-wrapper { position: relative; display: flex; align-items: center; }
+        .input-group input { width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; font-size: 0.875rem; transition: border-color 0.2s; }
+        .input-group input:focus { outline: none; border-color: #5A2E8E; }
+        .password-wrapper input { padding-right: 2.5rem; /* Leaves room for the eye icon */ }
+        
+        .toggle-btn { 
+            position: absolute; right: 0.5rem; background: none; border: none; cursor: pointer; 
+            color: #9CA3AF; display: flex; align-items: center; justify-content: center; padding: 0.25rem;
+        }
+        .toggle-btn:hover { color: #5A2E8E; }
+        
+        .btn-primary { width: 100%; padding: 0.75rem; border-radius: 0.5rem; background-color: #5A2E8E; color: white; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; transition: opacity 0.2s; }
         .btn-primary:hover { opacity: 0.9; }
         
         #error-msg { color: #DC2626; font-size: 0.875rem; margin-top: 1rem; text-align: center; display: none; font-weight: bold; }
@@ -39,16 +62,53 @@
                 <label>Email Address</label>
                 <input type="email" id="email" required>
             </div>
+            
             <div class="input-group">
                 <label>Password</label>
-                <input type="password" id="password" required>
+                <div class="password-wrapper">
+                    <input type="password" id="password" required>
+                    <button type="button" id="toggle-password" class="toggle-btn" aria-label="Toggle password visibility">
+                        <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
             </div>
+            
             <button type="submit" class="btn-primary" id="submit-btn">Sign In</button>
             <p id="error-msg"></p>
         </form>
     </div>
 
     <script>
+        // 1. Password Visibility Toggle Logic
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eye-icon');
+
+        togglePassword.addEventListener('click', () => {
+            // Check if it's currently hidden
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+            
+            // Toggle the input type
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            
+            // Swap the SVG icon (Eye vs Eye-Off)
+            if (isPassword) {
+                eyeIcon.innerHTML = `
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                `;
+            } else {
+                eyeIcon.innerHTML = `
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                `;
+            }
+        });
+
+        // 2. Database Routing Logic
         const SUPABASE_URL = 'https://lgmzqktvkvyfycyrhrbt.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
         
@@ -57,7 +117,7 @@
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const password = passwordInput.value; // Pull from the toggled input
             const errorMsg = document.getElementById('error-msg');
             const submitBtn = document.getElementById('submit-btn');
 
