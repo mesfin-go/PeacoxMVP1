@@ -257,4 +257,335 @@
                     <div class="form-section" style="margin-bottom: 0;">
                         <h3>Guardian Details</h3>
                         <div class="info-grid">
-                            <div class="info-box"><div
+                            <div class="info-box"><div class="info-label">Guardian Name</div><div class="info-val">Martha Johnson</div></div>
+                            <div class="info-box"><div class="info-label">Phone</div><div class="info-val">(614) 555-0198</div></div>
+                            <div class="info-box" style="grid-column: span 2;"><div class="info-label">Home Address</div><div class="info-val">123 Peacox Way, Columbus OH</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-gab-data" style="display: none;">
+                    <div class="form-section">
+                        <h3>1. Record New Metrics</h3>
+                        <div class="info-grid" style="margin-bottom: 0.75rem;">
+                            <div><label class="info-label">Year</label><select id="gab-year" class="input-full" style="margin-bottom:0;"><option>2025</option><option>2026</option></select></div>
+                            <div><label class="info-label">Semester / Qtr</label><select id="gab-term" class="input-full" style="margin-bottom:0;"><option>Fall Q1</option><option>Fall Q2</option><option>Spring Q3</option><option>Spring Q4</option></select></div>
+                        </div>
+                        <label class="info-label">Quarterly GPA</label><input type="number" id="gab-gpa" step="0.1" class="input-full" placeholder="e.g. 3.2">
+                        <label class="info-label">Days Absent</label><input type="number" id="gab-absent" class="input-full" placeholder="e.g. 2">
+                        <label class="info-label">Behavior Incidents (Self-Reported)</label><input type="number" id="gab-behavior" class="input-full" placeholder="e.g. 0">
+                        <button class="btn-primary" onclick="saveGAB()">Save Metrics</button>
+                    </div>
+                    
+                    <div class="form-section" style="margin-bottom: 0;">
+                        <h3>2. Historical GAB Data (Since Sept 2025)</h3>
+                        <div id="gab-history-list" style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem; max-height: 200px; overflow-y: auto;">
+                            <p class="text-sm text-muted">No historical data recorded yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-engagement-plan" style="display: none;">
+                    <p class="text-sm text-muted" style="margin-bottom: 1rem;">Select your required curriculum tracks for program manager approval.</p>
+                    
+                    <div class="form-section">
+                        <h3>Youth Programs (Select 2 / Month)</h3>
+                        <div class="check-grid" id="youth-group">
+                            <label class="check-item"><input type="checkbox" value="Positive Action"> Positive Action</label>
+                            <label class="check-item"><input type="checkbox" value="Youth Advisory Committee"> Youth Advisory Committee</label>
+                            <label class="check-item"><input type="checkbox" value="Family Game Night"> Family Game Night</label>
+                            <label class="check-item"><input type="checkbox" value="Gracehaven"> Gracehaven</label>
+                            <label class="check-item"><input type="checkbox" value="The Message Campaign"> The Message Campaign</label>
+                            <label class="check-item"><input type="checkbox" value="STEM Academy"> STEM Academy</label>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3>Community Engagement (Select 1 / Month)</h3>
+                        <div class="check-grid" id="comm-group">
+                            <label class="check-item"><input type="checkbox" value="Food Distribution"> Food Distribution</label>
+                            <label class="check-item"><input type="checkbox" value="Community Clean-Up"> Community Clean-Up</label>
+                            <label class="check-item"><input type="checkbox" value="Neighborhood Watch"> Neighborhood Watch</label>
+                            <label class="check-item"><input type="checkbox" value="Volunteer Activities"> Volunteer Activities</label>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3>Major Events (Select 2 / Annually)</h3>
+                        <div class="check-grid" id="event-group">
+                            <label class="check-item"><input type="checkbox" value="Youth Resiliency Conference"> Youth Resiliency Conference</label>
+                            <label class="check-item"><input type="checkbox" value="Talent & Car Show"> Talent & Car Show</label>
+                            <label class="check-item"><input type="checkbox" value="Run & Walk for Recovery"> Run & Walk for Recovery</label>
+                            <label class="check-item"><input type="checkbox" value="Workforce Summit"> Workforce Summit</label>
+                            <label class="check-item"><input type="checkbox" value="Peacox Showcase"> Peacox Showcase</label>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="saveEngagement()">Save & Sync to Dashboard</button>
+                </div>
+
+                <div id="content-idp-plan" style="display: none;">
+                    <div class="form-section">
+                        <h3>1. Goals</h3>
+                        <label class="info-label">Short-Term Goals (30-60 Days) - Required: 2</label>
+                        <textarea id="idp-short-1" class="input-full" rows="2" placeholder="Goal 1: Complete resume draft by Oct 15..."></textarea>
+                        <textarea id="idp-short-2" class="input-full" rows="2" placeholder="Goal 2: Attend two tutoring sessions..."></textarea>
+                        
+                        <label class="info-label" style="margin-top: 0.5rem;">Long-Term Goal (3-6 Months) - Required: 1</label>
+                        <textarea id="idp-long" class="input-full" rows="2" placeholder="Long-Term Goal: Obtain Food Handler Cert..."></textarea>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>2. Barriers & Support Needs</h3>
+                        <div class="check-grid">
+                            <label class="check-item"><input type="checkbox" id="bar-food"> Food Support</label>
+                            <label class="check-item"><input type="checkbox" id="bar-school"> School / Academic</label>
+                            <label class="check-item"><input type="checkbox" id="bar-emp"> Employment Support</label>
+                            <label class="check-item"><input type="checkbox" id="bar-mental"> Mental Health Support</label>
+                            <label class="check-item"><input type="checkbox" id="bar-sub"> Substance-use Support</label>
+                            <label class="check-item"><input type="checkbox" id="bar-cloth"> Clothing & Hygiene</label>
+                            <label class="check-item" style="grid-column: span 2;"><input type="checkbox" id="bar-friend"> Friendships & Social Connections</label>
+                        </div>
+                        <label class="info-label" style="margin-top: 1rem;">Other Barriers (Please Specify)</label>
+                        <input type="text" id="bar-other" class="input-full" placeholder="List any other barriers here...">
+                    </div>
+                    <button class="btn-primary" onclick="saveIDP()">Save Development Plan</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let GLOBAL_USER_ID = null; // Will be set by Supabase after login
+
+        // --- 1. PERSISTENT AVATAR UPLOAD ---
+        document.getElementById('avatar-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(file && GLOBAL_USER_ID) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64String = event.target.result;
+                    const avatar = document.getElementById('student-avatar');
+                    avatar.innerText = ''; 
+                    avatar.style.backgroundImage = `url("${base64String}")`;
+                    localStorage.setItem(`avatar_${GLOBAL_USER_ID}`, base64String); // Save to browser!
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // --- 2. SIDE PANE & MODAL ROUTING ---
+        function toggleSidePane() {
+            document.getElementById('side-pane').classList.toggle('active');
+            document.getElementById('side-overlay').classList.toggle('active');
+        }
+
+        function openModal(contentType) {
+            document.getElementById('side-pane').classList.remove('active');
+            document.getElementById('side-overlay').classList.remove('active');
+
+            document.getElementById('content-basic-info').style.display = 'none';
+            document.getElementById('content-gab-data').style.display = 'none';
+            document.getElementById('content-engagement-plan').style.display = 'none';
+            document.getElementById('content-idp-plan').style.display = 'none';
+
+            let title = "Details";
+            if(contentType === 'basic-info') { title = "Basic Information"; document.getElementById('content-basic-info').style.display = 'block'; }
+            if(contentType === 'gab-data') { title = "GAB Data Tracker"; document.getElementById('content-gab-data').style.display = 'block'; }
+            if(contentType === 'engagement-plan') { title = "Engagement Curriculum"; document.getElementById('content-engagement-plan').style.display = 'block'; }
+            if(contentType === 'idp-plan') { title = "Individual Development Plan"; document.getElementById('content-idp-plan').style.display = 'block'; }
+
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('master-modal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('master-modal').style.display = 'none'; }
+
+        // --- 3. SMART CHECKBOX LIMITERS ---
+        function enforceLimits(groupId, maxAllowed) {
+            const container = document.getElementById(groupId);
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const checked = container.querySelectorAll('input[type="checkbox"]:checked');
+                    if(checked.length > maxAllowed) {
+                        cb.checked = false;
+                        alert(`You can only select up to ${maxAllowed} options for this category.`);
+                    }
+                });
+            });
+        }
+        enforceLimits('youth-group', 2);
+        enforceLimits('comm-group', 1);
+        enforceLimits('event-group', 2);
+
+        // --- 4. SAVING & SYNCING DATA (LOCAL STORAGE MVP) ---
+        function saveGAB() {
+            if(!GLOBAL_USER_ID) return;
+            const entry = {
+                year: document.getElementById('gab-year').value,
+                term: document.getElementById('gab-term').value,
+                gpa: document.getElementById('gab-gpa').value || "N/A",
+                absent: document.getElementById('gab-absent').value || "0",
+                behavior: document.getElementById('gab-behavior').value || "0",
+                date: new Date().toLocaleDateString()
+            };
+            
+            let history = JSON.parse(localStorage.getItem(`gab_${GLOBAL_USER_ID}`) || '[]');
+            history.unshift(entry); // Add to beginning
+            localStorage.setItem(`gab_${GLOBAL_USER_ID}`, JSON.stringify(history));
+            
+            document.getElementById('gab-gpa').value = '';
+            document.getElementById('gab-absent').value = '';
+            document.getElementById('gab-behavior').value = '';
+            
+            loadUserData(); // Refresh UI
+            closeModal();
+        }
+
+        function saveEngagement() {
+            if(!GLOBAL_USER_ID) return;
+            const getChecked = (groupId) => Array.from(document.querySelectorAll(`#${groupId} input:checked`)).map(cb => cb.value);
+            
+            const plan = {
+                youth: getChecked('youth-group'),
+                comm: getChecked('comm-group'),
+                events: getChecked('event-group')
+            };
+            localStorage.setItem(`engage_${GLOBAL_USER_ID}`, JSON.stringify(plan));
+            loadUserData();
+            closeModal();
+        }
+
+        function saveIDP() {
+            if(!GLOBAL_USER_ID) return;
+            const idp = {
+                short1: document.getElementById('idp-short-1').value,
+                short2: document.getElementById('idp-short-2').value,
+                long: document.getElementById('idp-long').value,
+                otherBarriers: document.getElementById('bar-other').value,
+                checks: Array.from(document.querySelectorAll('#content-idp-plan input[type="checkbox"]')).map(cb => cb.checked)
+            };
+            localStorage.setItem(`idp_${GLOBAL_USER_ID}`, JSON.stringify(idp));
+            loadUserData();
+            closeModal();
+        }
+
+        // --- 5. MASTER LOAD FUNCTION (Runs after Supabase gets the User ID) ---
+        function loadUserData() {
+            if(!GLOBAL_USER_ID) return;
+
+            // Load Avatar
+            const savedAvatar = localStorage.getItem(`avatar_${GLOBAL_USER_ID}`);
+            if(savedAvatar) {
+                const avatarDiv = document.getElementById('student-avatar');
+                avatarDiv.innerText = '';
+                avatarDiv.style.backgroundImage = `url("${savedAvatar}")`;
+            }
+
+            // Load GAB History
+            const gabHistory = JSON.parse(localStorage.getItem(`gab_${GLOBAL_USER_ID}`) || '[]');
+            const historyList = document.getElementById('gab-history-list');
+            if(gabHistory.length > 0) {
+                historyList.innerHTML = gabHistory.map(entry => `
+                    <div class="history-item">
+                        <h4>${entry.term} ${entry.year} <span style="float:right; font-size:0.65rem; color:#9CA3AF;">Logged: ${entry.date}</span></h4>
+                        <p><strong>GPA:</strong> ${entry.gpa} &nbsp;|&nbsp; <strong>Absent:</strong> ${entry.absent} &nbsp;|&nbsp; <strong>Incidents:</strong> ${entry.behavior}</p>
+                    </div>
+                `).join('');
+                
+                // Update Dashboard Top Cards with latest entry
+                document.getElementById('dash-gpa').innerText = gabHistory[0].gpa;
+                document.getElementById('dash-absent').innerText = gabHistory[0].absent;
+                document.getElementById('dash-behavior').innerText = gabHistory[0].behavior;
+            }
+
+            // Load Engagement Plan
+            const plan = JSON.parse(localStorage.getItem(`engage_${GLOBAL_USER_ID}`) || '{"youth":[], "comm":[], "events":[]}');
+            
+            // Sync Checkboxes in Modal
+            document.querySelectorAll('#youth-group input').forEach(cb => cb.checked = plan.youth.includes(cb.value));
+            document.querySelectorAll('#comm-group input').forEach(cb => cb.checked = plan.comm.includes(cb.value));
+            document.querySelectorAll('#event-group input').forEach(cb => cb.checked = plan.events.includes(cb.value));
+            
+            // Sync Dashboard Lists
+            const renderList = (arr) => arr.length > 0 ? arr.map(i => `<li>${i}</li>`).join('') : `<li>Pending Selection</li>`;
+            document.getElementById('dash-youth-list').innerHTML = renderList(plan.youth);
+            document.getElementById('dash-comm-list').innerHTML = renderList(plan.comm);
+            document.getElementById('dash-event-list').innerHTML = renderList(plan.events);
+
+            // Load IDP Plan
+            const idp = JSON.parse(localStorage.getItem(`idp_${GLOBAL_USER_ID}`) || null);
+            if(idp) {
+                // Restore Form
+                document.getElementById('idp-short-1').value = idp.short1;
+                document.getElementById('idp-short-2').value = idp.short2;
+                document.getElementById('idp-long').value = idp.long;
+                document.getElementById('bar-other').value = idp.otherBarriers;
+                const checks = document.querySelectorAll('#content-idp-plan input[type="checkbox"]');
+                checks.forEach((cb, index) => cb.checked = idp.checks[index]);
+
+                // Sync Dashboard Vision Statement
+                let shortHTML = '';
+                if(idp.short1) shortHTML += `<li>${idp.short1}</li>`;
+                if(idp.short2) shortHTML += `<li>${idp.short2}</li>`;
+                if(shortHTML === '') shortHTML = '<li>Update IDP to set goals.</li>';
+                
+                document.getElementById('dash-short-goals').innerHTML = shortHTML;
+                document.getElementById('dash-long-goal').innerText = idp.long || 'Update IDP to set goal.';
+            }
+        }
+    </script>
+
+
+    <script>
+        try {
+            const SUPABASE_URL = 'https://lgmzqktvkvyfycyrhrbt.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
+            const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            async function loadDatabaseData() {
+                const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+                if (authError || !user) { 
+                    if(window.location.protocol !== 'file:') window.location.href = 'index.html'; 
+                    return; 
+                }
+
+                // 1. SET THE SECURE GLOBAL ID SO LOCAL STORAGE KNOWS WHO IS LOGGED IN!
+                GLOBAL_USER_ID = user.id;
+
+                const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+
+                if (profile) {
+                    const firstName = profile.first_name || 'Peacox';
+                    const lastName = profile.last_name || 'Student';
+                    const email = user.email || '--';
+                    const initials = profile.avatar_initials || (firstName[0] + lastName[0]);
+                    
+                    document.getElementById('student-name').innerText = `${firstName} ${lastName}`;
+                    document.getElementById('info-name').innerText = `${firstName} ${lastName}`;
+                    document.getElementById('info-email').innerText = email;
+                    document.getElementById('student-avatar').innerText = initials.toUpperCase();
+                    
+                    // 2. NOW LOAD ALL THEIR SAVED UI DATA!
+                    loadUserData(); 
+                }
+            }
+
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async () => {
+                    logoutBtn.innerText = 'Signing out...';
+                    try { await supabaseClient.auth.signOut(); } 
+                    catch (error) { console.error("Logout error:", error); } 
+                    finally { window.location.replace('index.html'); }
+                });
+            }
+
+            loadDatabaseData();
+            
+        } catch (error) {
+            console.warn("Supabase connection bypassed locally.");
+        }
+    </script>
+</body>
+</html>
