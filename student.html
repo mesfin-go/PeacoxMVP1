@@ -55,9 +55,6 @@
         .btn-primary { width: 100%; padding: 0.6rem; border-radius: 0.5rem; background-color: var(--peacox-purple); color: white; border: none; font-weight: bold; cursor: pointer; font-size: 0.875rem; margin-top: 0.5rem;}
         .btn-primary:hover { opacity: 0.9; }
 
-        .progress-group { width: 100%; margin-bottom: 0.75rem;}
-        .progress-header { display: flex; justify-content: space-between; align-items: flex-start; font-size: 0.875rem; font-weight: bold; margin-bottom: 0.25rem; flex-direction: column;}
-        
         .stats-grid { display: flex; justify-content: space-between; align-items: center; text-align: center; height: 100%; width: 100%;}
         .stat-col { flex: 1; border-right: 1px solid var(--border-color); padding: 0 0.25rem; display: flex; flex-direction: column; justify-content: center; height: 100%;}
         .stat-col:last-child { border-right: none; }
@@ -65,6 +62,13 @@
 
         .goal-flex { display: flex; gap: 1rem; height: 100%; width: 100%;}
         .goal-box { flex: 1; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid; display: flex; flex-direction: column; overflow-y: auto;}
+        
+        /* NEW ENGAGEMENT STYLES */
+        .engage-box { padding: 0.75rem; border-radius: 0.5rem; border: 1px solid; display: flex; flex-direction: column; }
+        .engage-header { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.05em;}
+        .engage-item { font-size: 0.875rem; color: var(--text-main); display: flex; align-items: flex-start; gap: 0.4rem; margin-bottom: 0.35rem; font-weight: 500;}
+        .engage-item:last-child { margin-bottom: 0; }
+        .icon-check { color: #10B981; flex-shrink: 0; margin-top: 0.1rem;}
         
         .text-purple { color: var(--peacox-purple); } .text-teal { color: var(--peacox-teal); } .text-xs { font-size: 0.75rem; } .text-sm { font-size: 0.875rem; } .font-bold { font-weight: bold; } .text-muted { color: var(--text-muted); } .text-green { color: #10B981; }
 
@@ -178,19 +182,29 @@
 
         <div class="card col-2 row-2">
             <h3 class="card-header">Engagement Curriculum</h3>
-            <div style="display: flex; flex-direction: column; flex: 1; overflow-y: auto;">
-                <div class="progress-group">
-                    <div class="progress-header"><span style="color: var(--text-main);">Youth Programs <span class="text-muted text-xs font-normal">(Max 2)</span></span></div>
-                    <ul class="curriculum-list" id="dash-youth-list"><li>Pending Selection</li></ul>
+            <div style="display: flex; flex-direction: column; flex: 1; overflow-y: auto; gap: 0.75rem;">
+                
+                <div class="engage-box" style="background-color: #F0FDFA; border-color: #CCFBF1;">
+                    <div class="engage-header text-teal">Youth Programs <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 2)</span></div>
+                    <div id="dash-youth-list">
+                        <div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div>
+                    </div>
                 </div>
-                <div class="progress-group">
-                    <div class="progress-header"><span style="color: var(--text-main);">Community Engagement <span class="text-muted text-xs font-normal">(Max 1)</span></span></div>
-                    <ul class="curriculum-list" id="dash-comm-list"><li>Pending Selection</li></ul>
+
+                <div class="engage-box" style="background-color: #FAF5FF; border-color: #F3E8FF;">
+                    <div class="engage-header text-purple">Community Engagement <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 1)</span></div>
+                    <div id="dash-comm-list">
+                        <div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div>
+                    </div>
                 </div>
-                <div class="progress-group" style="margin-bottom: 0;">
-                    <div class="progress-header"><span style="color: var(--text-main);">Major Events <span class="text-muted text-xs font-normal">(Max 2)</span></span></div>
-                    <ul class="curriculum-list" id="dash-event-list"><li>Pending Selection</li></ul>
+
+                <div class="engage-box" style="background-color: #EFF6FF; border-color: #DBEAFE;">
+                    <div class="engage-header" style="color: #3B82F6;">Major Events <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 2)</span></div>
+                    <div id="dash-event-list">
+                        <div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div>
+                    </div>
                 </div>
+
             </div>
         </div>
 
@@ -355,7 +369,7 @@
 
 
     <script>
-        let GLOBAL_USER_ID = null; // Will be set by Supabase after login
+        let GLOBAL_USER_ID = null; 
 
         // --- 1. PERSISTENT AVATAR UPLOAD ---
         document.getElementById('avatar-upload').addEventListener('change', function(e) {
@@ -367,7 +381,7 @@
                     const avatar = document.getElementById('student-avatar');
                     avatar.innerText = ''; 
                     avatar.style.backgroundImage = `url("${base64String}")`;
-                    localStorage.setItem(`avatar_${GLOBAL_USER_ID}`, base64String); // Save to browser!
+                    localStorage.setItem(`avatar_${GLOBAL_USER_ID}`, base64String); 
                 };
                 reader.readAsDataURL(file);
             }
@@ -418,7 +432,7 @@
         enforceLimits('comm-group', 1);
         enforceLimits('event-group', 2);
 
-        // --- 4. SAVING & SYNCING DATA (LOCAL STORAGE MVP) ---
+        // --- 4. SAVING & SYNCING DATA ---
         function saveGAB() {
             if(!GLOBAL_USER_ID) return;
             const entry = {
@@ -431,14 +445,14 @@
             };
             
             let history = JSON.parse(localStorage.getItem(`gab_${GLOBAL_USER_ID}`) || '[]');
-            history.unshift(entry); // Add to beginning
+            history.unshift(entry); 
             localStorage.setItem(`gab_${GLOBAL_USER_ID}`, JSON.stringify(history));
             
             document.getElementById('gab-gpa').value = '';
             document.getElementById('gab-absent').value = '';
             document.getElementById('gab-behavior').value = '';
             
-            loadUserData(); // Refresh UI
+            loadUserData(); 
             closeModal();
         }
 
@@ -470,11 +484,10 @@
             closeModal();
         }
 
-        // --- 5. MASTER LOAD FUNCTION (Runs after Supabase gets the User ID) ---
+        // --- 5. MASTER LOAD FUNCTION ---
         function loadUserData() {
             if(!GLOBAL_USER_ID) return;
 
-            // Load Avatar
             const savedAvatar = localStorage.getItem(`avatar_${GLOBAL_USER_ID}`);
             if(savedAvatar) {
                 const avatarDiv = document.getElementById('student-avatar');
@@ -482,7 +495,6 @@
                 avatarDiv.style.backgroundImage = `url("${savedAvatar}")`;
             }
 
-            // Load GAB History
             const gabHistory = JSON.parse(localStorage.getItem(`gab_${GLOBAL_USER_ID}`) || '[]');
             const historyList = document.getElementById('gab-history-list');
             if(gabHistory.length > 0) {
@@ -493,30 +505,30 @@
                     </div>
                 `).join('');
                 
-                // Update Dashboard Top Cards with latest entry
                 document.getElementById('dash-gpa').innerText = gabHistory[0].gpa;
                 document.getElementById('dash-absent').innerText = gabHistory[0].absent;
                 document.getElementById('dash-behavior').innerText = gabHistory[0].behavior;
             }
 
-            // Load Engagement Plan
+            // Load & Style Engagement Plan
             const plan = JSON.parse(localStorage.getItem(`engage_${GLOBAL_USER_ID}`) || '{"youth":[], "comm":[], "events":[]}');
             
-            // Sync Checkboxes in Modal
             document.querySelectorAll('#youth-group input').forEach(cb => cb.checked = plan.youth.includes(cb.value));
             document.querySelectorAll('#comm-group input').forEach(cb => cb.checked = plan.comm.includes(cb.value));
             document.querySelectorAll('#event-group input').forEach(cb => cb.checked = plan.events.includes(cb.value));
             
-            // Sync Dashboard Lists
-            const renderList = (arr) => arr.length > 0 ? arr.map(i => `<li>${i}</li>`).join('') : `<li>Pending Selection</li>`;
+            // New dynamic rendering for the styled boxes
+            const checkIcon = `<svg class="icon-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            const renderList = (arr) => arr.length > 0 
+                ? arr.map(i => `<div class="engage-item">${checkIcon} <span>${i}</span></div>`).join('') 
+                : `<div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div>`;
+                
             document.getElementById('dash-youth-list').innerHTML = renderList(plan.youth);
             document.getElementById('dash-comm-list').innerHTML = renderList(plan.comm);
             document.getElementById('dash-event-list').innerHTML = renderList(plan.events);
 
-            // Load IDP Plan
             const idp = JSON.parse(localStorage.getItem(`idp_${GLOBAL_USER_ID}`) || null);
             if(idp) {
-                // Restore Form
                 document.getElementById('idp-short-1').value = idp.short1;
                 document.getElementById('idp-short-2').value = idp.short2;
                 document.getElementById('idp-long').value = idp.long;
@@ -524,7 +536,6 @@
                 const checks = document.querySelectorAll('#content-idp-plan input[type="checkbox"]');
                 checks.forEach((cb, index) => cb.checked = idp.checks[index]);
 
-                // Sync Dashboard Vision Statement
                 let shortHTML = '';
                 if(idp.short1) shortHTML += `<li>${idp.short1}</li>`;
                 if(idp.short2) shortHTML += `<li>${idp.short2}</li>`;
@@ -550,7 +561,6 @@
                     return; 
                 }
 
-                // 1. SET THE SECURE GLOBAL ID SO LOCAL STORAGE KNOWS WHO IS LOGGED IN!
                 GLOBAL_USER_ID = user.id;
 
                 const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
@@ -566,7 +576,6 @@
                     document.getElementById('info-email').innerText = email;
                     document.getElementById('student-avatar').innerText = initials.toUpperCase();
                     
-                    // 2. NOW LOAD ALL THEIR SAVED UI DATA!
                     loadUserData(); 
                 }
             }
