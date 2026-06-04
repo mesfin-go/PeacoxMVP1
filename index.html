@@ -1,58 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peacox Helping Hands - Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #F8FAFC; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        
-        .login-card { 
-            background: white; padding: 2.5rem; border-radius: 1rem; 
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 400px; border: 1px solid #E5E7EB; 
-        }
-        .login-card h1 { color: #1F2937; font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem; text-align: center; }
-        .login-card p { color: #6B7280; font-size: 0.875rem; text-align: center; margin-bottom: 1.5rem; }
-        
-        .input-group { margin-bottom: 1.25rem; }
-        .input-group label { display: block; font-size: 0.75rem; font-weight: bold; color: #4B5563; margin-bottom: 0.5rem; text-transform: uppercase; }
-        .input-group input { width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; font-size: 0.875rem; }
-        
-        .btn-primary { width: 100%; padding: 0.75rem; border-radius: 0.5rem; background-color: #5A2E8E; color: white; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; }
-        .btn-primary:hover { opacity: 0.9; }
-        
-        #error-msg { color: #DC2626; font-size: 0.875rem; margin-top: 1rem; text-align: center; display: none; font-weight: bold; }
-    </style>
-</head>
-<body>
-    <div class="login-card">
-        <h1>Peacox Portal</h1>
-        <p>Sign in to access your dashboard</p>
-        
-        <form id="login-form">
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="email" required>
-            </div>
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="password" required>
-            </div>
-            <button type="submit" class="btn-primary" id="submit-btn">Sign In</button>
-            <p id="error-msg"></p>
-        </form>
-    </div>
-
-    <script>
+<script>
         // ADD YOUR KEYS HERE
         const SUPABASE_URL = 'https://lgmzqktvkvyfycyrhrbt.supabase.co';
-		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
-		const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
+        
+        // FIX: We changed the name here to "supabaseClient" to avoid the crash
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -64,8 +16,8 @@
             submitBtn.innerText = 'Authenticating...';
             errorMsg.style.display = 'none';
 
-            // Authenticate with Supabase
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            // FIX: Using supabaseClient
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             if (error) {
                 errorMsg.innerText = error.message;
@@ -74,8 +26,8 @@
                 return;
             }
 
-            // Fetch the user's role from the profiles table
-            const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).single();
+            // FIX: Using supabaseClient
+            const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', data.user.id).single();
 
             if (!profile) {
                 errorMsg.innerText = "Account role is missing.";
@@ -96,5 +48,3 @@
             }
         });
     </script>
-</body>
-</html>
