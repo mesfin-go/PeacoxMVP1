@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peacox Program Manager Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            var(--peacox-purple): #5A2E8E;
+            var(--peacox-teal): #008080;
+            var(--bg-color): #F8FAFC;
+            var(--card-bg): #FFFFFF;
+            var(--text-main): #1F2937;
+            var(--text-muted): #6B7280;
+            var(--border-color): #E5E7EB;
+            var(--status-green): #10B981;
+            var(--status-yellow): #F59E0B;
+            var(--status-red): #EF4444;
+        }
+
+        html { font-size: clamp(12px, 0.7vw + 0.4rem, 18px); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: #F8FAFC; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: #FFFFFF; border-bottom: 1px solid #E5E7EB; flex-shrink: 0; height: auto; }
+        .header-profile { display: flex; align-items: center; gap: 1.25rem; }
+        .avatar { width: 3.5rem; height: 3.5rem; border-radius: 0.5rem; background-color: #1F2937; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.25rem; flex-shrink: 0; }
+        .header-info { display: flex; flex-direction: column; justify-content: center;}
+        .header-tags { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+        .tag { padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: bold; border: 1px solid; white-space: nowrap; }
+        
+        .tag-info { background-color: #EFF6FF; color: #3B82F6; border-color: #DBEAFE; }
+        .tag-success { background-color: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+        .tag-alert { background-color: #FEF2F2; color: #B91C1C; border-color: #FEE2E2; display: flex; align-items: center; gap: 0.5rem;}
+        .tag-alert::before { content: ""; display: block; width: 0.5rem; height: 0.5rem; background-color: #EF4444; border-radius: 50%; }
+
+        main { flex: 1; padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 1.25rem; overflow: hidden; min-height: 0; }
+        .card { background-color: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 1rem; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; overflow: hidden; justify-content: space-between; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px -2px rgba(0,0,0,0.1); }
+        .card-header { font-size: 0.75rem; font-weight: bold; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; flex-shrink: 0;}
+        
+        .col-1 { grid-column: span 1; }
+        .col-2 { grid-column: span 2; }
+        .row-1 { grid-row: span 1; }
+        .row-2 { grid-row: span 2; }
+        .card-urgent { border-left: 0.25rem solid #EF4444; }
+        
+        .btn-primary { width: 100%; padding: 0.6rem; border-radius: 0.5rem; background-color: #5A2E8E; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 0.875rem; transition: opacity 0.2s;}
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-outline { width: 100%; padding: 0.6rem; border-radius: 0.5rem; background-color: transparent; color: #5A2E8E; border: 1px solid #5A2E8E; font-weight: bold; cursor: pointer; font-size: 0.875rem; transition: all 0.2s;}
+        .btn-outline:hover { background-color: #F3E8FF; }
+
+        .text-purple { color: #5A2E8E; }
+        .text-teal { color: #008080; }
+        .text-main { color: #1F2937; }
+        .text-xs { font-size: 0.75rem; }
+        .text-sm { font-size: 0.875rem; }
+        .font-bold { font-weight: bold; }
+        .text-muted { color: #6B7280; }
+        .text-green { color: #10B981; }
+
+        .progress-group { width: 100%; }
+        .progress-header { display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.875rem; font-weight: bold; margin-bottom: 0.25rem; }
+        .progress-track { width: 100%; height: 0.75rem; background-color: #F3F4F6; border-radius: 0.375rem; overflow: hidden; }
+        .progress-fill { height: 100%; background-color: #008080; border-radius: 0.375rem; }
+
+        .stat-block { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0.5rem; border-bottom: 1px solid #E5E7EB; flex: 1; }
+        .stat-block:last-child { border-bottom: none; }
+        .stat-val { font-size: 2rem; font-weight: 900; color: #1F2937; line-height: 1.1; margin: 0.25rem 0;}
+
+        .impact-circle { width: 6rem; height: 6rem; border-radius: 50%; border: 0.375rem solid #008080; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto; }
+        .escalation-item { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #E5E7EB; }
+        .escalation-item:last-child { border-bottom: none; }
+
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 50; }
+        .modal-content { background-color: white; width: 66%; max-width: 500px; border-radius: 1rem; padding: 2rem; position: relative; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; background: #F3F4F6; border: none; width: 2rem; height: 2rem; border-radius: 50%; cursor: pointer; font-weight: bold; color: #9CA3AF; }
+        .modal-close:hover { background: #E5E7EB; color: #374151; }
+        
+        /* Form Styles */
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; font-size: 0.75rem; font-weight: bold; color: #4B5563; margin-bottom: 0.35rem; text-transform: uppercase; }
+        .input-group input, .input-group select { width: 100%; padding: 0.6rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; font-size: 0.875rem; }
+        .input-row { display: flex; gap: 1rem; }
+        .input-row .input-group { flex: 1; }
+        
+        #form-msg { font-size: 0.875rem; margin-top: 1rem; text-align: center; display: none; font-weight: bold; }
+
+        .logout-btn { background: none; border: 1px solid #E5E7EB; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: bold; color: #6B7280; cursor: pointer; transition: all 0.2s; }
+        .logout-btn:hover { background: #FEF2F2; color: #DC2626; border-color: #FEE2E2; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-profile">
+            <div class="avatar" id="pm-avatar">--</div>
+            <div class="header-info">
+                <h1 id="pm-name" style="font-size: 1.25rem; color: #1F2937; margin-bottom: 0.125rem;">Loading...</h1>
+                <p class="text-sm text-muted">Program Manager, Peacox Helping Hands</p>
+                <div class="header-tags">
+                    <span class="tag tag-info">150 Active Students</span>
+                    <span class="tag tag-success">30 Active Mentors</span>
+                    <span class="tag tag-alert">3 System Escalations</span>
+                </div>
+            </div>
+        </div>
+        <button class="logout-btn" id="logout-btn">Sign Out</button>
+    </header>
+
+    <main>
+        <div class="card col-1 row-2">
+            <h3 class="card-header">Cohort Health Averages</h3>
+            <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-between;">
+                <div class="stat-block"><p class="text-xs text-muted font-bold uppercase tracking-wider">Average GPA</p><p class="stat-val">3.05</p><p class="text-xs text-green font-bold">+0.15 vs Last Qtr</p></div>
+                <div class="stat-block"><p class="text-xs text-muted font-bold uppercase tracking-wider">Avg Attendance</p><p class="stat-val">91%</p><p class="text-xs text-green font-bold">Stable</p></div>
+                <div class="stat-block"><p class="text-xs text-muted font-bold uppercase tracking-wider">Discipline Ratio</p><p class="stat-val" style="font-size: 1.5rem; color: #F59E0B;">14 Simple</p><p class="text-xs font-bold" style="color: #EF4444;">2 Formal Esc.</p></div>
+            </div>
+        </div>
+
+        <div class="card col-2 row-2">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 class="card-header" style="margin: 0;">Global GRO-WORK Pipeline</h3>
+                <span class="text-xs font-bold text-muted bg-gray-100" style="padding: 0.2rem 0.5rem; border-radius: 0.25rem; background-color: #F3F4F6;">N = 150 Students</span>
+            </div>
+            <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-evenly; gap: 0.5rem;">
+                <div class="progress-group"><div class="progress-header"><span class="text-main">1. Pre-employment Training</span><span class="text-teal">150 Students (100%)</span></div><div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header"><span class="text-main">2. Resume & Cover Letter</span><span class="text-teal">112 Students (74%)</span></div><div class="progress-track"><div class="progress-fill" style="width: 74%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header"><span class="text-main">3. Job Skill Training</span><span class="text-teal">68 Students (45%)</span></div><div class="progress-track"><div class="progress-fill" style="width: 45%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header"><span class="text-main">4. Career Assessment</span><span class="text-purple">32 Students (21%)</span></div><div class="progress-track" style="background-color: #F3E8FF;"><div class="progress-fill" style="width: 21%; background-color: #5A2E8E;"></div></div><p class="text-xs text-muted" style="margin-top: 0.35rem; line-height: 1.3;">Goal: 50% completion before Showcase Conference.</p></div>
+            </div>
+        </div>
+
+        <div class="card col-1 row-2">
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 1px solid #E5E7EB; padding-bottom: 1rem; margin-bottom: 1rem;">
+                <h3 class="card-header text-center" style="margin-bottom: 1rem;">Cohort Resiliency</h3>
+                <div class="impact-circle"><span style="font-size: 1.75rem; font-weight: 900; line-height: 1;" class="text-teal">8.4</span><span style="font-size: 0.75rem; font-weight: bold; color: #6B7280;">/ 10.0</span></div>
+                <p class="text-xs text-muted text-center" style="margin-top: 0.75rem; line-height: 1.3;">Aggregated growth via SurveyMonkey API.</p>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <h3 class="card-header text-center">Mentor Compliance</h3>
+                <p style="font-size: 2.25rem; font-weight: 900; line-height: 1.1; margin: 0.5rem 0;" class="text-purple">83%</p>
+                <p class="text-xs text-muted text-center" style="line-height: 1.3;">Meeting 3 sessions/mo requirement.</p>
+            </div>
+        </div>
+
+        <div class="card col-1 row-1 card-urgent">
+            <h3 class="card-header" style="color: #EF4444; margin-bottom: 0.5rem;">Action Required</h3>
+            <div style="display: flex; flex-direction: column; flex: 1; justify-content: center;">
+                <div class="escalation-item"><span class="text-sm font-bold text-main">Formal Write-ups</span><span class="text-xs font-bold text-white" style="background-color: #EF4444; padding: 0.15rem 0.4rem; border-radius: 0.25rem;">2 Pending</span></div>
+                <div class="escalation-item"><span class="text-sm font-bold text-main">Food Support Req.</span><span class="text-xs font-bold text-white" style="background-color: #F59E0B; padding: 0.15rem 0.4rem; border-radius: 0.25rem;">1 New</span></div>
+            </div>
+        </div>
+
+        <div class="card col-2 row-1" style="flex-direction: row; align-items: center; gap: 1.5rem;">
+            <div style="flex: 1;">
+                <h3 class="card-header">Major Event Tracker</h3>
+                <h4 style="font-size: 1.125rem; font-weight: bold; margin-bottom: 0.25rem; color: #1F2937; line-height: 1.2;">Peacox Showcase Conference</h4>
+                <p class="text-sm font-bold text-purple">Countdown: 45 Days Away</p>
+            </div>
+            <div style="flex: 1; border-left: 1px solid #E5E7EB; padding-left: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;"><span class="text-sm font-bold text-main">Cohort RSVPs</span><span class="text-sm font-bold text-teal">120 / 150</span></div>
+                <div class="progress-track" style="height: 0.75rem;"><div class="progress-fill" style="width: 80%;"></div></div>
+                <p class="text-xs text-muted" style="margin-top: 0.35rem;">80% confirmed attendance.</p>
+            </div>
+        </div>
+
+        <div class="card col-1 row-1" style="justify-content: center;">
+            <h3 class="card-header" style="margin-bottom: 0.75rem;">Admin & Reporting</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <button class="btn-primary" onclick="openAddUserModal()">+ Add New User</button>
+                <button class="btn-outline" onclick="alert('Compiling PDF Report...');">Generate Q2 Report</button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="addUserModalOverlay" class="modal-overlay" onclick="closeAddUserModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeAddUserModal()">✕</button>
+            <h2 style="font-size: 1.5rem; font-weight: 900; color: #1F2937; margin-bottom: 0.25rem;">Add System User</h2>
+            <p class="text-sm text-muted" style="margin-bottom: 1.5rem;">Create a new profile. They will be able to log in instantly.</p>
+            
+            <form id="add-user-form">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>First Name</label>
+                        <input type="text" id="new-first" required placeholder="Jane">
+                    </div>
+                    <div class="input-group">
+                        <label>Last Name</label>
+                        <input type="text" id="new-last" required placeholder="Doe">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="new-email" required placeholder="jane.doe@peacox.org">
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Temporary Password</label>
+                        <input type="password" id="new-pass" required placeholder="Min. 6 characters">
+                    </div>
+                    <div class="input-group">
+                        <label>Account Role</label>
+                        <select id="new-role" required>
+                            <option value="student">Student</option>
+                            <option value="mentor">Mentor</option>
+                            <option value="manager">Program Manager</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" id="create-user-btn" style="margin-top: 0.5rem;">Create Account</button>
+                <p id="form-msg"></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 1. Initialize Supabase (Replace with your actual keys)
+        const SUPABASE_URL = 'https://lgmzqktvkvyfycyrhrbt.supabase.co';
+		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
+		const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 2. Load Dynamic Dashboard Data
+        async function loadDashboard() {
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            
+            if (authError || !user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            // Security Check: If they log in but are NOT a manager, kick them to their proper dashboard
+            if (profile && profile.role !== 'manager') {
+                window.location.href = profile.role === 'mentor' ? 'mentor.html' : 'student.html';
+                return;
+            }
+
+            if (profile) {
+                const firstName = profile.first_name || 'Peacox';
+                const lastName = profile.last_name || 'Manager';
+                const initials = profile.avatar_initials || (firstName[0] + lastName[0]);
+
+                document.getElementById('pm-name').innerText = `${firstName} ${lastName}`;
+                document.getElementById('pm-avatar').innerText = initials.toUpperCase();
+            }
+        }
+
+        // 3. Handle Add New User Submission
+        document.getElementById('add-user-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('create-user-btn');
+            const msg = document.getElementById('form-msg');
+            
+            const firstName = document.getElementById('new-first').value;
+            const lastName = document.getElementById('new-last').value;
+            const email = document.getElementById('new-email').value;
+            const password = document.getElementById('new-pass').value;
+            const role = document.getElementById('new-role').value;
+            
+            const initials = (firstName[0] + lastName[0]).toUpperCase();
+
+            btn.innerText = 'Creating User...';
+            msg.style.display = 'none';
+
+            // Send to Supabase Auth. The SQL Trigger we built earlier will catch this metadata 
+            // and automatically inject it into the `profiles` table!
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        first_name: firstName,
+                        last_name: lastName,
+                        role: role,
+                        avatar_initials: initials
+                    }
+                }
+            });
+
+            if (error) {
+                msg.innerText = error.message;
+                msg.style.color = '#DC2626'; // Red
+                msg.style.display = 'block';
+                btn.innerText = 'Create Account';
+            } else {
+                msg.innerText = `${firstName}'s ${role} account created successfully!`;
+                msg.style.color = '#10B981'; // Green
+                msg.style.display = 'block';
+                btn.innerText = 'Create Account';
+                document.getElementById('add-user-form').reset();
+                
+                // Close modal after 2 seconds
+                setTimeout(() => {
+                    closeAddUserModal();
+                    msg.style.display = 'none';
+                }, 2000);
+            }
+        });
+
+        // Modal Controls
+        function openAddUserModal() { document.getElementById('addUserModalOverlay').style.display = 'flex'; }
+        function closeAddUserModal() { document.getElementById('addUserModalOverlay').style.display = 'none'; }
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        loadDashboard();
+    </script>
+</body>
+</html>
