@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peacox Manager Dashboard</title>
+    <title>Peacox Mentor Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -13,36 +13,65 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-color); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
+        /* HEADER */
         header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 100; position: relative;}
         .header-profile { display: flex; align-items: center; gap: 1.25rem; }
         .avatar-wrapper { position: relative; cursor: pointer; transition: transform 0.2s; }
         .avatar-wrapper:hover { transform: scale(1.05); }
-        .avatar { width: 3.5rem; height: 3.5rem; border-radius: 0.5rem; background-color: #1F2937; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.25rem; background-size: cover; background-position: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .upload-badge { position: absolute; bottom: -5px; right: -5px; background-color: var(--peacox-teal); border-radius: 50%; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center; border: 2px solid white; cursor: pointer; color: white;}
+        .avatar { width: 3.5rem; height: 3.5rem; border-radius: 50%; background-color: var(--peacox-purple); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.25rem; background-size: cover; background-position: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .upload-badge { position: absolute; bottom: 0; right: 0; background-color: var(--peacox-teal); border-radius: 50%; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center; border: 2px solid white; cursor: pointer; color: white; transition: background-color 0.2s;}
         
         .header-info { display: flex; flex-direction: column; justify-content: center;}
-        .header-actions { display: flex; gap: 1rem; align-items: center; }
-        .btn-add-user { background-color: var(--peacox-purple); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.875rem; }
+        .name-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.125rem; }
+        .header-tags { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+        .tag { padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: bold; border: 1px solid; white-space: nowrap; }
+        .tag-success { background-color: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+        .tag-alert { background-color: #FFF7ED; color: #C2410C; border-color: #FFEDD5; display: flex; align-items: center; gap: 0.5rem;}
+        .tag-alert::before { content: ""; display: block; width: 0.5rem; height: 0.5rem; background-color: #F97316; border-radius: 50%; }
 
-        main { flex: 1; padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 1.25rem; overflow: hidden; min-height: 0; }
+        /* GRID (No Scroll) */
+        main { flex: 1; padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 1.25rem; overflow: hidden; min-height: 0; }
         .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 1rem; padding: 1.25rem; display: flex; flex-direction: column; overflow: hidden; justify-content: space-between; }
         .card-header { font-size: 0.75rem; font-weight: bold; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; flex-shrink: 0;}
-        .col-1 { grid-column: span 1; } .col-2 { grid-column: span 2; } .row-1 { grid-row: span 1; } .row-2 { grid-row: span 2; }
+        .col-1 { grid-column: span 1; } .col-2 { grid-column: span 2; } .col-3 { grid-column: span 3; } .row-1 { grid-row: span 1; } .row-2 { grid-row: span 2; }
 
-        .stat-block { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; flex: 1; border-bottom: 1px solid var(--border-color); }
-        .stat-block:last-child { border-bottom: none; }
-        .stat-val { font-size: 2rem; font-weight: 900; color: var(--text-main); margin: 0.25rem 0; line-height: 1.1;}
+        /* CALENDAR */
+        .calendar-wrapper { display: flex; flex-direction: column; height: 100%; }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; font-weight: bold; color: var(--text-main); font-size: 0.875rem; }
+        .cal-nav { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.25rem; }
+        .cal-nav:hover { color: var(--peacox-purple); }
+        .cal-grid-header { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 0.25rem;}
+        .cal-day-header { text-align: center; font-size: 0.65rem; color: var(--text-muted); font-weight: bold; }
+        .cal-grid { display: flex; flex-direction: column; flex: 1; gap: 2px;}
+        .cal-row { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; gap: 2px;}
+        .cal-day { border-radius: 0.25rem; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--text-main); cursor: pointer; background: #F9FAFB; position: relative; }
+        .cal-day:hover { border: 1px solid var(--peacox-teal); }
+        .cal-day.today { background: var(--peacox-teal); color: white; font-weight: bold; }
+        .cal-day.empty { background: transparent; cursor: default; }
+        .cal-note-dot { position: absolute; bottom: 2px; width: 4px; height: 4px; background: var(--peacox-purple); border-radius: 50%; }
 
+        /* PROGRESS BARS */
         .progress-group { width: 100%; display: flex; flex-direction: column; justify-content: center; flex: 1;}
         .progress-header { display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.875rem; font-weight: bold; margin-bottom: 0.35rem; }
-        .progress-track { width: 100%; height: 0.75rem; background-color: #F3F4F6; border-radius: 0.375rem; overflow: hidden; }
-        .progress-fill { height: 100%; background-color: var(--peacox-teal); border-radius: 0.375rem; }
-        .progress-fill.purple { background-color: var(--peacox-purple); }
+        .progress-track { width: 100%; height: 0.5rem; background-color: #F3F4F6; border-radius: 0.25rem; overflow: hidden; }
+        .progress-fill { height: 100%; background-color: var(--peacox-purple); border-radius: 0.25rem; }
+        .progress-fill.teal { background-color: var(--peacox-teal); }
 
+        /* ROSTER */
+        .roster-grid { display: flex; justify-content: space-between; align-items: center; height: 100%; gap: 0.5rem;}
+        .roster-card { flex: 1; border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 0.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #F9FAFB; height: 100%;}
+        .roster-avatar { width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: var(--peacox-teal); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: bold; margin-bottom: 0.25rem; }
+
+        /* LISTS */
+        .session-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem;}
+        .session-item:last-child { border: none; margin: 0; padding: 0; }
+        
+        /* SIDE PANE & MODALS */
         .side-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.4); z-index: 40; display: none; }
         .side-pane { position: fixed; top: 0; left: 0; bottom: 0; width: 320px; background: white; z-index: 50; transform: translateX(-100%); transition: transform 0.3s; display: flex; flex-direction: column; padding-top: 5.5rem; }
         .side-overlay.active { display: block; } .side-pane.active { transform: translateX(0); }
         .side-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .side-header h2 { font-size: 1.125rem; font-weight: 900; }
         .menu-list { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
         .menu-item { padding: 1rem; border-radius: 0.5rem; background-color: var(--bg-color); border: 1px solid var(--border-color); font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .menu-item:hover { background-color: #F0FDFA; border-color: #99F6E4; color: var(--peacox-teal); }
@@ -51,9 +80,10 @@
         .modal-container { background: white; width: 100%; max-width: 500px; max-height: 90vh; border-radius: 1rem; display: flex; flex-direction: column; overflow: hidden; }
         .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; background-color: var(--bg-color); }
         .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
-        .btn-primary { width: 100%; padding: 0.75rem; border-radius: 0.5rem; background-color: var(--peacox-purple); color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 1rem;}
+        .btn-primary { width: 100%; padding: 0.75rem; border-radius: 0.5rem; background-color: var(--peacox-teal); color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 1rem;}
         .input-full { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; margin-bottom: 0.75rem; }
         .logout-btn { background: none; border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: bold; color: var(--text-muted); cursor: pointer; }
+        .logout-btn:hover { background: #FEF2F2; color: #DC2626; border-color: #FEE2E2; }
     </style>
 </head>
 <body>
@@ -61,62 +91,94 @@
     <header>
         <div class="header-profile">
             <div class="avatar-wrapper" onclick="toggleSidePane()">
-                <div class="avatar" id="pm-avatar">--</div>
+                <div class="avatar" id="mentor-avatar">--</div>
                 <label for="avatar-upload" class="upload-badge" onclick="event.stopPropagation()">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                 </label>
                 <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onclick="event.stopPropagation()">
             </div>
             <div class="header-info">
-                <h1 id="pm-name" style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 0.125rem;">Loading...</h1>
-                <p style="font-size: 0.875rem; color: var(--text-muted);">Program Manager Dashboard</p>
+                <div class="name-row">
+                    <h1 id="mentor-name" style="font-size: 1.25rem; color: var(--text-main);">Loading...</h1>
+                </div>
+                <p class="text-sm text-muted">Peacox Helping Hands Mentor</p>
+                <div class="header-tags">
+                    <span class="tag tag-success">Caseload: 4/4 Mentees</span>
+                    <span class="tag tag-alert">1 Session Overdue</span>
+                </div>
             </div>
         </div>
-        <div class="header-actions">
-            <button class="btn-add-user" onclick="openModal('add-user')">+ Add User</button>
-            <button class="logout-btn" id="logout-btn">Sign Out</button>
-        </div>
+        <button class="logout-btn" id="logout-btn">Sign Out</button>
     </header>
 
     <main>
-        <div class="card col-1 row-2">
-            <h3 class="card-header">Cohort Health (Q1 2026)</h3>
-            <div class="stat-block"><p style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">AVG GPA</p><p class="stat-val">3.05</p><p style="font-size: 0.75rem; color: #10B981; font-weight: bold;">+0.15 ↑</p></div>
-            <div class="stat-block"><p style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">AVG ATTENDANCE</p><p class="stat-val">91%</p><p style="font-size: 0.75rem; color: #10B981; font-weight: bold;">Stable</p></div>
-            <div class="stat-block"><p style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">DISCIPLINE RATIO</p><p class="stat-val" style="color: #F59E0B;">14</p><p style="font-size: 0.75rem; color: #EF4444; font-weight: bold;">2 Escalated</p></div>
+        <div class="card col-1 row-1" style="border-top: 4px solid var(--peacox-teal);">
+            <h3 class="card-header">Upcoming Sessions</h3>
+            <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
+                <div class="session-item">
+                    <div><p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Kannan J.</p><p style="font-size: 0.75rem; color: var(--text-muted);">Today, 4:00 PM</p></div>
+                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--peacox-purple); background: #F3E8FF; padding: 0.2rem 0.5rem; border-radius: 1rem;">Virtual</span>
+                </div>
+                <div class="session-item">
+                    <div><p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Marcus S.</p><p style="font-size: 0.75rem; color: var(--text-muted);">Tomorrow, 5:30 PM</p></div>
+                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--peacox-teal); background: #E6FFFA; padding: 0.2rem 0.5rem; border-radius: 1rem;">In-Person</span>
+                </div>
+            </div>
         </div>
 
-        <div class="card col-2 row-2">
-            <h3 class="card-header">Global GRO-WORK Pipeline (N=150)</h3>
-            <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">1. Pre-employment</span><span style="color: var(--peacox-teal);">150 (100%)</span></div><div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div></div>
-            <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">2. Resume & Cover Letter</span><span style="color: var(--peacox-teal);">112 (74%)</span></div><div class="progress-track"><div class="progress-fill" style="width: 74%;"></div></div></div>
-            <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">3. Job Skill Training</span><span style="color: var(--peacox-purple);">68 (45%)</span></div><div class="progress-track"><div class="progress-fill purple" style="width: 45%;"></div></div></div>
-            <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">4. Career Assessment</span><span style="color: var(--peacox-purple);">32 (21%)</span></div><div class="progress-track"><div class="progress-fill purple" style="width: 21%;"></div></div></div>
-        </div>
-
-        <div class="card col-1 row-1" style="border-left: 4px solid #EF4444;">
-            <h3 class="card-header" style="color: #EF4444;">Urgent Escalations</h3>
-            <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; gap: 0.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;"><span style="font-size: 0.875rem; font-weight: bold;">Formal Write-ups</span><span style="background: #EF4444; color: white; padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: bold;">2 Pending</span></div>
-                <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.875rem; font-weight: bold;">Food Support Req.</span><span style="background: #F59E0B; color: white; padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: bold;">1 New</span></div>
+        <div class="card col-2 row-1">
+            <h3 class="card-header">Mentee Roster (Pulse Check)</h3>
+            <div class="roster-grid">
+                <div class="roster-card"><div class="roster-avatar">KJ</div><span style="font-size:0.75rem; font-weight:bold;">Kannan J.</span></div>
+                <div class="roster-card"><div class="roster-avatar" style="background:#3B82F6;">MS</div><span style="font-size:0.75rem; font-weight:bold;">Marcus S.</span></div>
+                <div class="roster-card"><div class="roster-avatar" style="background:#8B5CF6;">SJ</div><span style="font-size:0.75rem; font-weight:bold;">Sarah J.</span></div>
+                <div class="roster-card" style="border-color:#FCA5A5; background:#FEF2F2;"><div class="roster-avatar" style="background:#EF4444;">DL</div><span style="font-size:0.75rem; font-weight:bold;">David L.</span></div>
             </div>
         </div>
 
         <div class="card col-1 row-1" style="justify-content: center; align-items: center; text-align: center;">
-            <h3 class="card-header">Mentor Compliance</h3>
-            <p style="font-size: 2.5rem; font-weight: 900; color: var(--peacox-purple); line-height: 1;">83%</p>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Meeting 3 sessions/mo requirement</p>
+            <h3 class="card-header" style="margin-bottom: 0.25rem;">Action Items</h3>
+            <p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">2 Session Logs Overdue</p>
+            <button class="btn-primary" style="margin-top: 0.5rem; padding: 0.4rem; font-size: 0.75rem;">Submit Logs</button>
         </div>
 
+        <div class="card col-1 row-2">
+            <h3 class="card-header">Mentor Schedule</h3>
+            <div class="calendar-wrapper">
+                <div class="cal-header"><button class="cal-nav" onclick="changeMonth(-1)">‹</button><span id="cal-month-year">May 2026</span><button class="cal-nav" onclick="changeMonth(1)">›</button></div>
+                <div class="cal-grid-header"><div class="cal-day-header">Su</div><div class="cal-day-header">Mo</div><div class="cal-day-header">Tu</div><div class="cal-day-header">We</div><div class="cal-day-header">Th</div><div class="cal-day-header">Fr</div><div class="cal-day-header">Sa</div></div>
+                <div class="cal-grid" id="cal-grid"></div>
+            </div>
+        </div>
+
+        <div class="card col-1 row-2">
+            <h3 class="card-header">Mentee Engagement Curriculum</h3>
+            <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-evenly;">
+                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">Youth Programs</span><span style="color: var(--peacox-teal);">3/4 Mentees</span></div><div class="progress-track"><div class="progress-fill teal" style="width: 75%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">Community Eng.</span><span style="color: var(--peacox-teal);">4/4 Mentees</span></div><div class="progress-track"><div class="progress-fill teal" style="width: 100%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">Major Events</span><span style="color: var(--peacox-teal);">2/4 Mentees</span></div><div class="progress-track"><div class="progress-fill teal" style="width: 50%;"></div></div></div>
+            </div>
+        </div>
+
+        <div class="card col-2 row-2">
+            <h3 class="card-header">GRO-WORK Pipeline Status</h3>
+            <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-evenly;">
+                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">1. Pre-employment</span><span style="color: var(--peacox-purple);">4/4 Mentees</span></div><div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">2. Resume / Cover Letter</span><span style="color: var(--peacox-purple);">3/4 Mentees</span></div><div class="progress-track"><div class="progress-fill" style="width: 75%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">3. Job Skills Training</span><span style="color: var(--peacox-purple);">1/4 Mentees</span></div><div class="progress-track"><div class="progress-fill" style="width: 25%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">4. Career Assessment</span><span style="color: var(--peacox-purple);">0/4 Mentees</span></div><div class="progress-track"><div class="progress-fill" style="width: 0%;"></div></div></div>
+            </div>
+        </div>
     </main>
 
     <div class="side-overlay" id="side-overlay" onclick="toggleSidePane()"></div>
     <aside class="side-pane" id="side-pane">
-        <div class="side-header"><h2 style="font-size: 1.125rem; font-weight: 900;">Manager Settings</h2><button onclick="toggleSidePane()" style="background:none;border:none;font-size:1.25rem;cursor:pointer;">✕</button></div>
+        <div class="side-header"><h2>Mentor Settings</h2><button onclick="toggleSidePane()" style="background:none;border:none;font-size:1.25rem;cursor:pointer;">✕</button></div>
         <div class="menu-list">
             <div class="menu-item" onclick="openModal('basic-info')">Basic Information <span>→</span></div>
-            <div class="menu-item" onclick="alert('Exporting Q2 Report to CSV...')">Export Full Roster <span>→</span></div>
-            <div class="menu-item" onclick="alert('Opening System Settings...')">System Configuration <span>→</span></div>
+            <div class="menu-item" onclick="openModal('mentor-profile')">Mentor Profile <span>→</span></div>
+            <div class="menu-item" onclick="openModal('availability')">Capacity & Availability <span>→</span></div>
+            <div class="menu-item" onclick="openModal('ethics')">Code of Conduct <span>→</span></div>
         </div>
     </aside>
 
@@ -126,24 +188,28 @@
             <div class="modal-body" id="modal-body-content">
                 
                 <div id="content-basic-info" style="display: none;">
+                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">This information is managed by Peacox Admin.</p>
                     <label style="font-size: 0.75rem; font-weight: bold;">Full Name</label><input type="text" class="input-full" id="info-name" disabled>
                     <label style="font-size: 0.75rem; font-weight: bold;">Email Address</label><input type="text" class="input-full" id="info-email" disabled>
                 </div>
 
-                <div id="content-add-user" style="display: none;">
-                    <form id="add-user-form">
-                        <div style="display: flex; gap: 1rem;">
-                            <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold;">First Name</label><input type="text" class="input-full" id="new-first" required></div>
-                            <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold;">Last Name</label><input type="text" class="input-full" id="new-last" required></div>
-                        </div>
-                        <label style="font-size: 0.75rem; font-weight: bold;">Email Address</label><input type="email" class="input-full" id="new-email" required>
-                        <div style="display: flex; gap: 1rem;">
-                            <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold;">Password</label><input type="password" class="input-full" id="new-pass" required></div>
-                            <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold;">Role</label><select class="input-full" id="new-role" required><option value="student">Student</option><option value="mentor">Mentor</option><option value="manager">Manager</option></select></div>
-                        </div>
-                        <button type="submit" class="btn-primary" id="create-user-btn">Create Account</button>
-                        <p id="form-msg" style="text-align: center; margin-top: 1rem; font-weight: bold; font-size: 0.875rem; display: none;"></p>
-                    </form>
+                <div id="content-mentor-profile" style="display: none;">
+                    <label style="font-size: 0.75rem; font-weight: bold;">Education Background</label><input type="text" class="input-full" id="prof-edu" placeholder="e.g. BS Computer Science, OSU">
+                    <label style="font-size: 0.75rem; font-weight: bold;">Professional Industry</label><input type="text" class="input-full" id="prof-ind" placeholder="e.g. Software Engineering">
+                    <label style="font-size: 0.75rem; font-weight: bold;">Mentoring Topics (Comma separated)</label><input type="text" class="input-full" id="prof-topics" placeholder="e.g. Career Prep, STEM, Leadership">
+                    <button class="btn-primary" onclick="saveMentorData()">Save Profile</button>
+                </div>
+
+                <div id="content-availability" style="display: none;">
+                    <label style="font-size: 0.75rem; font-weight: bold;">Hours Available Per Week</label><input type="number" class="input-full" id="avail-hours" placeholder="e.g. 5">
+                    <label style="font-size: 0.75rem; font-weight: bold;">Maximum Mentee Capacity</label>
+                    <select class="input-full" id="avail-cap"><option>1 Mentee</option><option>2 Mentees</option><option>3 Mentees</option><option selected>4 Mentees</option></select>
+                    <button class="btn-primary" onclick="saveMentorData()">Save Capacity</button>
+                </div>
+
+                <div id="content-ethics" style="display: none;">
+                    <h3 style="font-size: 1rem; color: var(--peacox-teal); margin-bottom: 0.5rem;">Ethics & Conduct Reminder</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-main); line-height: 1.5;">As a Peacox Mentor, you agree to maintain professional boundaries, log all sessions within 48 hours, and immediately escalate any issues regarding a mentee's safety, food security, or mental health to the Program Manager.</p>
                 </div>
 
             </div>
@@ -152,29 +218,97 @@
 
     <script>
         let GLOBAL_USER_ID = null; 
+        let currentCalDate = new Date(); 
+
+        // AVATAR UPLOAD
         document.getElementById('avatar-upload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if(file && GLOBAL_USER_ID) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const b64 = event.target.result;
-                    document.getElementById('pm-avatar').innerText = ''; 
-                    document.getElementById('pm-avatar').style.backgroundImage = `url("${b64}")`;
+                    document.getElementById('mentor-avatar').innerText = ''; 
+                    document.getElementById('mentor-avatar').style.backgroundImage = `url("${b64}")`;
                     localStorage.setItem(`avatar_${GLOBAL_USER_ID}`, b64); 
                 };
                 reader.readAsDataURL(file);
             }
         });
 
+        // CALENDAR
+        function renderCalendar() {
+            const year = currentCalDate.getFullYear(); const month = currentCalDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate();
+            document.getElementById('cal-month-year').innerText = `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month]} ${year}`;
+            
+            let html = '';
+            for(let r=0; r<5; r++) { // 5 rows to fit card perfectly
+                html += '<div class="cal-row">';
+                for(let c=0; c<7; c++) {
+                    let d = (r*7 + c) - firstDay + 1;
+                    if(d > 0 && d <= daysInMonth) {
+                        const dateKey = `${year}-${month}-${d}`;
+                        const notes = JSON.parse(localStorage.getItem(`cal_notes_${GLOBAL_USER_ID}`) || '{}');
+                        const isToday = (d === new Date().getDate() && month === new Date().getMonth()) ? 'today' : '';
+                        const dot = notes[dateKey] ? `<div class="cal-note-dot"></div>` : '';
+                        html += `<div class="cal-day ${isToday}" onclick="addCalNote('${dateKey}')" title="${notes[dateKey]||''}">${d}${dot}</div>`;
+                    } else {
+                        html += `<div class="cal-day empty"></div>`;
+                    }
+                }
+                html += '</div>';
+            }
+            document.getElementById('cal-grid').innerHTML = html;
+        }
+
+        function changeMonth(dir) { currentCalDate.setMonth(currentCalDate.getMonth() + dir); renderCalendar(); }
+        function addCalNote(dateKey) {
+            if(!GLOBAL_USER_ID) return;
+            const notes = JSON.parse(localStorage.getItem(`cal_notes_${GLOBAL_USER_ID}`) || '{}');
+            const note = prompt("Enter mentor note/reminder:", notes[dateKey] || '');
+            if(note !== null) {
+                if(note.trim() === '') delete notes[dateKey]; else notes[dateKey] = note.trim();
+                localStorage.setItem(`cal_notes_${GLOBAL_USER_ID}`, JSON.stringify(notes));
+                renderCalendar();
+            }
+        }
+
+        // SIDE PANE & MODALS
         function toggleSidePane() { document.getElementById('side-pane').classList.toggle('active'); document.getElementById('side-overlay').classList.toggle('active'); }
         function openModal(type) {
-            document.getElementById('side-pane').classList.remove('active'); document.getElementById('side-overlay').classList.remove('active');
-            ['basic-info', 'add-user'].forEach(id => document.getElementById(`content-${id}`).style.display = 'none');
+            toggleSidePane();
+            ['basic-info', 'mentor-profile', 'availability', 'ethics'].forEach(id => document.getElementById(`content-${id}`).style.display = 'none');
             document.getElementById(`content-${type}`).style.display = 'block';
             document.getElementById('modal-title').innerText = type.replace('-', ' ').toUpperCase();
             document.getElementById('master-modal').style.display = 'flex';
         }
         function closeModal() { document.getElementById('master-modal').style.display = 'none'; }
+
+        // LOCAL STORAGE
+        function saveMentorData() {
+            if(!GLOBAL_USER_ID) return;
+            const data = {
+                edu: document.getElementById('prof-edu').value, ind: document.getElementById('prof-ind').value,
+                top: document.getElementById('prof-topics').value, hrs: document.getElementById('avail-hours').value,
+                cap: document.getElementById('avail-cap').value
+            };
+            localStorage.setItem(`mentor_prof_${GLOBAL_USER_ID}`, JSON.stringify(data));
+            closeModal();
+        }
+
+        function loadMentorData() {
+            renderCalendar();
+            if(!GLOBAL_USER_ID) return;
+            const avatar = localStorage.getItem(`avatar_${GLOBAL_USER_ID}`);
+            if(avatar) { document.getElementById('mentor-avatar').innerText = ''; document.getElementById('mentor-avatar').style.backgroundImage = `url("${avatar}")`; }
+            
+            const data = JSON.parse(localStorage.getItem(`mentor_prof_${GLOBAL_USER_ID}`) || '{}');
+            if(data.edu) {
+                document.getElementById('prof-edu').value = data.edu || ''; document.getElementById('prof-ind').value = data.ind || '';
+                document.getElementById('prof-topics').value = data.top || ''; document.getElementById('avail-hours').value = data.hrs || '';
+                document.getElementById('avail-cap').value = data.cap || '4 Mentees';
+            }
+        }
     </script>
 
     <script>
@@ -190,36 +324,13 @@
 
                 const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
                 if (profile) {
-                    const fn = profile.first_name || 'Peacox'; const ln = profile.last_name || 'Manager';
-                    document.getElementById('pm-name').innerText = `${fn} ${ln}`;
+                    const fn = profile.first_name || 'Peacox'; const ln = profile.last_name || 'Mentor';
+                    document.getElementById('mentor-name').innerText = `Dr. ${fn} ${ln}`;
                     document.getElementById('info-name').value = `${fn} ${ln}`; document.getElementById('info-email').value = user.email || '';
-                    
-                    const avatar = localStorage.getItem(`avatar_${GLOBAL_USER_ID}`);
-                    if(avatar) { document.getElementById('pm-avatar').innerText = ''; document.getElementById('pm-avatar').style.backgroundImage = `url("${avatar}")`; }
-                    else { document.getElementById('pm-avatar').innerText = (profile.avatar_initials || (fn[0]+ln[0])).toUpperCase(); }
+                    document.getElementById('mentor-avatar').innerText = (profile.avatar_initials || (fn[0]+ln[0])).toUpperCase();
+                    loadMentorData(); 
                 }
             }
-
-            // ADD USER LOGIC
-            document.getElementById('add-user-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = document.getElementById('create-user-btn'); const msg = document.getElementById('form-msg');
-                const fn = document.getElementById('new-first').value; const ln = document.getElementById('new-last').value;
-                const email = document.getElementById('new-email').value; const pass = document.getElementById('new-pass').value;
-                const role = document.getElementById('new-role').value; const initials = (fn[0] + ln[0]).toUpperCase();
-
-                btn.innerText = 'Creating...'; msg.style.display = 'none';
-
-                const { error } = await supabaseClient.auth.signUp({
-                    email: email, password: pass, options: { data: { first_name: fn, last_name: ln, role: role, avatar_initials: initials } }
-                });
-
-                if (error) { msg.innerText = error.message; msg.style.color = '#DC2626'; msg.style.display = 'block'; btn.innerText = 'Create Account'; } 
-                else {
-                    msg.innerText = `Account created successfully!`; msg.style.color = '#10B981'; msg.style.display = 'block'; btn.innerText = 'Create Account';
-                    document.getElementById('add-user-form').reset(); setTimeout(() => { closeModal(); msg.style.display = 'none'; }, 2000);
-                }
-            });
 
             document.getElementById('logout-btn').addEventListener('click', async () => {
                 document.getElementById('logout-btn').innerText = 'Signing out...';
