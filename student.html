@@ -74,14 +74,11 @@
         .text-green { color: #10B981; }
 
         .training-row { display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color); background-color: #F9FAFB; transition: background-color 0.2s; }
-        .training-row:hover { background-color: #F3F4F6; }
         .training-row-complete { background-color: #F0FDFA; border-color: #CCFBF1; }
-        .training-row-complete:hover { background-color: #E6FFFA; }
         .badge-complete { background-color: #E6FFFA; color: var(--peacox-teal); padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-size: 0.65rem; font-weight: bold; line-height: 1;}
         .badge-progress { background-color: #F3E8FF; color: var(--peacox-purple); padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-size: 0.65rem; font-weight: bold; line-height: 1;}
         .training-text { font-size: 0.75rem; color: var(--text-main); font-weight: 500; line-height: 1.1;}
         
-        /* Logout Button Styles */
         .logout-btn { background: none; border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: bold; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
         .logout-btn:hover { background: #FEF2F2; color: #DC2626; border-color: #FEE2E2; }
     </style>
@@ -107,7 +104,6 @@
         <div class="card col-1 row-1 card-mentor">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <h3 class="card-header">Mentorship Session</h3>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1.25rem; height: 1.25rem;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="M9 16l2 2 4-4"></path></svg>
             </div>
             <div style="margin-top: auto; margin-bottom: auto;">
                 <p style="font-size: 1.5rem; font-weight: 900; line-height: 1.1;" class="text-purple">Monday, May 5</p>
@@ -133,20 +129,20 @@
         <div class="card col-2 row-2">
             <h3 class="card-header">Engagement Curriculum</h3>
             <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-between;">
-                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Youth Programs <span style="font-weight: normal;" class="text-muted text-xs">(Select 2)</span></span><span class="text-teal text-sm">50%</span></div><div class="text-xs text-muted" style="line-height: 1.3;">1. Positive Action</div><div class="text-xs text-muted" style="margin-bottom: 0.35rem; line-height: 1.3;">2. STEM Academy</div><div class="progress-track"><div class="progress-fill" style="width: 50%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Community Engagement <span style="font-weight: normal;" class="text-muted text-xs">(Select 1)</span></span><span class="text-teal text-sm">100%</span></div><div class="text-xs text-muted" style="margin-bottom: 0.35rem; line-height: 1.3;">1. Food Distribution</div><div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">GRO-WORK</span><span class="text-teal text-sm">25%</span></div><div class="text-xs text-muted" style="margin-bottom: 0.35rem; line-height: 1.3;">1. Professional Development</div><div class="progress-track"><div class="progress-fill" style="width: 25%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Major Events <span style="font-weight: normal;" class="text-muted text-xs">(Select 2)</span></span><span class="text-teal text-sm">50%</span></div><div class="text-xs text-muted" style="line-height: 1.3;">1. Peacox Showcase Conference</div><div class="text-xs text-muted" style="margin-bottom: 0.35rem; line-height: 1.3;">2. Talent & Car Show</div><div class="progress-track"><div class="progress-fill" style="width: 50%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Youth Programs <span style="font-weight: normal;" class="text-muted text-xs">(Select 2)</span></span><span class="text-teal text-sm">50%</span></div><div class="text-xs text-muted" style="line-height: 1.3;">1. Positive Action</div><div class="progress-track"><div class="progress-fill" style="width: 50%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Community Engagement <span style="font-weight: normal;" class="text-muted text-xs">(Select 1)</span></span><span class="text-teal text-sm">100%</span></div><div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">GRO-WORK</span><span class="text-teal text-sm">25%</span></div><div class="progress-track"><div class="progress-fill" style="width: 25%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Major Events <span style="font-weight: normal;" class="text-muted text-xs">(Select 2)</span></span><span class="text-teal text-sm">50%</span></div><div class="progress-track"><div class="progress-fill" style="width: 50%;"></div></div></div>
             </div>
         </div>
 
         <div class="card col-2 row-1">
             <h3 class="card-header" style="margin-bottom: 0.35rem;">Center for Growth & Workforce Empowerment</h3>
             <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-between; gap: 0.25rem;">
-                <div class="training-row training-row-complete"><div style="display: flex; align-items: center; gap: 0.35rem;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--peacox-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span class="training-text">Pre-employment training</span></div><span class="badge-complete">100%</span></div>
-                <div class="training-row"><div style="display: flex; align-items: center; gap: 0.35rem;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--peacox-purple)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="training-text">Resume, Cover letter, reference</span></div><span class="badge-progress">75%</span></div>
-                <div class="training-row"><div style="display: flex; align-items: center; gap: 0.35rem;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--peacox-purple)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span class="training-text">Job skill training</span></div><span class="badge-progress">25%</span></div>
-                <div class="training-row training-row-complete"><div style="display: flex; align-items: center; gap: 0.35rem;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--peacox-teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span class="training-text">Career assessment</span></div><span class="badge-complete">100%</span></div>
+                <div class="training-row training-row-complete"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Pre-employment training</span></div><span class="badge-complete">100%</span></div>
+                <div class="training-row"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Resume, Cover letter</span></div><span class="badge-progress">75%</span></div>
+                <div class="training-row"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Job skill training</span></div><span class="badge-progress">25%</span></div>
+                <div class="training-row training-row-complete"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Career assessment</span></div><span class="badge-complete">100%</span></div>
             </div>
         </div>
 
@@ -160,64 +156,35 @@
     </main>
 
     <script>
-        // 1. Initialize Supabase (Replace with your actual keys)
         const SUPABASE_URL = 'https://lgmzqktvkvyfycyrhrbt.supabase.co';
-		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
-		const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // 2. Main function to load dynamic dashboard data
         async function loadDashboard() {
-            
-            // Step A: Check if a user is legally logged in
-            const { data: { user }, error: authError } = await supabase.auth.getUser();
-            
-            // If no user is found, kick them back to the login page immediately
-            if (authError || !user) {
-                window.location.href = 'index.html';
-                return;
-            }
+            const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+            if (authError || !user) { window.location.href = 'index.html'; return; }
 
-            // Step B: Fetch the specific profile details for this logged-in user
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
+            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
 
             if (profile) {
-                // Step C: Manipulate the DOM to show their real data
-                
-                // Fallbacks in case the database fields are empty
                 const firstName = profile.first_name || 'Peacox';
                 const lastName = profile.last_name || 'Student';
                 const initials = profile.avatar_initials || (firstName[0] + lastName[0]);
-
                 document.getElementById('student-name').innerText = `${firstName} ${lastName}`;
                 document.getElementById('student-avatar').innerText = initials.toUpperCase();
             }
         }
 
-        // 3. Handle Logout
-// --- BULLETPROOF LOGOUT SCRIPT ---
-const logoutBtn = document.getElementById('logout-btn');
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-        // 1. Give visual feedback so you know the button is alive
-        logoutBtn.innerText = 'Signing out...'; 
-        
-        try {
-            // 2. Tell the database to destroy the secure session
-            await supabaseClient.auth.signOut();
-        } catch (error) {
-            console.error("Session already cleared or network drop.");
-        } finally {
-            // 3. Guarantee the redirect happens, no matter what!
-            window.location.replace('index.html'); 
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                logoutBtn.innerText = 'Signing out...';
+                try { await supabaseClient.auth.signOut(); } 
+                catch (error) { console.error("Logout error:", error); } 
+                finally { window.location.replace('index.html'); }
+            });
         }
-    });
-}
 
-        // Fire the function as soon as the page loads
         loadDashboard();
     </script>
 </body>
