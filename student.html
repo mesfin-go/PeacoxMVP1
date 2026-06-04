@@ -25,33 +25,38 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-color); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
+        /* HEADER & AVATAR UPDATES */
         header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); flex-shrink: 0; height: auto; }
         .header-profile { display: flex; align-items: center; gap: 1.25rem; }
-        .avatar { width: 3.5rem; height: 3.5rem; border-radius: 50%; background-color: var(--peacox-teal); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.25rem; flex-shrink: 0; }
+        
+        .avatar-wrapper { position: relative; cursor: pointer; transition: transform 0.2s; }
+        .avatar-wrapper:hover { transform: scale(1.05); }
+        .avatar { width: 3.5rem; height: 3.5rem; border-radius: 50%; background-color: var(--peacox-teal); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.25rem; flex-shrink: 0; background-size: cover; background-position: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .upload-badge { position: absolute; bottom: 0; right: 0; background-color: var(--peacox-purple); border-radius: 50%; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center; border: 2px solid white; cursor: pointer; color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: background-color 0.2s;}
+        .upload-badge:hover { background-color: #4A2475; }
+        
         .header-info { display: flex; flex-direction: column; justify-content: center;}
+        .name-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.125rem; }
+        .status-active { background-color: #ECFDF5; color: #047857; font-size: 0.65rem; font-weight: bold; padding: 0.15rem 0.4rem; border-radius: 1rem; border: 1px solid #A7F3D0; display: flex; align-items: center; gap: 0.25rem; }
+        .status-active::before { content: ""; display: block; width: 0.4rem; height: 0.4rem; background-color: #10B981; border-radius: 50%; }
+
         .header-tags { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
         .tag { padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: bold; border: 1px solid; white-space: nowrap; }
         .tag-alert { background-color: #FFF7ED; color: #C2410C; border-color: #FFEDD5; display: flex; align-items: center; gap: 0.5rem;}
         .tag-alert::before { content: ""; display: block; width: 0.5rem; height: 0.5rem; background-color: #F97316; border-radius: 50%; }
         .tag-info { background-color: #EFF6FF; color: #3B82F6; border-color: #DBEAFE; }
 
+        /* BENTO GRID */
         main { flex: 1; padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 1.25rem; overflow: hidden; min-height: 0; }
         .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 1rem; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; overflow: hidden; justify-content: space-between; }
         .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px -2px rgba(0,0,0,0.1); }
         .card-header { font-size: 0.75rem; font-weight: bold; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; flex-shrink: 0;}
-        
-        .col-1 { grid-column: span 1; }
-        .col-2 { grid-column: span 2; }
-        .row-1 { grid-row: span 1; }
-        .row-2 { grid-row: span 2; }
-
+        .col-1 { grid-column: span 1; } .col-2 { grid-column: span 2; } .row-1 { grid-row: span 1; } .row-2 { grid-row: span 2; }
         .card-mentor { border-left: 0.25rem solid var(--peacox-purple); justify-content: space-between; }
+        
         .btn-primary { width: 100%; padding: 0.6rem; border-radius: 0.5rem; background-color: var(--peacox-purple); color: white; border: none; font-weight: bold; cursor: pointer; font-size: 0.875rem; margin-top: 0.5rem;}
         .btn-primary:hover { opacity: 0.9; }
 
-        .card-survey { align-items: center; justify-content: center; gap: 1rem; flex-direction: row; text-align: left;}
-        .icon-square { width: 3rem; height: 3rem; border-radius: 0.5rem; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        
         .progress-group { width: 100%;}
         .progress-header { display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.875rem; font-weight: bold; }
         .progress-track { width: 100%; height: 0.5rem; background-color: #F3F4F6; border-radius: 0.25rem; overflow: hidden; }
@@ -65,13 +70,7 @@
         .goal-flex { display: flex; gap: 1rem; height: 100%; width: 100%;}
         .goal-box { flex: 1; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid; display: flex; flex-direction: column; justify-content: center; }
         
-        .text-purple { color: var(--peacox-purple); }
-        .text-teal { color: var(--peacox-teal); }
-        .text-xs { font-size: 0.75rem; }
-        .text-sm { font-size: 0.875rem; }
-        .font-bold { font-weight: bold; }
-        .text-muted { color: var(--text-muted); }
-        .text-green { color: #10B981; }
+        .text-purple { color: var(--peacox-purple); } .text-teal { color: var(--peacox-teal); } .text-xs { font-size: 0.75rem; } .text-sm { font-size: 0.875rem; } .font-bold { font-weight: bold; } .text-muted { color: var(--text-muted); } .text-green { color: #10B981; }
 
         .training-row { display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color); background-color: #F9FAFB; transition: background-color 0.2s; }
         .training-row-complete { background-color: #F0FDFA; border-color: #CCFBF1; }
@@ -81,15 +80,64 @@
         
         .logout-btn { background: none; border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: bold; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
         .logout-btn:hover { background: #FEF2F2; color: #DC2626; border-color: #FEE2E2; }
+
+        /* SIDE PANE MENUS */
+        .side-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.4); backdrop-filter: blur(2px); z-index: 40; display: none; opacity: 0; transition: opacity 0.3s; }
+        .side-pane { position: fixed; top: 0; right: 0; bottom: 0; width: 320px; background: white; z-index: 50; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: -4px 0 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .side-overlay.active { display: block; opacity: 1; }
+        .side-pane.active { transform: translateX(0); }
+        .side-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .side-header h2 { font-size: 1.125rem; font-weight: 900; color: var(--text-main); }
+        .close-side { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted); padding: 0.25rem; }
+        .close-side:hover { color: var(--text-main); }
+        .menu-list { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+        .menu-item { padding: 1rem; border-radius: 0.5rem; background-color: var(--bg-color); border: 1px solid var(--border-color); font-weight: bold; color: var(--text-main); cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .menu-item:hover { background-color: #F3E8FF; border-color: #D8B4FE; color: var(--peacox-purple); transform: translateX(-4px); }
+
+        /* MODAL STYLES */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 60; padding: 1rem;}
+        .modal-container { background: white; width: 100%; max-width: 600px; max-height: 90vh; border-radius: 1rem; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; }
+        .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-color); }
+        .modal-header h2 { font-size: 1.25rem; font-weight: 900; color: var(--text-main); }
+        .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+        .modal-close { background: white; border: 1px solid var(--border-color); width: 2rem; height: 2rem; border-radius: 50%; cursor: pointer; font-weight: bold; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: #F3F4F6; color: var(--text-main); }
+        
+        /* FORM STYLES FOR MODALS */
+        .form-section { margin-bottom: 1.5rem; }
+        .form-section h3 { font-size: 0.875rem; text-transform: uppercase; color: var(--peacox-purple); margin-bottom: 0.75rem; border-bottom: 2px solid #F3E8FF; padding-bottom: 0.25rem; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .info-box { background: var(--bg-color); padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color); }
+        .info-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 0.25rem; }
+        .info-val { font-size: 0.875rem; font-weight: 500; color: var(--text-main); }
+        
+        .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .check-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--text-main); padding: 0.5rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.375rem; cursor: pointer; }
+        .check-item:hover { background: #F3F4F6; }
+        .check-item input { width: 1rem; height: 1rem; accent-color: var(--peacox-purple); cursor: pointer; }
+        
+        .input-full { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-family: inherit; font-size: 0.875rem; margin-bottom: 0.75rem; resize: vertical; }
+        .input-full:focus { outline: none; border-color: var(--peacox-purple); }
     </style>
 </head>
 <body>
 
     <header>
         <div class="header-profile">
-            <div class="avatar" id="student-avatar">--</div>
+            
+            <div class="avatar-wrapper" onclick="toggleSidePane()">
+                <div class="avatar" id="student-avatar">--</div>
+                <label for="avatar-upload" class="upload-badge" onclick="event.stopPropagation()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                </label>
+                <input type="file" id="avatar-upload" accept="image/*" hidden>
+            </div>
+
             <div class="header-info">
-                <h1 id="student-name" style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 0.125rem;">Loading...</h1>
+                <div class="name-row">
+                    <h1 id="student-name" style="font-size: 1.25rem; color: var(--text-main);">Loading...</h1>
+                    <span class="status-active">Active</span>
+                </div>
                 <p class="text-sm text-muted">Mentor: Jamoya Cox</p>
                 <div class="header-tags">
                     <span class="tag tag-info">Program: Sept 2025 – Sept 2026</span>
@@ -130,9 +178,9 @@
             <h3 class="card-header">Engagement Curriculum</h3>
             <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-between;">
                 <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Youth Programs <span style="font-weight: normal;" class="text-muted text-xs">(Select 2)</span></span><span class="text-teal text-sm">50%</span></div><div class="text-xs text-muted" style="line-height: 1.3;">1. Positive Action</div><div class="progress-track"><div class="progress-fill" style="width: 50%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Community Engagement <span style="font-weight: normal;" class="text-muted text-xs">(Select 1)</span></span><span class="text-teal text-sm">100%</span></div><div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">GRO-WORK</span><span class="text-teal text-sm">25%</span></div><div class="progress-track"><div class="progress-fill" style="width: 25%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Major Events <span style="font-weight: normal;" class="text-muted text-xs">(Select 2)</span></span><span class="text-teal text-sm">50%</span></div><div class="progress-track"><div class="progress-fill" style="width: 50%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Community Engagement <span style="font-weight: normal;" class="text-muted text-xs">(Select 1)</span></span><span class="text-teal text-sm">100%</span></div><div class="text-xs text-muted" style="margin-bottom: 0.35rem; line-height: 1.3;">1. Food Distribution</div><div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">GRO-WORK</span><span class="text-teal text-sm">25%</span></div><div class="text-xs text-muted" style="margin-bottom: 0.35rem; line-height: 1.3;">1. Professional Development</div><div class="progress-track"><div class="progress-fill" style="width: 25%;"></div></div></div>
+                <div class="progress-group"><div class="progress-header" style="margin-bottom: 0.125rem;"><span style="color: var(--text-main);">Major Events <span style="font-weight: normal;" class="text-muted text-xs">(Select 2)</span></span><span class="text-teal text-sm">50%</span></div><div class="text-xs text-muted" style="line-height: 1.3;">1. Peacox Showcase Conference</div><div class="progress-track"><div class="progress-fill" style="width: 50%;"></div></div></div>
             </div>
         </div>
 
@@ -140,7 +188,7 @@
             <h3 class="card-header" style="margin-bottom: 0.35rem;">Center for Growth & Workforce Empowerment</h3>
             <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-between; gap: 0.25rem;">
                 <div class="training-row training-row-complete"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Pre-employment training</span></div><span class="badge-complete">100%</span></div>
-                <div class="training-row"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Resume, Cover letter</span></div><span class="badge-progress">75%</span></div>
+                <div class="training-row"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Resume, Cover letter, reference</span></div><span class="badge-progress">75%</span></div>
                 <div class="training-row"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Job skill training</span></div><span class="badge-progress">25%</span></div>
                 <div class="training-row training-row-complete"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Career assessment</span></div><span class="badge-complete">100%</span></div>
             </div>
@@ -155,11 +203,135 @@
         </div>
     </main>
 
+    <div class="side-overlay" id="side-overlay" onclick="toggleSidePane()"></div>
+    <aside class="side-pane" id="side-pane">
+        <div class="side-header">
+            <h2>Student Profile</h2>
+            <button class="close-side" onclick="toggleSidePane()">✕</button>
+        </div>
+        <div class="menu-list">
+            <div class="menu-item" onclick="openModal('basic-info')">Basic Information <span style="color: #D1D5DB;">→</span></div>
+            <div class="menu-item" onclick="openModal('gab-data')">GAB Data (Quarterly) <span style="color: #D1D5DB;">→</span></div>
+            <div class="menu-item" onclick="openModal('engagement-plan')">Engagement Plan <span style="color: #D1D5DB;">→</span></div>
+            <div class="menu-item" onclick="openModal('idp-plan')">Individual Dev. Plan <span style="color: #D1D5DB;">→</span></div>
+        </div>
+    </aside>
+
+    <div class="modal-overlay" id="master-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 id="modal-title">Title</h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            
+            <div class="modal-body" id="modal-body-content">
+                
+                <div id="content-basic-info" style="display: none;">
+                    <div class="form-section">
+                        <h3>Student Details</h3>
+                        <div class="info-grid">
+                            <div class="info-box"><div class="info-label">Full Name</div><div class="info-val">Kannan Johnson</div></div>
+                            <div class="info-box"><div class="info-label">School / Grade</div><div class="info-val">East High / 11th</div></div>
+                            <div class="info-box"><div class="info-label">Email</div><div class="info-val">student@peacox.org</div></div>
+                            <div class="info-box"><div class="info-label">Start Date</div><div class="info-val">Sept 01, 2025</div></div>
+                        </div>
+                    </div>
+                    <div class="form-section" style="margin-bottom: 0;">
+                        <h3>Guardian Details</h3>
+                        <div class="info-grid">
+                            <div class="info-box"><div class="info-label">Guardian Name</div><div class="info-val">Martha Johnson</div></div>
+                            <div class="info-box"><div class="info-label">Phone</div><div class="info-val">(614) 555-0198</div></div>
+                            <div class="info-box" style="grid-column: span 2;"><div class="info-label">Home Address</div><div class="info-val">123 Peacox Way, Columbus OH 43215</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-gab-data" style="display: none;">
+                    <p class="text-sm text-muted" style="margin-bottom: 1rem;">Enter your end-of-quarter metrics below.</p>
+                    <div class="form-section">
+                        <label class="info-label">Quarterly GPA</label>
+                        <input type="number" step="0.1" class="input-full" placeholder="e.g. 3.2">
+                        <label class="info-label">Days Absent</label>
+                        <input type="number" class="input-full" placeholder="e.g. 2">
+                        <label class="info-label">Behavior Incidents (Self-Reported)</label>
+                        <input type="number" class="input-full" placeholder="e.g. 0">
+                        <button class="btn-primary" style="margin-top: 1rem;" onclick="closeModal()">Save Metrics</button>
+                    </div>
+                </div>
+
+                <div id="content-engagement-plan" style="display: none;">
+                    <p class="text-sm text-muted" style="margin-bottom: 1rem;">Select your required curriculum tracks for program manager approval.</p>
+                    
+                    <div class="form-section">
+                        <h3>Youth Programs (Select 2 / Month)</h3>
+                        <div class="check-grid">
+                            <label class="check-item"><input type="checkbox"> Positive Action</label>
+                            <label class="check-item"><input type="checkbox"> Youth Advisory Committee</label>
+                            <label class="check-item"><input type="checkbox"> Family Game Night</label>
+                            <label class="check-item"><input type="checkbox"> Gracehaven</label>
+                            <label class="check-item"><input type="checkbox"> The Message Campaign</label>
+                            <label class="check-item"><input type="checkbox"> STEM Academy</label>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3>Community Engagement (Select 1 / Month)</h3>
+                        <div class="check-grid">
+                            <label class="check-item"><input type="checkbox"> Food Distribution</label>
+                            <label class="check-item"><input type="checkbox"> Community Clean-Up</label>
+                            <label class="check-item"><input type="checkbox"> Neighborhood Watch</label>
+                            <label class="check-item"><input type="checkbox"> Volunteer Activities</label>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3>Major Events (Select 2 / Annually)</h3>
+                        <div class="check-grid">
+                            <label class="check-item"><input type="checkbox"> Youth Resiliency Conference</label>
+                            <label class="check-item"><input type="checkbox"> Talent & Car Show</label>
+                            <label class="check-item"><input type="checkbox"> Run & Walk for Recovery</label>
+                            <label class="check-item"><input type="checkbox"> Workforce Summit</label>
+                            <label class="check-item"><input type="checkbox"> Peacox Showcase</label>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="closeModal()">Submit Plan for Approval</button>
+                </div>
+
+                <div id="content-idp-plan" style="display: none;">
+                    <div class="form-section">
+                        <h3>1. Goals</h3>
+                        <label class="info-label">Short-Term Goals (30-60 Days) - Required: 2</label>
+                        <textarea class="input-full" rows="2" placeholder="Goal 1: Complete resume draft by Oct 15..."></textarea>
+                        <textarea class="input-full" rows="2" placeholder="Goal 2: Attend two tutoring sessions..."></textarea>
+                        
+                        <label class="info-label" style="margin-top: 0.5rem;">Long-Term Goal (3-6 Months) - Required: 1</label>
+                        <textarea class="input-full" rows="2" placeholder="Long-Term Goal: Obtain Food Handler Cert..."></textarea>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>2. Barriers & Support Needs</h3>
+                        <p class="text-xs text-muted" style="margin-bottom: 0.75rem;">Check all areas where you feel you need support.</p>
+                        <div class="check-grid">
+                            <label class="check-item"><input type="checkbox"> Food Support</label>
+                            <label class="check-item"><input type="checkbox"> School / Academic</label>
+                            <label class="check-item"><input type="checkbox"> Employment Support</label>
+                            <label class="check-item"><input type="checkbox"> Mental Health Support</label>
+                            <label class="check-item"><input type="checkbox"> Substance-use Support</label>
+                            <label class="check-item"><input type="checkbox"> Clothing & Hygiene</label>
+                            <label class="check-item" style="grid-column: span 2;"><input type="checkbox"> Friendships & Social Connections</label>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="closeModal()">Save Development Plan</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://lgmzqktvkvyfycyrhrbt.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // 1. Core Profile Fetching
         async function loadDashboard() {
             const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
             if (authError || !user) { window.location.href = 'index.html'; return; }
@@ -175,6 +347,51 @@
             }
         }
 
+        // 2. Avatar Upload Logic (Local Visual Preview)
+        document.getElementById('avatar-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const url = URL.createObjectURL(file);
+                const avatar = document.getElementById('student-avatar');
+                avatar.innerText = ''; // Hide initials
+                avatar.style.backgroundImage = `url(${url})`; // Set picture
+            }
+        });
+
+        // 3. Side Pane Logic
+        function toggleSidePane() {
+            document.getElementById('side-pane').classList.toggle('active');
+            document.getElementById('side-overlay').classList.toggle('active');
+        }
+
+        // 4. Multi-Modal Logic
+        function openModal(contentType) {
+            // Close side pane first
+            document.getElementById('side-pane').classList.remove('active');
+            document.getElementById('side-overlay').classList.remove('active');
+
+            // Hide all content blocks inside the modal
+            document.getElementById('content-basic-info').style.display = 'none';
+            document.getElementById('content-gab-data').style.display = 'none';
+            document.getElementById('content-engagement-plan').style.display = 'none';
+            document.getElementById('content-idp-plan').style.display = 'none';
+
+            // Show the requested content & set title
+            let title = "Details";
+            if(contentType === 'basic-info') { title = "Basic Information"; document.getElementById('content-basic-info').style.display = 'block'; }
+            if(contentType === 'gab-data') { title = "GAB Data Tracker"; document.getElementById('content-gab-data').style.display = 'block'; }
+            if(contentType === 'engagement-plan') { title = "Engagement Curriculum"; document.getElementById('content-engagement-plan').style.display = 'block'; }
+            if(contentType === 'idp-plan') { title = "Individual Development Plan"; document.getElementById('content-idp-plan').style.display = 'block'; }
+
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('master-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('master-modal').style.display = 'none';
+        }
+
+        // 5. Bulletproof Logout
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', async () => {
