@@ -63,14 +63,28 @@
         .goal-flex { display: flex; gap: 1rem; height: 100%; width: 100%;}
         .goal-box { flex: 1; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid; display: flex; flex-direction: column; overflow-y: auto;}
         
-        /* NEW ENGAGEMENT STYLES */
-        .engage-box { padding: 0.75rem; border-radius: 0.5rem; border: 1px solid; display: flex; flex-direction: column; }
-        .engage-header { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.05em;}
-        .engage-item { font-size: 0.875rem; color: var(--text-main); display: flex; align-items: flex-start; gap: 0.4rem; margin-bottom: 0.35rem; font-weight: 500;}
-        .engage-item:last-child { margin-bottom: 0; }
+        .engage-box { padding: 0.5rem; border-radius: 0.5rem; border: 1px solid; display: flex; flex-direction: column; margin-bottom: 0.5rem;}
+        .engage-header { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; margin-bottom: 0.25rem; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.05em;}
+        .engage-item { font-size: 0.75rem; color: var(--text-main); display: flex; align-items: flex-start; gap: 0.4rem; margin-bottom: 0.25rem; font-weight: 500;}
         .icon-check { color: #10B981; flex-shrink: 0; margin-top: 0.1rem;}
         
-        .text-purple { color: var(--peacox-purple); } .text-teal { color: var(--peacox-teal); } .text-xs { font-size: 0.75rem; } .text-sm { font-size: 0.875rem; } .font-bold { font-weight: bold; } .text-muted { color: var(--text-muted); } .text-green { color: #10B981; }
+        /* NEW DYNAMIC COLORS & CALENDAR */
+        .text-purple { color: var(--peacox-purple); } .text-teal { color: var(--peacox-teal); } 
+        .text-xs { font-size: 0.75rem; } .text-sm { font-size: 0.875rem; } .font-bold { font-weight: bold; } 
+        .text-muted { color: var(--text-muted); } .text-green { color: #10B981; } 
+        .text-brick { color: #D16D54; } /* Subtle faded brick orange */
+
+        .calendar-wrapper { display: flex; flex-direction: column; height: 100%; margin-top: 0.5rem;}
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-weight: bold; color: var(--text-main); font-size: 0.875rem; }
+        .cal-nav { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.25rem; line-height: 1; padding: 0 0.5rem; }
+        .cal-nav:hover { color: var(--peacox-purple); }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; flex: 1; }
+        .cal-day-header { text-align: center; font-size: 0.65rem; color: var(--text-muted); font-weight: bold; padding-bottom: 0.25rem; }
+        .cal-day { border-radius: 0.25rem; border: 1px solid transparent; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--text-main); cursor: pointer; position: relative; background: #F9FAFB; transition: all 0.2s; }
+        .cal-day:hover { border-color: var(--peacox-purple); background: #F3E8FF; }
+        .cal-day.today { background: var(--peacox-purple); color: white; font-weight: bold; }
+        .cal-day.empty { background: transparent; cursor: default; border: none; }
+        .cal-note-dot { position: absolute; bottom: 2px; width: 4px; height: 4px; background: var(--peacox-teal); border-radius: 50%; }
 
         .training-row { display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color); background-color: #F9FAFB; transition: background-color 0.2s; }
         .training-row-complete { background-color: #F0FDFA; border-color: #CCFBF1; }
@@ -122,7 +136,7 @@
         .history-item h4 { font-size: 0.875rem; color: var(--text-main); margin-bottom: 0.25rem; }
         .history-item p { font-size: 0.75rem; color: var(--text-muted); }
         
-        .curriculum-list { list-style: none; padding-left: 0.5rem; }
+        .curriculum-list { list-style: none; padding-left: 0.5rem; margin: 0;}
         .curriculum-list li { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem; position: relative; padding-left: 1rem; }
         .curriculum-list li::before { content: "•"; color: var(--peacox-teal); font-weight: bold; position: absolute; left: 0; }
     </style>
@@ -167,11 +181,23 @@
         </div>
 
         <div class="card col-2 row-1">
-            <h3 class="card-header">Quarterly Performance</h3>
+            <h3 class="card-header">Quarterly Performance <span id="qtr-perf-label" style="text-transform: none; font-weight: normal; float: right; color: var(--peacox-teal);">No Data</span></h3>
             <div class="stats-grid">
-                <div class="stat-col"><p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">GPA</p><p class="stat-val" style="margin-top: 0;" id="dash-gpa">--</p><p style="font-size: 0.75rem; font-weight: bold; margin-top: 0.35rem;" class="text-green">Latest Entry</p></div>
-                <div class="stat-col"><p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">Days Absent</p><p class="stat-val" style="margin-top: 0;" id="dash-absent">--</p></div>
-                <div class="stat-col"><p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">Behavior Inc.</p><p class="stat-val" style="margin-top: 0;" id="dash-behavior">--</p></div>
+                <div class="stat-col">
+                    <p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">GPA</p>
+                    <p class="stat-val" style="margin-top: 0;" id="dash-gpa">--</p>
+                    <div id="dash-gpa-change" style="margin-top: 0.35rem;"></div>
+                </div>
+                <div class="stat-col">
+                    <p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">Days Absent</p>
+                    <p class="stat-val" style="margin-top: 0;" id="dash-absent">--</p>
+                    <div id="dash-absent-change" style="margin-top: 0.35rem;"></div>
+                </div>
+                <div class="stat-col">
+                    <p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">Behavior Inc.</p>
+                    <p class="stat-val" style="margin-top: 0;" id="dash-behavior">--</p>
+                    <div id="dash-behavior-change" style="margin-top: 0.35rem;"></div>
+                </div>
             </div>
         </div>
 
@@ -180,31 +206,19 @@
             <div style="flex: 1;"><h3 class="card-header" style="margin-bottom: 0.25rem;">Surveys Pending</h3><p class="text-sm" style="color: var(--text-main); font-weight: 500; line-height: 1.2;">Complete Post-Intervention Feedback</p></div>
         </div>
 
-        <div class="card col-2 row-2">
-            <h3 class="card-header">Engagement Curriculum</h3>
-            <div style="display: flex; flex-direction: column; flex: 1; overflow-y: auto; gap: 0.75rem;">
-                
-                <div class="engage-box" style="background-color: #F0FDFA; border-color: #CCFBF1;">
-                    <div class="engage-header text-teal">Youth Programs <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 2)</span></div>
-                    <div id="dash-youth-list">
-                        <div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div>
-                    </div>
+        <div class="card col-2 row-1">
+            <h3 class="card-header" style="margin-bottom: 0;">Schedule & Reminders</h3>
+            <div class="calendar-wrapper">
+                <div class="cal-header">
+                    <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+                    <span id="cal-month-year">May 2026</span>
+                    <button class="cal-nav" onclick="changeMonth(1)">›</button>
                 </div>
-
-                <div class="engage-box" style="background-color: #FAF5FF; border-color: #F3E8FF;">
-                    <div class="engage-header text-purple">Community Engagement <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 1)</span></div>
-                    <div id="dash-comm-list">
-                        <div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div>
-                    </div>
+                <div class="cal-grid">
+                    <div class="cal-day-header">Su</div><div class="cal-day-header">Mo</div><div class="cal-day-header">Tu</div><div class="cal-day-header">We</div><div class="cal-day-header">Th</div><div class="cal-day-header">Fr</div><div class="cal-day-header">Sa</div>
                 </div>
-
-                <div class="engage-box" style="background-color: #EFF6FF; border-color: #DBEAFE;">
-                    <div class="engage-header" style="color: #3B82F6;">Major Events <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 2)</span></div>
-                    <div id="dash-event-list">
-                        <div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div>
+                <div class="cal-grid" id="cal-grid" style="grid-template-rows: repeat(5, 1fr);">
                     </div>
-                </div>
-
             </div>
         </div>
 
@@ -233,6 +247,29 @@
                 </div>
             </div>
         </div>
+
+        <div class="card col-2 row-1">
+            <h3 class="card-header">Engagement Curriculum</h3>
+            <div style="display: flex; flex-direction: column; flex: 1; overflow-y: auto;">
+                
+                <div class="engage-box" style="background-color: #F0FDFA; border-color: #CCFBF1;">
+                    <div class="engage-header text-teal">Youth Programs <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 2)</span></div>
+                    <div id="dash-youth-list"><div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div></div>
+                </div>
+
+                <div class="engage-box" style="background-color: #FAF5FF; border-color: #F3E8FF;">
+                    <div class="engage-header text-purple">Community Engagement <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 1)</span></div>
+                    <div id="dash-comm-list"><div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div></div>
+                </div>
+
+                <div class="engage-box" style="background-color: #EFF6FF; border-color: #DBEAFE; margin-bottom: 0;">
+                    <div class="engage-header" style="color: #3B82F6;">Major Events <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 2)</span></div>
+                    <div id="dash-event-list"><div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div></div>
+                </div>
+
+            </div>
+        </div>
+
     </main>
 
     <div class="side-overlay" id="side-overlay" onclick="toggleSidePane()"></div>
@@ -370,8 +407,60 @@
 
     <script>
         let GLOBAL_USER_ID = null; 
+        let currentCalDate = new Date(); // Tracks calendar month
 
-        // --- 1. PERSISTENT AVATAR UPLOAD ---
+        // --- 1. CALENDAR LOGIC ---
+        function renderCalendar() {
+            const year = currentCalDate.getFullYear();
+            const month = currentCalDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('cal-month-year').innerText = `${monthNames[month]} ${year}`;
+            
+            const calGrid = document.getElementById('cal-grid');
+            let html = '';
+            
+            // Empty slots
+            for(let i = 0; i < firstDay; i++) {
+                html += `<div class="cal-day empty"></div>`;
+            }
+            
+            const today = new Date();
+            const savedNotes = JSON.parse(localStorage.getItem(`cal_notes_${GLOBAL_USER_ID}`) || '{}');
+            
+            for(let d = 1; d <= daysInMonth; d++) {
+                const isToday = (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) ? 'today' : '';
+                const dateKey = `${year}-${month}-${d}`;
+                const note = savedNotes[dateKey];
+                const noteDot = note ? `<div class="cal-note-dot"></div>` : '';
+                const titleAttr = note ? `title="${note}"` : '';
+                
+                html += `<div class="cal-day ${isToday}" onclick="addCalNote('${dateKey}')" ${titleAttr}>${d}${noteDot}</div>`;
+            }
+            calGrid.innerHTML = html;
+        }
+
+        function changeMonth(dir) {
+            currentCalDate.setMonth(currentCalDate.getMonth() + dir);
+            renderCalendar();
+        }
+
+        function addCalNote(dateKey) {
+            if(!GLOBAL_USER_ID) return;
+            const savedNotes = JSON.parse(localStorage.getItem(`cal_notes_${GLOBAL_USER_ID}`) || '{}');
+            const existing = savedNotes[dateKey] || '';
+            const note = prompt("Enter a schedule note/reminder for this day:", existing);
+            if(note !== null) {
+                if(note.trim() === '') delete savedNotes[dateKey];
+                else savedNotes[dateKey] = note.trim();
+                localStorage.setItem(`cal_notes_${GLOBAL_USER_ID}`, JSON.stringify(savedNotes));
+                renderCalendar();
+            }
+        }
+
+        // --- 2. PERSISTENT AVATAR UPLOAD ---
         document.getElementById('avatar-upload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if(file && GLOBAL_USER_ID) {
@@ -387,7 +476,7 @@
             }
         });
 
-        // --- 2. SIDE PANE & MODAL ROUTING ---
+        // --- 3. SIDE PANE & MODAL ROUTING ---
         function toggleSidePane() {
             document.getElementById('side-pane').classList.toggle('active');
             document.getElementById('side-overlay').classList.toggle('active');
@@ -414,7 +503,7 @@
 
         function closeModal() { document.getElementById('master-modal').style.display = 'none'; }
 
-        // --- 3. SMART CHECKBOX LIMITERS ---
+        // --- 4. SMART CHECKBOX LIMITERS ---
         function enforceLimits(groupId, maxAllowed) {
             const container = document.getElementById(groupId);
             const checkboxes = container.querySelectorAll('input[type="checkbox"]');
@@ -432,13 +521,13 @@
         enforceLimits('comm-group', 1);
         enforceLimits('event-group', 2);
 
-        // --- 4. SAVING & SYNCING DATA ---
+        // --- 5. SAVING & SYNCING DATA ---
         function saveGAB() {
             if(!GLOBAL_USER_ID) return;
             const entry = {
                 year: document.getElementById('gab-year').value,
                 term: document.getElementById('gab-term').value,
-                gpa: document.getElementById('gab-gpa').value || "N/A",
+                gpa: document.getElementById('gab-gpa').value || "0",
                 absent: document.getElementById('gab-absent').value || "0",
                 behavior: document.getElementById('gab-behavior').value || "0",
                 date: new Date().toLocaleDateString()
@@ -484,9 +573,11 @@
             closeModal();
         }
 
-        // --- 5. MASTER LOAD FUNCTION ---
+        // --- 6. MASTER LOAD FUNCTION ---
         function loadUserData() {
             if(!GLOBAL_USER_ID) return;
+
+            renderCalendar();
 
             const savedAvatar = localStorage.getItem(`avatar_${GLOBAL_USER_ID}`);
             if(savedAvatar) {
@@ -495,6 +586,7 @@
                 avatarDiv.style.backgroundImage = `url("${savedAvatar}")`;
             }
 
+            // Load GAB Data & Math Logic
             const gabHistory = JSON.parse(localStorage.getItem(`gab_${GLOBAL_USER_ID}`) || '[]');
             const historyList = document.getElementById('gab-history-list');
             if(gabHistory.length > 0) {
@@ -505,9 +597,33 @@
                     </div>
                 `).join('');
                 
-                document.getElementById('dash-gpa').innerText = gabHistory[0].gpa;
-                document.getElementById('dash-absent').innerText = gabHistory[0].absent;
-                document.getElementById('dash-behavior').innerText = gabHistory[0].behavior;
+                const latest = gabHistory[0];
+                document.getElementById('qtr-perf-label').innerText = `${latest.term} ${latest.year}`;
+                document.getElementById('dash-gpa').innerText = latest.gpa;
+                document.getElementById('dash-absent').innerText = latest.absent;
+                document.getElementById('dash-behavior').innerText = latest.behavior;
+
+                // Percentage Change Math
+                if(gabHistory.length > 1) {
+                    const prev = gabHistory[1];
+                    const calcChange = (newVal, oldVal) => {
+                        const n = parseFloat(newVal); const o = parseFloat(oldVal);
+                        if(isNaN(n) || isNaN(o)) return '';
+                        if(o === 0) return n > 0 ? `<span class="text-green text-xs font-bold">↑ New</span>` : `<span class="text-muted text-xs font-bold">— 0%</span>`;
+                        const diff = n - o;
+                        const pct = Math.abs(Math.round((diff / o) * 100));
+                        if(diff > 0) return `<span class="text-green text-xs font-bold">↑ ${pct}%</span>`;
+                        if(diff < 0) return `<span class="text-brick text-xs font-bold">↓ ${pct}%</span>`;
+                        return `<span class="text-muted text-xs font-bold">— 0%</span>`;
+                    };
+                    document.getElementById('dash-gpa-change').innerHTML = calcChange(latest.gpa, prev.gpa);
+                    document.getElementById('dash-absent-change').innerHTML = calcChange(latest.absent, prev.absent);
+                    document.getElementById('dash-behavior-change').innerHTML = calcChange(latest.behavior, prev.behavior);
+                } else {
+                    document.getElementById('dash-gpa-change').innerHTML = `<span class="text-green text-xs font-bold">Latest Entry</span>`;
+                    document.getElementById('dash-absent-change').innerHTML = '';
+                    document.getElementById('dash-behavior-change').innerHTML = '';
+                }
             }
 
             // Load & Style Engagement Plan
@@ -517,7 +633,6 @@
             document.querySelectorAll('#comm-group input').forEach(cb => cb.checked = plan.comm.includes(cb.value));
             document.querySelectorAll('#event-group input').forEach(cb => cb.checked = plan.events.includes(cb.value));
             
-            // New dynamic rendering for the styled boxes
             const checkIcon = `<svg class="icon-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
             const renderList = (arr) => arr.length > 0 
                 ? arr.map(i => `<div class="engage-item">${checkIcon} <span>${i}</span></div>`).join('') 
@@ -527,6 +642,7 @@
             document.getElementById('dash-comm-list').innerHTML = renderList(plan.comm);
             document.getElementById('dash-event-list').innerHTML = renderList(plan.events);
 
+            // Load IDP Plan
             const idp = JSON.parse(localStorage.getItem(`idp_${GLOBAL_USER_ID}`) || null);
             if(idp) {
                 document.getElementById('idp-short-1').value = idp.short1;
