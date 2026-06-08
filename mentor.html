@@ -218,6 +218,7 @@
 
     <script>
         let GLOBAL_USER_ID = null; 
+        let supabaseClient = null;
         let currentCalDate = new Date(); 
 
         // AVATAR UPLOAD
@@ -358,7 +359,7 @@
         try {
             const SUPABASE_URL = 'https://lgmzqktvkvyfycyrhrbt.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
-            const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             async function loadDatabaseData() {
                 const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
