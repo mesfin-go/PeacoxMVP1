@@ -410,7 +410,7 @@
         let currentCalDate = new Date(); // Tracks calendar month
 
         // --- 1. CALENDAR LOGIC ---
-        function renderCalendar() {
+        async function renderCalendar() {
             const year = currentCalDate.getFullYear();
             const month = currentCalDate.getMonth();
             const firstDay = new Date(year, month, 1).getDay();
@@ -428,11 +428,23 @@
             }
             
             const today = new Date();
-            const savedNotes = JSON.parse(localStorage.getItem(`cal_notes_${GLOBAL_USER_ID}`) || '{}');
+            
+            // Fetch calendar notes
+            let savedNotes = {};
+            if(GLOBAL_USER_ID) {
+                const startStr = `${year}-${String(month+1).padStart(2,'0')}-01`;
+                const endStr = `${year}-${String(month+1).padStart(2,'0')}-${daysInMonth}`;
+                const { data } = await supabaseClient.from('calendar_notes')
+                    .select('date, note')
+                    .eq('user_id', GLOBAL_USER_ID)
+                    .gte('date', startStr)
+                    .lte('date', endStr);
+                if(data) data.forEach(row => savedNotes[row.date] = row.note);
+            }
             
             for(let d = 1; d <= daysInMonth; d++) {
                 const isToday = (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) ? 'today' : '';
-                const dateKey = `${year}-${month}-${d}`;
+                const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 const note = savedNotes[dateKey];
                 const noteDot = note ? `<div class="cal-note-dot"></div>` : '';
                 const titleAttr = note ? `title="${note}"` : '';
@@ -447,32 +459,45 @@
             renderCalendar();
         }
 
-        function addCalNote(dateKey) {
+        async function addCalNote(dateKey) {
             if(!GLOBAL_USER_ID) return;
-            const savedNotes = JSON.parse(localStorage.getItem(`cal_notes_${GLOBAL_USER_ID}`) || '{}');
-            const existing = savedNotes[dateKey] || '';
+            const { data } = await supabaseClient.from('calendar_notes').select('note').eq('user_id', GLOBAL_USER_ID).eq('date', dateKey).single();
+            const existing = data ? data.note : '';
             const note = prompt("Enter a schedule note/reminder for this day:", existing);
             if(note !== null) {
-                if(note.trim() === '') delete savedNotes[dateKey];
-                else savedNotes[dateKey] = note.trim();
-                localStorage.setItem(`cal_notes_${GLOBAL_USER_ID}`, JSON.stringify(savedNotes));
+                if(note.trim() === '') {
+                    await supabaseClient.from('calendar_notes').delete().eq('user_id', GLOBAL_USER_ID).eq('date', dateKey);
+                } else {
+                    await supabaseClient.from('calendar_notes').upsert({ user_id: GLOBAL_USER_ID, date: dateKey, note: note.trim() });
+                }
                 renderCalendar();
             }
         }
 
         // --- 2. PERSISTENT AVATAR UPLOAD ---
-        document.getElementById('avatar-upload').addEventListener('change', function(e) {
+        document.getElementById('avatar-upload').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if(file && GLOBAL_USER_ID) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const base64String = event.target.result;
-                    const avatar = document.getElementById('student-avatar');
+                const avatar = document.getElementById('student-avatar');
+                avatar.innerText = '...'; 
+                
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${GLOBAL_USER_ID}.${fileExt}`;
+                const { data, error } = await supabaseClient.storage.from('avatars').upload(fileName, file, { upsert: true });
+                
+                if(!error) {
+                    const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
+                    const publicURL = urlData.publicUrl;
+                    
+                    await supabaseClient.from('profiles').update({ avatar_url: publicURL }).eq('id', GLOBAL_USER_ID);
+                    
                     avatar.innerText = ''; 
-                    avatar.style.backgroundImage = `url("${base64String}")`;
-                    localStorage.setItem(`avatar_${GLOBAL_USER_ID}`, base64String); 
-                };
-                reader.readAsDataURL(file);
+                    avatar.style.backgroundImage = `url("${publicURL}?t=${new Date().getTime()}")`; // cache break
+                } else {
+                    console.error("Upload error:", error);
+                    alert("Avatar upload failed.");
+                    loadUserData();
+                }
             }
         });
 
@@ -522,88 +547,102 @@
         enforceLimits('event-group', 2);
 
         // --- 5. SAVING & SYNCING DATA ---
-        function saveGAB() {
+        async function saveGAB() {
             if(!GLOBAL_USER_ID) return;
             const entry = {
-                year: document.getElementById('gab-year').value,
-                term: document.getElementById('gab-term').value,
+                student_id: GLOBAL_USER_ID,
+                quarter: document.getElementById('gab-term').value + ' ' + document.getElementById('gab-year').value,
                 gpa: document.getElementById('gab-gpa').value || "0",
-                absent: document.getElementById('gab-absent').value || "0",
-                behavior: document.getElementById('gab-behavior').value || "0",
-                date: new Date().toLocaleDateString()
+                attendance_pct: document.getElementById('gab-absent').value || "0",
+                behavior_pct: document.getElementById('gab-behavior').value || "0"
             };
             
-            let history = JSON.parse(localStorage.getItem(`gab_${GLOBAL_USER_ID}`) || '[]');
-            history.unshift(entry); 
-            localStorage.setItem(`gab_${GLOBAL_USER_ID}`, JSON.stringify(history));
+            await supabaseClient.from('performance_metrics').insert(entry);
             
             document.getElementById('gab-gpa').value = '';
             document.getElementById('gab-absent').value = '';
             document.getElementById('gab-behavior').value = '';
             
-            loadUserData(); 
+            await loadUserData(); 
             closeModal();
         }
 
-        function saveEngagement() {
+        async function saveEngagement() {
             if(!GLOBAL_USER_ID) return;
             const getChecked = (groupId) => Array.from(document.querySelectorAll(`#${groupId} input:checked`)).map(cb => cb.value);
             
-            const plan = {
-                youth: getChecked('youth-group'),
-                comm: getChecked('comm-group'),
-                events: getChecked('event-group')
-            };
-            localStorage.setItem(`engage_${GLOBAL_USER_ID}`, JSON.stringify(plan));
-            loadUserData();
+            const youth = getChecked('youth-group');
+            const comm = getChecked('comm-group');
+            const events = getChecked('event-group');
+            
+            await supabaseClient.from('curriculum_progress').delete().eq('student_id', GLOBAL_USER_ID);
+            
+            const inserts = [];
+            youth.forEach(item => inserts.push({ student_id: GLOBAL_USER_ID, category: 'Youth Programs', item_name: item, status: 'in-progress' }));
+            comm.forEach(item => inserts.push({ student_id: GLOBAL_USER_ID, category: 'Community Engagement', item_name: item, status: 'in-progress' }));
+            events.forEach(item => inserts.push({ student_id: GLOBAL_USER_ID, category: 'Major Events', item_name: item, status: 'in-progress' }));
+            
+            if (inserts.length > 0) {
+                await supabaseClient.from('curriculum_progress').insert(inserts);
+            }
+            
+            await loadUserData();
             closeModal();
         }
 
-        function saveIDP() {
+        async function saveIDP() {
             if(!GLOBAL_USER_ID) return;
+            const short1 = document.getElementById('idp-short-1').value;
+            const short2 = document.getElementById('idp-short-2').value;
+            const checkLabels = ["Food Support", "School / Academic", "Employment Support", "Mental Health Support", "Substance-use Support", "Clothing & Hygiene", "Friendships & Social Connections"];
+            const checks = Array.from(document.querySelectorAll('#content-idp-plan input[type="checkbox"]'));
+            const selectedChecks = checks.map((cb, index) => cb.checked ? checkLabels[index] : null).filter(Boolean);
+            
+            let barriersText = document.getElementById('bar-other').value || "";
+            if (selectedChecks.length > 0) barriersText = selectedChecks.join(', ') + (barriersText ? ', ' + barriersText : "");
+
             const idp = {
-                short1: document.getElementById('idp-short-1').value,
-                short2: document.getElementById('idp-short-2').value,
-                long: document.getElementById('idp-long').value,
-                otherBarriers: document.getElementById('bar-other').value,
-                checks: Array.from(document.querySelectorAll('#content-idp-plan input[type="checkbox"]')).map(cb => cb.checked)
+                student_id: GLOBAL_USER_ID,
+                short_term: short1 + (short2 ? " | " + short2 : ""),
+                long_term: document.getElementById('idp-long').value,
+                barriers: barriersText
             };
-            localStorage.setItem(`idp_${GLOBAL_USER_ID}`, JSON.stringify(idp));
-            loadUserData();
+            
+            await supabaseClient.from('idp_goals').upsert(idp);
+            await loadUserData();
             closeModal();
         }
 
         // --- 6. MASTER LOAD FUNCTION ---
-        function loadUserData() {
+        async function loadUserData() {
             if(!GLOBAL_USER_ID) return;
 
             renderCalendar();
 
-            const savedAvatar = localStorage.getItem(`avatar_${GLOBAL_USER_ID}`);
-            if(savedAvatar) {
+            const { data: profile } = await supabaseClient.from('profiles').select('avatar_url').eq('id', GLOBAL_USER_ID).single();
+            if(profile && profile.avatar_url) {
                 const avatarDiv = document.getElementById('student-avatar');
                 avatarDiv.innerText = '';
-                avatarDiv.style.backgroundImage = `url("${savedAvatar}")`;
+                avatarDiv.style.backgroundImage = `url("${profile.avatar_url}")`;
             }
 
-            // Load GAB Data & Math Logic
-            const gabHistory = JSON.parse(localStorage.getItem(`gab_${GLOBAL_USER_ID}`) || '[]');
+            // Load GAB Data
+            const { data: gabHistory } = await supabaseClient.from('performance_metrics').select('*').eq('student_id', GLOBAL_USER_ID).order('updated_at', { ascending: false });
             const historyList = document.getElementById('gab-history-list');
-            if(gabHistory.length > 0) {
+            if(gabHistory && gabHistory.length > 0) {
                 historyList.innerHTML = gabHistory.map(entry => `
                     <div class="history-item">
-                        <h4>${entry.term} ${entry.year} <span style="float:right; font-size:0.65rem; color:#9CA3AF;">Logged: ${entry.date}</span></h4>
-                        <p><strong>GPA:</strong> ${entry.gpa} &nbsp;|&nbsp; <strong>Absent:</strong> ${entry.absent} &nbsp;|&nbsp; <strong>Incidents:</strong> ${entry.behavior}</p>
+                        <h4>${entry.quarter} <span style="float:right; font-size:0.65rem; color:#9CA3AF;">Logged: ${new Date(entry.updated_at).toLocaleDateString()}</span></h4>
+                        <p><strong>GPA:</strong> ${entry.gpa} &nbsp;|&nbsp; <strong>Absent:</strong> ${entry.attendance_pct} &nbsp;|&nbsp; <strong>Incidents:</strong> ${entry.behavior_pct}</p>
                     </div>
                 `).join('');
                 
                 const latest = gabHistory[0];
-                document.getElementById('qtr-perf-label').innerText = `${latest.term} ${latest.year}`;
+                document.getElementById('qtr-perf-label').innerText = latest.quarter;
                 document.getElementById('dash-gpa').innerText = latest.gpa;
-                document.getElementById('dash-absent').innerText = latest.absent;
-                document.getElementById('dash-behavior').innerText = latest.behavior;
+                document.getElementById('dash-absent').innerText = latest.attendance_pct;
+                document.getElementById('dash-behavior').innerText = latest.behavior_pct;
 
-                // Percentage Change Math
                 if(gabHistory.length > 1) {
                     const prev = gabHistory[1];
                     const calcChange = (newVal, oldVal) => {
@@ -617,17 +656,32 @@
                         return `<span class="text-muted text-xs font-bold">— 0%</span>`;
                     };
                     document.getElementById('dash-gpa-change').innerHTML = calcChange(latest.gpa, prev.gpa);
-                    document.getElementById('dash-absent-change').innerHTML = calcChange(latest.absent, prev.absent);
-                    document.getElementById('dash-behavior-change').innerHTML = calcChange(latest.behavior, prev.behavior);
+                    document.getElementById('dash-absent-change').innerHTML = calcChange(latest.attendance_pct, prev.attendance_pct);
+                    document.getElementById('dash-behavior-change').innerHTML = calcChange(latest.behavior_pct, prev.behavior_pct);
                 } else {
                     document.getElementById('dash-gpa-change').innerHTML = `<span class="text-green text-xs font-bold">Latest Entry</span>`;
                     document.getElementById('dash-absent-change').innerHTML = '';
                     document.getElementById('dash-behavior-change').innerHTML = '';
                 }
+            } else {
+                document.getElementById('dash-gpa-change').innerHTML = '';
+                document.getElementById('dash-absent-change').innerHTML = '';
+                document.getElementById('dash-behavior-change').innerHTML = '';
+                document.getElementById('dash-gpa').innerText = '--';
+                document.getElementById('dash-absent').innerText = '--';
+                document.getElementById('dash-behavior').innerText = '--';
             }
 
-            // Load & Style Engagement Plan
-            const plan = JSON.parse(localStorage.getItem(`engage_${GLOBAL_USER_ID}`) || '{"youth":[], "comm":[], "events":[]}');
+            // Load Engagement Plan
+            const { data: engData } = await supabaseClient.from('curriculum_progress').select('*').eq('student_id', GLOBAL_USER_ID);
+            const plan = { youth: [], comm: [], events: [] };
+            if (engData) {
+                engData.forEach(e => {
+                    if (e.category === 'Youth Programs') plan.youth.push(e.item_name);
+                    if (e.category === 'Community Engagement') plan.comm.push(e.item_name);
+                    if (e.category === 'Major Events') plan.events.push(e.item_name);
+                });
+            }
             
             document.querySelectorAll('#youth-group input').forEach(cb => cb.checked = plan.youth.includes(cb.value));
             document.querySelectorAll('#comm-group input').forEach(cb => cb.checked = plan.comm.includes(cb.value));
@@ -643,22 +697,33 @@
             document.getElementById('dash-event-list').innerHTML = renderList(plan.events);
 
             // Load IDP Plan
-            const idp = JSON.parse(localStorage.getItem(`idp_${GLOBAL_USER_ID}`) || null);
+            const { data: idp } = await supabaseClient.from('idp_goals').select('*').eq('student_id', GLOBAL_USER_ID).single();
             if(idp) {
-                document.getElementById('idp-short-1').value = idp.short1;
-                document.getElementById('idp-short-2').value = idp.short2;
-                document.getElementById('idp-long').value = idp.long;
-                document.getElementById('bar-other').value = idp.otherBarriers;
+                const shortGoals = idp.short_term ? idp.short_term.split(' | ') : [];
+                document.getElementById('idp-short-1').value = shortGoals[0] || '';
+                document.getElementById('idp-short-2').value = shortGoals[1] || '';
+                document.getElementById('idp-long').value = idp.long_term || '';
+                
+                const checkLabels = ["Food Support", "School / Academic", "Employment Support", "Mental Health Support", "Substance-use Support", "Clothing & Hygiene", "Friendships & Social Connections"];
                 const checks = document.querySelectorAll('#content-idp-plan input[type="checkbox"]');
-                checks.forEach((cb, index) => cb.checked = idp.checks[index]);
+                checks.forEach((cb, index) => {
+                    if (idp.barriers && idp.barriers.includes(checkLabels[index])) cb.checked = true;
+                    else cb.checked = false;
+                });
+
+                // Extract other barriers by filtering out the checkboxes from the barriers text
+                let otherText = idp.barriers || "";
+                checkLabels.forEach(label => {
+                    otherText = otherText.replace(label, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '');
+                });
+                document.getElementById('bar-other').value = otherText.trim();
 
                 let shortHTML = '';
-                if(idp.short1) shortHTML += `<li>${idp.short1}</li>`;
-                if(idp.short2) shortHTML += `<li>${idp.short2}</li>`;
+                shortGoals.forEach(g => { if(g) shortHTML += `<li>${g}</li>`; });
                 if(shortHTML === '') shortHTML = '<li>Update IDP to set goals.</li>';
                 
                 document.getElementById('dash-short-goals').innerHTML = shortHTML;
-                document.getElementById('dash-long-goal').innerText = idp.long || 'Update IDP to set goal.';
+                document.getElementById('dash-long-goal').innerText = idp.long_term || 'Update IDP to set goal.';
             }
         }
     </script>

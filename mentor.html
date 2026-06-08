@@ -221,37 +221,61 @@
         let currentCalDate = new Date(); 
 
         // AVATAR UPLOAD
-        document.getElementById('avatar-upload').addEventListener('change', function(e) {
+        document.getElementById('avatar-upload').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if(file && GLOBAL_USER_ID) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const b64 = event.target.result;
-                    document.getElementById('mentor-avatar').innerText = ''; 
-                    document.getElementById('mentor-avatar').style.backgroundImage = `url("${b64}")`;
-                    localStorage.setItem(`avatar_${GLOBAL_USER_ID}`, b64); 
-                };
-                reader.readAsDataURL(file);
+                const avatar = document.getElementById('mentor-avatar');
+                avatar.innerText = '...'; 
+                
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${GLOBAL_USER_ID}.${fileExt}`;
+                const { data, error } = await supabaseClient.storage.from('avatars').upload(fileName, file, { upsert: true });
+                
+                if(!error) {
+                    const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
+                    const publicURL = urlData.publicUrl;
+                    
+                    await supabaseClient.from('profiles').update({ avatar_url: publicURL }).eq('id', GLOBAL_USER_ID);
+                    
+                    avatar.innerText = ''; 
+                    avatar.style.backgroundImage = `url("${publicURL}?t=${new Date().getTime()}")`;
+                } else {
+                    console.error("Upload error:", error);
+                    alert("Avatar upload failed.");
+                    loadMentorData();
+                }
             }
         });
 
         // CALENDAR
-        function renderCalendar() {
+        async function renderCalendar() {
             const year = currentCalDate.getFullYear(); const month = currentCalDate.getMonth();
             const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate();
             document.getElementById('cal-month-year').innerText = `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month]} ${year}`;
             
+            let savedNotes = {};
+            if(GLOBAL_USER_ID) {
+                const startStr = `${year}-${String(month+1).padStart(2,'0')}-01`;
+                const endStr = `${year}-${String(month+1).padStart(2,'0')}-${daysInMonth}`;
+                const { data } = await supabaseClient.from('calendar_notes')
+                    .select('date, note')
+                    .eq('user_id', GLOBAL_USER_ID)
+                    .gte('date', startStr)
+                    .lte('date', endStr);
+                if(data) data.forEach(row => savedNotes[row.date] = row.note);
+            }
+
             let html = '';
             for(let r=0; r<5; r++) { // 5 rows to fit card perfectly
                 html += '<div class="cal-row">';
                 for(let c=0; c<7; c++) {
                     let d = (r*7 + c) - firstDay + 1;
                     if(d > 0 && d <= daysInMonth) {
-                        const dateKey = `${year}-${month}-${d}`;
-                        const notes = JSON.parse(localStorage.getItem(`cal_notes_${GLOBAL_USER_ID}`) || '{}');
+                        const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                        const note = savedNotes[dateKey];
                         const isToday = (d === new Date().getDate() && month === new Date().getMonth()) ? 'today' : '';
-                        const dot = notes[dateKey] ? `<div class="cal-note-dot"></div>` : '';
-                        html += `<div class="cal-day ${isToday}" onclick="addCalNote('${dateKey}')" title="${notes[dateKey]||''}">${d}${dot}</div>`;
+                        const dot = note ? `<div class="cal-note-dot"></div>` : '';
+                        html += `<div class="cal-day ${isToday}" onclick="addCalNote('${dateKey}')" title="${note||''}">${d}${dot}</div>`;
                     } else {
                         html += `<div class="cal-day empty"></div>`;
                     }
@@ -262,13 +286,17 @@
         }
 
         function changeMonth(dir) { currentCalDate.setMonth(currentCalDate.getMonth() + dir); renderCalendar(); }
-        function addCalNote(dateKey) {
+        async function addCalNote(dateKey) {
             if(!GLOBAL_USER_ID) return;
-            const notes = JSON.parse(localStorage.getItem(`cal_notes_${GLOBAL_USER_ID}`) || '{}');
-            const note = prompt("Enter mentor note/reminder:", notes[dateKey] || '');
+            const { data } = await supabaseClient.from('calendar_notes').select('note').eq('user_id', GLOBAL_USER_ID).eq('date', dateKey).single();
+            const existing = data ? data.note : '';
+            const note = prompt("Enter mentor note/reminder:", existing);
             if(note !== null) {
-                if(note.trim() === '') delete notes[dateKey]; else notes[dateKey] = note.trim();
-                localStorage.setItem(`cal_notes_${GLOBAL_USER_ID}`, JSON.stringify(notes));
+                if(note.trim() === '') {
+                    await supabaseClient.from('calendar_notes').delete().eq('user_id', GLOBAL_USER_ID).eq('date', dateKey);
+                } else {
+                    await supabaseClient.from('calendar_notes').upsert({ user_id: GLOBAL_USER_ID, date: dateKey, note: note.trim() });
+                }
                 renderCalendar();
             }
         }
@@ -284,29 +312,44 @@
         }
         function closeModal() { document.getElementById('master-modal').style.display = 'none'; }
 
-        // LOCAL STORAGE
-        function saveMentorData() {
+        // LOCAL STORAGE -> SUPABASE
+        async function saveMentorData() {
             if(!GLOBAL_USER_ID) return;
             const data = {
-                edu: document.getElementById('prof-edu').value, ind: document.getElementById('prof-ind').value,
-                top: document.getElementById('prof-topics').value, hrs: document.getElementById('avail-hours').value,
-                cap: document.getElementById('avail-cap').value
+                mentor_id: GLOBAL_USER_ID,
+                education: document.getElementById('prof-edu').value, 
+                industry: document.getElementById('prof-ind').value,
+                topics: document.getElementById('prof-topics').value, 
+                capacity_hours: document.getElementById('avail-hours').value || 0,
+                max_mentees: parseInt(document.getElementById('avail-cap').value) || 4
             };
-            localStorage.setItem(`mentor_prof_${GLOBAL_USER_ID}`, JSON.stringify(data));
+            await supabaseClient.from('mentor_profiles').upsert(data);
             closeModal();
         }
 
-        function loadMentorData() {
+        async function loadMentorData() {
             renderCalendar();
             if(!GLOBAL_USER_ID) return;
-            const avatar = localStorage.getItem(`avatar_${GLOBAL_USER_ID}`);
-            if(avatar) { document.getElementById('mentor-avatar').innerText = ''; document.getElementById('mentor-avatar').style.backgroundImage = `url("${avatar}")`; }
             
-            const data = JSON.parse(localStorage.getItem(`mentor_prof_${GLOBAL_USER_ID}`) || '{}');
-            if(data.edu) {
-                document.getElementById('prof-edu').value = data.edu || ''; document.getElementById('prof-ind').value = data.ind || '';
-                document.getElementById('prof-topics').value = data.top || ''; document.getElementById('avail-hours').value = data.hrs || '';
-                document.getElementById('avail-cap').value = data.cap || '4 Mentees';
+            const { data: profile } = await supabaseClient.from('profiles').select('avatar_url').eq('id', GLOBAL_USER_ID).single();
+            if(profile && profile.avatar_url) {
+                const avatarDiv = document.getElementById('mentor-avatar');
+                avatarDiv.innerText = '';
+                avatarDiv.style.backgroundImage = `url("${profile.avatar_url}")`;
+            }
+            
+            const { data } = await supabaseClient.from('mentor_profiles').select('*').eq('mentor_id', GLOBAL_USER_ID).single();
+            if(data) {
+                document.getElementById('prof-edu').value = data.education || ''; 
+                document.getElementById('prof-ind').value = data.industry || '';
+                document.getElementById('prof-topics').value = data.topics || ''; 
+                document.getElementById('avail-hours').value = data.capacity_hours || '';
+                
+                const selectElement = document.getElementById('avail-cap');
+                const targetText = `${data.max_mentees} Mentee${data.max_mentees !== 1 ? 's' : ''}`;
+                Array.from(selectElement.options).forEach(opt => {
+                    if (opt.text === targetText) opt.selected = true;
+                });
             }
         }
     </script>

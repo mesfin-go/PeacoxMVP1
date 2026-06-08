@@ -138,7 +138,7 @@
                 <div class="stat-grid">
                     <div class="stat-col" style="border-right: 1px solid var(--border-color); padding-right: 1rem;">
                         <p style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">AVG COHORT GPA</p>
-                        <p class="stat-val">3.05</p>
+                        <p class="stat-val" id="pm-avg-gpa">--</p>
                         <div class="trend-box">
                             <div class="spark" style="height: 40%;"></div><div class="spark" style="height: 50%;"></div>
                             <div class="spark" style="height: 55%;"></div><div class="spark active" style="height: 75%;"></div>
@@ -147,7 +147,7 @@
                     </div>
                     <div class="stat-col" style="padding-left: 0.5rem;">
                         <p style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">AVG ATTENDANCE</p>
-                        <p class="stat-val">91%</p>
+                        <p class="stat-val" id="pm-avg-att">--%</p>
                         <div class="trend-box">
                             <div class="spark" style="height: 90%;"></div><div class="spark" style="height: 85%;"></div>
                             <div class="spark" style="height: 88%;"></div><div class="spark active" style="height: 91%;"></div>
@@ -197,7 +197,7 @@
             <div class="card col-2 row-1">
                 <h3 class="card-header">Organizational Capacity</h3>
                 <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; text-align: center;">
-                    <p style="font-size: 3rem; font-weight: 900; color: var(--text-main); line-height: 1;">120<span style="font-size: 1.5rem; color: var(--text-muted);">/150</span></p>
+                    <p style="font-size: 3rem; font-weight: 900; color: var(--text-main); line-height: 1;" id="pm-mentees-count">--<span style="font-size: 1.5rem; color: var(--text-muted);">/--</span></p>
                     <p style="font-size: 0.875rem; font-weight: bold; color: var(--text-muted); margin-bottom: 1rem;">Active Mentees Placed</p>
                     <div class="progress-track" style="height: 12px;"><div class="progress-fill purple" style="width: 80%;"></div></div>
                     <p style="font-size: 0.75rem; color: var(--peacox-purple); font-weight: bold; margin-top: 0.5rem;">30 Slots Remaining across 30 Active Mentors</p>
@@ -352,17 +352,28 @@
         }
 
         // AVATAR LOGIC
-        document.getElementById('avatar-upload').addEventListener('change', function(e) {
+        document.getElementById('avatar-upload').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if(file && GLOBAL_USER_ID) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const b64 = event.target.result;
-                    document.getElementById('pm-avatar').innerText = ''; 
-                    document.getElementById('pm-avatar').style.backgroundImage = `url("${b64}")`;
-                    localStorage.setItem(`avatar_${GLOBAL_USER_ID}`, b64); 
-                };
-                reader.readAsDataURL(file);
+                const avatar = document.getElementById('pm-avatar');
+                avatar.innerText = '...'; 
+                
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${GLOBAL_USER_ID}.${fileExt}`;
+                const { data, error } = await supabaseClient.storage.from('avatars').upload(fileName, file, { upsert: true });
+                
+                if(!error) {
+                    const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
+                    const publicURL = urlData.publicUrl;
+                    
+                    await supabaseClient.from('profiles').update({ avatar_url: publicURL }).eq('id', GLOBAL_USER_ID);
+                    
+                    avatar.innerText = ''; 
+                    avatar.style.backgroundImage = `url("${publicURL}?t=${new Date().getTime()}")`;
+                } else {
+                    console.error("Upload error:", error);
+                    alert("Avatar upload failed.");
+                }
             }
         });
 
@@ -395,15 +406,40 @@
                 if (authError || !user) { if(window.location.protocol !== 'file:') window.location.href = 'index.html'; return; }
                 GLOBAL_USER_ID = user.id;
 
-                const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+                    const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
                 if (profile) {
                     const fn = profile.first_name || 'Peacox'; const ln = profile.last_name || 'Manager';
                     document.getElementById('pm-name').innerText = `${fn} ${ln}`;
                     document.getElementById('info-name').value = `${fn} ${ln}`; document.getElementById('info-email').value = user.email || '';
                     
-                    const avatar = localStorage.getItem(`avatar_${GLOBAL_USER_ID}`);
-                    if(avatar) { document.getElementById('pm-avatar').innerText = ''; document.getElementById('pm-avatar').style.backgroundImage = `url("${avatar}")`; }
+                    if(profile.avatar_url) { 
+                        document.getElementById('pm-avatar').innerText = ''; 
+                        document.getElementById('pm-avatar').style.backgroundImage = `url("${profile.avatar_url}")`; 
+                    }
                     else { document.getElementById('pm-avatar').innerText = (profile.avatar_initials || (fn[0]+ln[0])).toUpperCase(); }
+                }
+
+                loadMetrics();
+            }
+
+            async function loadMetrics() {
+                // Fetch metrics from Supabase
+                const { data: perfData } = await supabaseClient.from('performance_metrics').select('gpa, attendance_pct');
+                if(perfData && perfData.length > 0) {
+                    const totalGPA = perfData.reduce((sum, item) => sum + parseFloat(item.gpa || 0), 0);
+                    const avgGPA = (totalGPA / perfData.length).toFixed(2);
+                    document.getElementById('pm-avg-gpa').innerText = avgGPA;
+
+                    const totalAtt = perfData.reduce((sum, item) => sum + parseFloat(item.attendance_pct || 0), 0);
+                    const avgAtt = Math.round(totalAtt / perfData.length);
+                    document.getElementById('pm-avg-att').innerText = `${avgAtt}%`;
+                }
+
+                const { count: studentCount } = await supabaseClient.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'student');
+                
+                // Mentees count logic
+                if (studentCount !== null) {
+                    document.getElementById('pm-mentees-count').innerHTML = `${studentCount}<span style="font-size: 1.5rem; color: var(--text-muted);"> Active</span>`;
                 }
             }
 
