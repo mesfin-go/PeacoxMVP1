@@ -627,7 +627,7 @@
                 } catch(e) { console.error("loadMentors error", e); }
                 
                 if(window.filterFeedback) window.filterFeedback('all');
-            });
+            }
 
             async function loadMetrics() {
                 const { count: studentCount } = await supabaseClient.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'student');
@@ -1076,6 +1076,7 @@
 
                 msg.innerText = `Changes saved successfully!`; msg.style.color = '#10B981'; msg.style.display = 'block'; btn.innerText = 'Save Changes';
                 setTimeout(() => { closeModal(); msg.style.display = 'none'; }, 2000);
+            });
 
         // --- FEEDBACK LIST LOGIC ---
         window.filterFeedback = function(type) {
