@@ -650,8 +650,8 @@
                     dbStudents = students.map(s => {
                         // Check if metadata exists
                         const meta = s.raw_user_meta_data || {};
-                        const gpa = meta.gpa || s.gpa || (Math.random() * (4.0 - 1.5) + 1.5).toFixed(1); 
-                        const att = meta.attendance_pct || s.attendance_pct || Math.floor(Math.random() * 30 + 70);
+                        const gpa = meta.gpa || s.gpa || 0; 
+                        const att = meta.attendance_pct || s.attendance_pct || 0;
                         const isActive = meta.is_active === undefined ? true : meta.is_active; 
                         
                         return {
@@ -822,26 +822,17 @@
                             id: authData.user.id,
                             name: `${fn} ${ln}`,
                             created_at: new Date().toISOString(),
-                            gpa: parseFloat((Math.random() * (4.0 - 1.5) + 1.5).toFixed(1)), // Mock data
-                            attendance: parseInt(Math.floor(Math.random() * 30 + 70)), // Mock data
+                            gpa: 0,
+                            attendance: 0,
                             is_active: true
                         };
                         ALL_STUDENTS.push(newStudent);
                         localStorage.setItem('pm_local_students', JSON.stringify(ALL_STUDENTS));
                         renderStudentTable();
 
-                        // Generate Mock GAB Data for the student profile to display
-                        const mockGab = [
-                            { student_id: authData.user.id, quarter: 'Q2 2026', gpa: newStudent.gpa, attendance_pct: newStudent.attendance, behavior_pct: parseInt(Math.floor(Math.random() * 10 + 90)), updated_at: new Date().toISOString() },
-                            { student_id: authData.user.id, quarter: 'Q1 2026', gpa: parseFloat((Math.max(1.0, newStudent.gpa - 0.2)).toFixed(1)), attendance_pct: Math.max(0, newStudent.attendance - 5), behavior_pct: 85, updated_at: new Date(Date.now() - 90*24*60*60*1000).toISOString() }
-                        ];
-                        
-                        // Push to Supabase (may fail due to RLS, but we try)
-                        await supabaseClient.from('performance_metrics').insert(mockGab);
-                        
-                        // Push to local storage fallback
+                        // Initialize empty GAB array in local storage fallback
                         let localGabCache = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
-                        localGabCache[authData.user.id] = mockGab;
+                        localGabCache[authData.user.id] = [];
                         localStorage.setItem('pm_local_gab', JSON.stringify(localGabCache));
                     }
 
