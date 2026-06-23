@@ -182,27 +182,17 @@
             <!-- RIGHT 40% : Stacked Summary Cards -->
             <div class="col-1 row-2" style="display: flex; flex-direction: column; gap: var(--grid-gap); overflow-y: auto;">
                 
-                <!-- GAB Averages -->
+                <!-- Risk Matrix -->
                 <div class="card" style="min-height: max-content;">
-                    <h3 class="card-header">GAB Averages & Quarterly Trends</h3>
-                    <div class="stat-grid">
-                        <div class="stat-col" style="border-right: 1px solid var(--border-color); padding-right: 1rem;">
-                            <p style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">AVG COHORT GPA</p>
-                            <p class="stat-val" id="pm-avg-gpa">--</p>
-                            <div class="trend-box">
-                                <div class="spark" style="height: 40%;"></div><div class="spark" style="height: 50%;"></div>
-                                <div class="spark" style="height: 55%;"></div><div class="spark active" style="height: 75%;"></div>
-                                <span style="font-size: 0.65rem; font-weight: bold; color: #10B981; margin-left: 0.5rem;">+0.15</span>
-                            </div>
+                    <h3 class="card-header">GAB Risk Matrix <span id="risk-n-count">(N=0)</span></h3>
+                    <div style="display: flex; gap: 1rem; flex: 1; margin-top: 0.5rem;">
+                        <div style="display: flex; flex-direction: column; justify-content: space-around; font-size: 0.65rem; font-weight: bold; color: var(--text-muted); text-align: right;">
+                            <span>High Risk</span><span>Medium</span><span>On Track</span>
                         </div>
-                        <div class="stat-col" style="padding-left: 0.5rem;">
-                            <p style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">AVG ATTENDANCE</p>
-                            <p class="stat-val" id="pm-avg-att">--%</p>
-                            <div class="trend-box">
-                                <div class="spark" style="height: 90%;"></div><div class="spark" style="height: 85%;"></div>
-                                <div class="spark" style="height: 88%;"></div><div class="spark active" style="height: 91%;"></div>
-                                <span style="font-size: 0.65rem; font-weight: bold; color: #10B981; margin-left: 0.5rem;">+3%</span>
-                            </div>
+                        <div class="heatmap" style="display: grid; grid-template-columns: 1fr; grid-template-rows: repeat(3, 1fr); gap: 0.25rem; flex: 1;">
+                            <div class="heat-cell heat-high" style="display:flex; justify-content:space-between; align-items:center; padding: 0.5rem;"><span id="risk-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.65rem;">Critical</span></div>
+                            <div class="heat-cell heat-med" style="display:flex; justify-content:space-between; align-items:center; padding: 0.5rem;"><span id="risk-med" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.65rem;">Warning</span></div>
+                            <div class="heat-cell heat-low" style="display:flex; justify-content:space-between; align-items:center; padding: 0.5rem;"><span id="risk-low" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.65rem;">On Track</span></div>
                         </div>
                     </div>
                 </div>
@@ -214,20 +204,6 @@
                         <div class="escalation-item"><span style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Formal Write-ups Pending</span><span class="badge" style="background: #EF4444;">2 Escalated</span></div>
                         <div class="escalation-item"><span style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Food & Housing Support Req.</span><span class="badge" style="background: #F59E0B;">1 New</span></div>
                         <div class="escalation-item"><span style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Mental Health Triage</span><span class="badge" style="background: #10B981;">0 Active</span></div>
-                    </div>
-                </div>
-
-                <!-- Risk Matrix -->
-                <div class="card" style="min-height: max-content;">
-                    <h3 class="card-header">GAB Risk Matrix (N=150) <span>Live</span></h3>
-                    <div style="display: flex; gap: 1rem; flex: 1; margin-top: 0.5rem;">
-                        <div style="display: flex; flex-direction: column; justify-content: space-around; font-size: 0.65rem; font-weight: bold; color: var(--text-muted); text-align: right;">
-                            <span>High Risk</span><span>Monitor</span>
-                        </div>
-                        <div class="heatmap">
-                            <div class="heat-cell heat-med">4<span>GPA/Att</span></div><div class="heat-cell heat-high">12<span>Behavior</span></div><div class="heat-cell heat-high">3<span>Critical</span></div>
-                            <div class="heat-cell heat-low">98<span>On Track</span></div><div class="heat-cell heat-low">21<span>Minor</span></div><div class="heat-cell heat-med">12<span>Warning</span></div>
-                        </div>
                     </div>
                 </div>
 
@@ -640,23 +616,12 @@
             }
 
             async function loadMetrics() {
-                // Fetch metrics from Supabase
-                const { data: perfData } = await supabaseClient.from('performance_metrics').select('gpa, attendance_pct');
-                if(perfData && perfData.length > 0) {
-                    const totalGPA = perfData.reduce((sum, item) => sum + parseFloat(item.gpa || 0), 0);
-                    const avgGPA = (totalGPA / perfData.length).toFixed(2);
-                    document.getElementById('pm-avg-gpa').innerText = avgGPA;
-
-                    const totalAtt = perfData.reduce((sum, item) => sum + parseFloat(item.attendance_pct || 0), 0);
-                    const avgAtt = Math.round(totalAtt / perfData.length);
-                    document.getElementById('pm-avg-att').innerText = `${avgAtt}%`;
-                }
-
                 const { count: studentCount } = await supabaseClient.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'student');
                 
                 // Mentees count logic
                 if (studentCount !== null) {
-                    document.getElementById('pm-mentees-count').innerHTML = `${studentCount}<span style="font-size: 1.5rem; color: var(--text-muted);"> Active</span>`;
+                    const el = document.getElementById('pm-mentees-count');
+                    if(el) el.innerHTML = `${studentCount}<span style="font-size: 1.5rem; color: var(--text-muted);"> Active</span>`;
                 }
             }
 
@@ -723,6 +688,43 @@
                     if (sortBy === 'gpa') return b.gpa - a.gpa;
                     return 0;
                 });
+
+                // Calculate Risk Metrics
+                let highRiskCount = 0;
+                let medRiskCount = 0;
+                let onTrackCount = 0;
+                
+                const localGab = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
+
+                filtered.forEach(s => {
+                    let gpa = s.gpa || 0;
+                    let absent = 0;
+                    let behavior = 0;
+                    
+                    const history = localGab[s.id] || [];
+                    if (history.length > 0) {
+                        const latest = history[history.length - 1];
+                        gpa = parseFloat(latest.gpa || gpa);
+                        absent = parseInt(latest.absent || 0);
+                        behavior = parseInt(latest.behavior || 0);
+                    }
+                    
+                    if ((gpa > 0 && gpa < 2.0) || absent > 5 || behavior >= 3) {
+                        highRiskCount++;
+                    } else if ((gpa > 0 && gpa < 2.5) || absent > 3 || behavior >= 1) {
+                        medRiskCount++;
+                    } else {
+                        onTrackCount++;
+                    }
+                });
+
+                const rCountEl = document.getElementById('risk-n-count');
+                if (rCountEl) {
+                    rCountEl.innerText = `(N=${filtered.length})`;
+                    document.getElementById('risk-high').innerText = highRiskCount;
+                    document.getElementById('risk-med').innerText = medRiskCount;
+                    document.getElementById('risk-low').innerText = onTrackCount;
+                }
 
                 if (filtered.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 1rem; color: var(--text-muted);">No students found.</td></tr>`;
