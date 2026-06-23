@@ -737,10 +737,17 @@
                 quarter: document.getElementById('gab-term').value + ' ' + document.getElementById('gab-year').value,
                 gpa: document.getElementById('gab-gpa').value || "0",
                 attendance_pct: document.getElementById('gab-absent').value || "0",
-                behavior_pct: document.getElementById('gab-behavior').value || "0"
+                behavior_pct: document.getElementById('gab-behavior').value || "0",
+                updated_at: new Date().toISOString()
             };
             
             await supabaseClient.from('performance_metrics').insert(entry);
+            
+            // Push to local storage fallback
+            let localGabCache = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
+            if (!localGabCache[GLOBAL_USER_ID]) localGabCache[GLOBAL_USER_ID] = [];
+            localGabCache[GLOBAL_USER_ID].unshift(entry);
+            localStorage.setItem('pm_local_gab', JSON.stringify(localGabCache));
             
             document.getElementById('gab-gpa').value = '';
             document.getElementById('gab-absent').value = '';
