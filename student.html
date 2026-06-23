@@ -984,10 +984,11 @@
                     document.getElementById('student-name').innerText = `${firstName} ${lastName}`;
                     document.getElementById('info-name').innerText = `${firstName} ${lastName}`;
                     document.getElementById('info-email').innerText = email;
-                    document.getElementById('info-school').innerText = profile.school_grade || '--';
-                    document.getElementById('info-start-date').innerText = profile.start_date || '--';
-                    document.getElementById('info-guardian-name').innerText = profile.guardian_name || '--';
-                    document.getElementById('info-guardian-phone').innerText = profile.guardian_phone || '--';
+                    const meta = profile.raw_user_meta_data || {};
+                    document.getElementById('info-school').innerText = profile.school_grade || meta.school_grade || '--';
+                    document.getElementById('info-start-date').innerText = profile.start_date || meta.start_date || '--';
+                    document.getElementById('info-guardian-name').innerText = profile.guardian_name || meta.guardian_name || '--';
+                    document.getElementById('info-guardian-phone').innerText = profile.guardian_phone || meta.guardian_phone || '--';
                     document.getElementById('info-home-address').innerText = profile.address || '--';
                     document.getElementById('student-avatar').innerText = initials.toUpperCase();
                     
