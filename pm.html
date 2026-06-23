@@ -190,13 +190,13 @@
                             <span>High Risk</span><span>On Track</span>
                         </div>
                         <div class="heatmap" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr 1fr; gap: 0.25rem; flex: 1; text-align: center;">
-                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-gpa-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Low GPA</span></div>
-                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-att-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">High Absent</span></div>
-                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-beh-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Behavior</span></div>
+                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('gpa-high', 'Low GPA')"><span id="risk-gpa-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Low GPA</span></div>
+                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('att-high', 'High Absent')"><span id="risk-att-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">High Absent</span></div>
+                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('beh-high', 'Behavior')"><span id="risk-beh-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Behavior</span></div>
                             
-                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-gpa-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">GPA OK</span></div>
-                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-att-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Att OK</span></div>
-                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-beh-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Behavior OK</span></div>
+                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('gpa-ok', 'GPA OK')"><span id="risk-gpa-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">GPA OK</span></div>
+                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('att-ok', 'Att OK')"><span id="risk-att-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Att OK</span></div>
+                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('beh-ok', 'Behavior OK')"><span id="risk-beh-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Behavior OK</span></div>
                         </div>
                     </div>
                 </div>
@@ -485,6 +485,35 @@
                     </form>
                 </div>
 
+                <div id="content-risk-table" style="display: none; flex-direction: column; height: 100%;">
+                    <div style="display: flex; gap: 0.5rem; font-weight: normal; margin-bottom: 0.5rem; flex-shrink: 0;">
+                        <select id="risk-filter-status" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="window.renderRiskTable()">
+                            <option value="all">All Status</option>
+                            <option value="active" selected>Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <select id="risk-sort-by" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="window.renderRiskTable()">
+                            <option value="name">Sort by Name</option>
+                            <option value="date">Sort by Enrollment Date</option>
+                            <option value="gpa">Sort by GAB Score</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; overflow-y: auto; padding-right: 0.5rem;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem;">
+                            <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 10;">
+                                <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+                                    <th style="padding: 0.5rem;">Student Name</th>
+                                    <th style="padding: 0.5rem;">Date Enrolled</th>
+                                    <th style="padding: 0.5rem; text-align: center;">GAB Score</th>
+                                    <th style="padding: 0.5rem; text-align: center;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="risk-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -563,11 +592,14 @@
             document.getElementById('side-pane').classList.remove('active'); 
             document.getElementById('side-overlay').classList.remove('active');
             
-            ['basic-info', 'add-user', 'edit-user'].forEach(id => document.getElementById(`content-${id}`).style.display = 'none');
-            document.getElementById(`content-${type}`).style.display = 'block';
+            ['basic-info', 'add-user', 'edit-user', 'risk-table'].forEach(id => {
+                const el = document.getElementById(`content-${id}`);
+                if(el) el.style.display = 'none';
+            });
+            document.getElementById(`content-${type}`).style.display = (type === 'risk-table') ? 'flex' : 'block';
             
-            const titles = {'basic-info': 'Manager Details', 'add-user': 'Add System User', 'edit-user': 'Edit Student Profile'};
-            document.getElementById('modal-title').innerText = titles[type];
+            const titles = {'basic-info': 'Manager Details', 'add-user': 'Add System User', 'edit-user': 'Edit Student Profile', 'risk-table': 'Risk Matrix Details'};
+            if (titles[type]) document.getElementById('modal-title').innerText = titles[type];
             document.getElementById('modal-header-controls').style.display = (type === 'add-user') ? 'block' : 'none';
             document.getElementById('master-modal').style.display = 'flex';
         }
@@ -805,6 +837,94 @@
                 }).join('');
             };
 
+            window.currentRiskFilter = null;
+            window.openRiskTable = function(type, label) {
+                window.currentRiskFilter = type;
+                document.getElementById('modal-title').innerText = `Risk Matrix: ${label}`;
+                openModal('risk-table');
+                window.renderRiskTable();
+            };
+
+            window.renderRiskTable = function() {
+                const tbody = document.getElementById('risk-table-body');
+                if(!tbody) return;
+
+                const statusFilter = document.getElementById('risk-filter-status').value;
+                const sortBy = document.getElementById('risk-sort-by').value;
+                const riskType = window.currentRiskFilter;
+
+                const localGab = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
+
+                let filtered = ALL_STUDENTS.filter(s => {
+                    if (statusFilter === 'active' && !s.is_active) return false;
+                    if (statusFilter === 'inactive' && s.is_active) return false;
+
+                    let gpa = s.gpa || 0;
+                    let absent = 0;
+                    let behavior = 0;
+                    
+                    const history = localGab[s.id] || [];
+                    if (history.length > 0) {
+                        const latest = history[history.length - 1];
+                        gpa = parseFloat(latest.gpa || gpa);
+                        absent = parseInt(latest.absent || 0);
+                        behavior = parseInt(latest.behavior || 0);
+                    }
+
+                    if (riskType === 'gpa-high') return gpa > 0 && gpa < 2.0;
+                    if (riskType === 'att-high') return absent > 4;
+                    if (riskType === 'beh-high') return behavior > 0;
+                    if (riskType === 'gpa-ok') return !(gpa > 0 && gpa < 2.0);
+                    if (riskType === 'att-ok') return absent <= 4;
+                    if (riskType === 'beh-ok') return behavior === 0;
+
+                    return true;
+                });
+
+                filtered.sort((a, b) => {
+                    if (sortBy === 'name') return a.name.localeCompare(b.name);
+                    if (sortBy === 'date') return new Date(b.created_at) - new Date(a.created_at);
+                    if (sortBy === 'gpa') return b.gpa - a.gpa;
+                    return 0;
+                });
+
+                if (filtered.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 1rem; color: var(--text-muted);">No students found in this category.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = filtered.map(s => {
+                    const dateStr = new Date(s.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    let gpaColor = 'var(--text-main)';
+                    if (s.gpa < 2.0) gpaColor = '#EF4444';
+                    else if (s.gpa < 3.0) gpaColor = '#F59E0B';
+                    else gpaColor = '#10B981';
+
+                    return `
+                        <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;">
+                            <td style="padding: 0.25rem;">
+                                <a href="student.html?student_id=${s.id}" style="text-decoration: none; color: var(--peacox-purple); font-weight: bold; font-size: 0.85rem;">${s.name}</a>
+                            </td>
+                            <td style="padding: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">${dateStr}</td>
+                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${gpaColor}; font-size: 0.8rem;">${s.gpa.toFixed(1)} / ${s.attendance}%</td>
+                            <td style="padding: 0.25rem; text-align: center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                                    <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; margin: 0;" onclick="event.stopPropagation();">
+                                        <input type="checkbox" ${s.is_active ? 'checked' : ''} onchange="toggleStudentStatus('${s.id}', this.checked)" style="cursor: pointer;" title="Toggle Active Status">
+                                    </label>
+                                    <button onclick="window.openEditModal('${s.id}')" style="background: none; border: none; cursor: pointer; color: var(--peacox-purple); padding: 0.25rem; border-radius: 4px;" title="Edit Profile">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    </button>
+                                    <button onclick="window.deleteStudent('${s.id}')" style="background: none; border: none; cursor: pointer; color: #EF4444; padding: 0.25rem; border-radius: 4px;" title="Delete Student">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            };
+
             window.toggleStudentStatus = async function(id, newStatus) {
                 const student = ALL_STUDENTS.find(s => s.id === id);
                 if (student) student.is_active = newStatus;
@@ -812,6 +932,9 @@
                 // Update local storage
                 localStorage.setItem('pm_local_students', JSON.stringify(ALL_STUDENTS));
                 renderStudentTable();
+                if (window.renderRiskTable && document.getElementById('master-modal').style.display === 'flex') {
+                    window.renderRiskTable();
+                }
                 
                 // Update Supabase via auth API or user update (since we use raw_user_meta_data here due to constraints)
                 await supabaseClient.auth.updateUser({ data: { is_active: newStatus } });
@@ -826,6 +949,9 @@
                 ALL_STUDENTS = ALL_STUDENTS.filter(s => s.id !== id);
                 localStorage.setItem('pm_local_students', JSON.stringify(ALL_STUDENTS));
                 renderStudentTable();
+                if (window.renderRiskTable && document.getElementById('master-modal').style.display === 'flex') {
+                    window.renderRiskTable();
+                }
 
                 // Delete from Supabase profiles (Will cascade to other tables if foreign keys are set up)
                 await supabaseClient.from('profiles').delete().eq('id', id);
