@@ -604,26 +604,41 @@
                     const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
                 if (profile) {
                     const fn = profile.first_name || 'Peacox'; const ln = profile.last_name || 'Manager';
-                    document.getElementById('pm-name').innerText = `${fn} ${ln}`;
-                    document.getElementById('info-name').value = `${fn} ${ln}`; document.getElementById('info-email').value = user.email || '';
+                    const pmNameEl = document.getElementById('pm-name');
+                    if (pmNameEl) pmNameEl.innerText = `${fn} ${ln}`;
+                    
+                    const infoNameEl = document.getElementById('info-name');
+                    if (infoNameEl) infoNameEl.value = `${fn} ${ln}`; 
+                    
+                    const infoEmailEl = document.getElementById('info-email');
+                    if (infoEmailEl) infoEmailEl.value = user.email || '';
                     
                     if(profile.avatar_url) { 
-                        document.getElementById('pm-avatar').innerText = ''; 
-                        document.getElementById('pm-avatar').style.backgroundImage = `url("${profile.avatar_url}")`; 
+                        const pmAv = document.getElementById('pm-avatar');
+                        if(pmAv) { pmAv.innerText = ''; pmAv.style.backgroundImage = `url("${profile.avatar_url}")`; }
                     }
-                    else { document.getElementById('pm-avatar').innerText = (profile.avatar_initials || (fn[0]+ln[0])).toUpperCase(); }
+                    else { 
+                        const pmAv = document.getElementById('pm-avatar');
+                        if(pmAv) pmAv.innerText = (profile.avatar_initials || (fn[0]+ln[0])).toUpperCase(); 
+                    }
                 }
 
                 // SECURITY: Only the primary manager can create new users
-                if (user.email === 'ketesfa@outlook.com') {
+                if (user.email && user.email.toLowerCase() === 'ketesfa@outlook.com') {
                     const addBtn = document.getElementById('add-user-btn');
                     if(addBtn) addBtn.style.display = 'block';
                 }
 
-                loadMetrics();
-                loadStudents();
+                try {
+                    await loadMetrics();
+                } catch(e) { console.error("loadMetrics error", e); }
+                
+                try {
+                    await loadStudents();
+                } catch(e) { console.error("loadStudents error", e); }
+                
                 if(window.filterFeedback) window.filterFeedback('all');
-            }
+            });
 
             async function loadMetrics() {
                 const { count: studentCount } = await supabaseClient.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'student');
