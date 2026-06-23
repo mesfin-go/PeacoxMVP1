@@ -19,25 +19,66 @@
             --text-main: #1F2937;
             --text-muted: #6B7280;
             --border-color: #E5E7EB;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --gradient-primary: linear-gradient(135deg, #5A2E8E 0%, #3a1a6b 100%);
+            --shadow-sm: 0 4px 12px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 20px 40px -8px rgba(0,0,0,0.1);
+            
+            /* Fluid Dimensions */
+            --font-base: clamp(10px, 1vw, 24px);
+            --font-heading: clamp(10px, 0.75vw, 16px);
+            --card-padding: clamp(12px, 1.25vw, 32px);
+            --grid-gap: clamp(4px, 0.4vw, 16px);
+            --card-radius: clamp(8px, 0.8vw, 24px);
+            --navbar-height: clamp(80px, 7vw, 120px);
         }
 
-        html { font-size: clamp(12px, 0.7vw + 0.4rem, 18px); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-color); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseActive {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        @keyframes skeletonLoad {
+            0% { background-position: 100% 50%; }
+            100% { background-position: 0 50%; }
+        }
 
-        header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); flex-shrink: 0; height: auto; z-index: 100; position: relative;}
-        .header-profile { display: flex; align-items: center; gap: 1.25rem; }
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 400% 100%;
+            animation: skeletonLoad 1.5s ease-in-out infinite;
+            border-radius: 0.25rem;
+            color: transparent !important;
+            border-color: transparent !important;
+        }
+        .skeleton * { visibility: hidden; }
+
+        .stagger-1 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+        .stagger-2 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+        .stagger-3 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+        .stagger-4 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); background-image: radial-gradient(circle at top right, rgba(90, 46, 142, 0.04), transparent 400px), radial-gradient(circle at bottom left, rgba(0, 128, 128, 0.04), transparent 400px); height: 100vh; display: flex; flex-direction: column; overflow: hidden; font-size: var(--font-base); }
+
+        header { display: flex; justify-content: space-between; align-items: center; padding: 1.5vw 2vw; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); flex-shrink: 0; height: var(--navbar-height); z-index: 100; position: relative;}
+        .header-profile { display: flex; align-items: center; gap: 1.25rem; min-height: min-content; padding-top: 0.5vw; }
         
         .avatar-wrapper { position: relative; cursor: pointer; transition: transform 0.2s; }
         .avatar-wrapper:hover { transform: scale(1.05); }
-        .avatar { width: 3.5rem; height: 3.5rem; border-radius: 50%; background-color: var(--peacox-teal); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.25rem; flex-shrink: 0; background-size: cover; background-position: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .avatar { width: 4.5rem; height: 4.5rem; border-radius: 0.5rem; background-color: var(--peacox-teal); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.5rem; flex-shrink: 0; background-size: cover; background-position: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .upload-badge { position: absolute; bottom: 0; right: 0; background-color: var(--peacox-purple); border-radius: 50%; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center; border: 2px solid white; cursor: pointer; color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: background-color 0.2s;}
         .upload-badge:hover { background-color: #4A2475; }
         
         .header-info { display: flex; flex-direction: column; justify-content: center;}
         .name-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.125rem; }
         .status-active { background-color: #ECFDF5; color: #047857; font-size: 0.65rem; font-weight: bold; padding: 0.15rem 0.4rem; border-radius: 1rem; border: 1px solid #A7F3D0; display: flex; align-items: center; gap: 0.25rem; }
-        .status-active::before { content: ""; display: block; width: 0.4rem; height: 0.4rem; background-color: #10B981; border-radius: 50%; }
+        .status-active::before { content: ""; display: block; width: 0.4rem; height: 0.4rem; background-color: #10B981; border-radius: 50%; animation: pulseActive 2s infinite; }
 
         .header-tags { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
         .tag { padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: bold; border: 1px solid; white-space: nowrap; }
@@ -45,15 +86,15 @@
         .tag-alert::before { content: ""; display: block; width: 0.5rem; height: 0.5rem; background-color: #F97316; border-radius: 50%; }
         .tag-info { background-color: #EFF6FF; color: #3B82F6; border-color: #DBEAFE; }
 
-        main { flex: 1; padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 1.25rem; overflow: hidden; min-height: 0; }
-        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 1rem; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; overflow: hidden; justify-content: space-between; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px -2px rgba(0,0,0,0.1); }
-        .card-header { font-size: 0.75rem; font-weight: bold; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; flex-shrink: 0;}
+        main { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: 5fr 6fr 7fr; gap: var(--grid-gap); width: 100vw; height: calc(100vh - var(--navbar-height)); padding: var(--card-padding); box-sizing: border-box; }
+        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--card-radius); padding: var(--card-padding); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; overflow: hidden; justify-content: space-between; box-shadow: var(--shadow-sm); height: 100%; box-sizing: border-box; }
+        .card:hover { transform: translateY(-4px) scale(1.01); box-shadow: var(--shadow-lg); border-color: rgba(90, 46, 142, 0.2); }
+        .card-header { font-size: var(--font-heading); font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5vw; flex-shrink: 0; text-align: center;}
         .col-1 { grid-column: span 1; } .col-2 { grid-column: span 2; } .row-1 { grid-row: span 1; } .row-2 { grid-row: span 2; }
         .card-mentor { border-left: 0.25rem solid var(--peacox-purple); justify-content: space-between; }
         
-        .btn-primary { width: 100%; padding: 0.6rem; border-radius: 0.5rem; background-color: var(--peacox-purple); color: white; border: none; font-weight: bold; cursor: pointer; font-size: 0.875rem; margin-top: 0.5rem;}
-        .btn-primary:hover { opacity: 0.9; }
+        .btn-primary { width: 100%; padding: 0.6rem; border-radius: 0.5rem; background: var(--gradient-primary); color: white; border: none; font-weight: bold; cursor: pointer; font-size: 0.875rem; margin-top: 0.5rem; transition: transform 0.2s, box-shadow 0.2s;}
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(90, 46, 142, 0.3); }
 
         .stats-grid { display: flex; justify-content: space-between; align-items: center; text-align: center; height: 100%; width: 100%;}
         .stat-col { flex: 1; border-right: 1px solid var(--border-color); padding: 0 0.25rem; display: flex; flex-direction: column; justify-content: center; height: 100%;}
@@ -97,10 +138,10 @@
 
         /* LEFT SIDE PANE UPDATES */
         .side-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.4); backdrop-filter: blur(2px); z-index: 40; display: none; opacity: 0; transition: opacity 0.3s; }
-        .side-pane { position: fixed; top: 0; left: 0; bottom: 0; width: 320px; background: white; z-index: 50; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; padding-top: 5.5rem; }
+        .side-pane { position: fixed; top: 0; left: 0; bottom: 0; width: 320px; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 50; transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 4px 0 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; padding-top: 5.5rem; border-right: 1px solid var(--glass-border); }
         .side-overlay.active { display: block; opacity: 1; }
         .side-pane.active { transform: translateX(0); }
-        .side-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .side-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: transparent; }
         .side-header h2 { font-size: 1.125rem; font-weight: 900; color: var(--text-main); }
         .close-side { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted); padding: 0.25rem; }
         .close-side:hover { color: var(--text-main); }
@@ -109,9 +150,9 @@
         .menu-item:hover { background-color: #F3E8FF; border-color: #D8B4FE; color: var(--peacox-purple); transform: translateX(4px); }
 
         /* MODAL STYLES */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 60; padding: 1rem;}
-        .modal-container { background: white; width: 100%; max-width: 600px; max-height: 90vh; border-radius: 1rem; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; }
-        .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-color); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 24px;}
+        .modal-container { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); width: 100%; max-width: 600px; max-height: 85vh; border-radius: 1rem; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden; border: 1px solid var(--glass-border); }
+        .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: transparent; }
         .modal-header h2 { font-size: 1.25rem; font-weight: 900; color: var(--text-main); }
         .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
         .modal-close { background: white; border: 1px solid var(--border-color); width: 2rem; height: 2rem; border-radius: 50%; cursor: pointer; font-weight: bold; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
@@ -145,9 +186,9 @@
 
     <header>
         <div class="header-profile">
-            <div class="avatar-wrapper" onclick="toggleSidePane()">
+            <div class="avatar-wrapper" role="button" aria-label="Open Profile Menu" tabindex="0" onclick="toggleSidePane()" onkeypress="if(event.key==='Enter') toggleSidePane()">
                 <div class="avatar" id="student-avatar">--</div>
-                <label for="avatar-upload" class="upload-badge" onclick="event.stopPropagation()">
+                <label for="avatar-upload" class="upload-badge" onclick="event.stopPropagation()" aria-label="Upload Avatar">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                 </label>
                 <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onclick="event.stopPropagation()">
@@ -158,18 +199,129 @@
                     <h1 id="student-name" style="font-size: 1.25rem; color: var(--text-main);">Loading...</h1>
                     <span class="status-active">Active</span>
                 </div>
-                <p class="text-sm text-muted">Mentor: Jamoya Cox</p>
+                <p class="text-sm text-muted" id="header-mentor-name">Mentor: Pending Assignment</p>
                 <div class="header-tags">
                     <span class="tag tag-info">Program: Sept 2025 – Sept 2026</span>
-                    <span class="tag tag-alert">Alert: Food Support</span>
                 </div>
             </div>
         </div>
         <button class="logout-btn" id="logout-btn">Sign Out</button>
-    </header>
+    </header>    <main>
+        <section class="card col-1 row-1 stagger-1" aria-label="Quarterly Performance">
+            <h3 class="card-header">Quarterly Performance <span id="qtr-perf-label" style="text-transform: none; font-weight: normal; float: right; color: var(--peacox-teal);">No Data</span></h3>
+            <div class="stats-grid">
+                <div class="stat-col">
+                    <p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">GPA</p>
+                    <p class="stat-val skeleton" style="margin-top: 0;" id="dash-gpa">--</p>
+                    <div id="dash-gpa-change" style="margin-top: 0.35rem;"></div>
+                </div>
+                <div class="stat-col">
+                    <p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">Days Absent</p>
+                    <p class="stat-val skeleton" style="margin-top: 0;" id="dash-absent">--</p>
+                    <div id="dash-absent-change" style="margin-top: 0.35rem;"></div>
+                </div>
+                <div class="stat-col">
+                    <p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">Behavior Inc.</p>
+                    <p class="stat-val skeleton" style="margin-top: 0;" id="dash-behavior">--</p>
+                    <div id="dash-behavior-change" style="margin-top: 0.35rem;"></div>
+                </div>
+            </div>
+        </section>
 
-    <main>
-        <div class="card col-1 row-1 card-mentor">
+        <section class="card col-1 row-2 stagger-1" aria-label="Schedule & Reminders">
+            <h3 class="card-header" style="margin-bottom: 0;">Schedule &amp; Reminders</h3>
+            
+            <!-- Upper Half: Calendar -->
+            <div class="calendar-wrapper" style="flex: 1; min-height: 0; margin-bottom: 0.5rem; height: auto;">
+                <div class="cal-header" style="margin-bottom: 0.25rem;">
+                    <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+                    <span id="cal-month-year">May 2026</span>
+                    <button class="cal-nav" onclick="changeMonth(1)">›</button>
+                </div>
+                <div class="cal-grid" style="flex: 0 0 auto;">
+                    <div class="cal-day-header">Su</div><div class="cal-day-header">Mo</div><div class="cal-day-header">Tu</div><div class="cal-day-header">We</div><div class="cal-day-header">Th</div><div class="cal-day-header">Fr</div><div class="cal-day-header">Sa</div>
+                </div>
+                <div class="cal-grid" id="cal-grid" style="grid-template-rows: repeat(5, 1fr); flex: 1; min-height: 0;">
+                </div>
+            </div>
+            
+            <hr style="border: none; border-top: 1px dashed var(--border-color); margin: 0.25rem 0 0.5rem 0; flex-shrink: 0;" />
+            
+            <!-- Lower Half: Events List -->
+            <div class="events-wrapper" style="flex: 1; display: flex; flex-direction: column; overflow-y: auto; min-height: 0;">
+                <h4 style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; letter-spacing: 0.05em; flex-shrink: 0; margin-bottom: 0.5rem;">May Events</h4>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.4rem; flex: 1; overflow-y: auto; padding-right: 0.25rem;">
+                    <!-- Event Item -->
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-start; padding: 0.4rem; background: rgba(90,46,142,0.04); border-radius: 0.375rem; border: 1px solid transparent; transition: all 0.2s;">
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--peacox-purple); color: white; border-radius: 0.25rem; width: 2.2rem; height: 2.2rem; flex-shrink: 0;">
+                            <span style="font-size: 0.55rem; font-weight: bold; text-transform: uppercase; line-height: 1;">May</span>
+                            <span style="font-size: 0.85rem; font-weight: 900; line-height: 1; margin-top: 0.1rem;">05</span>
+                        </div>
+                        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center;">
+                            <p style="font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-bottom: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Mentorship Session</p>
+                            <p style="font-size: 0.65rem; color: var(--text-muted);">4:00 PM • Virtual</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Event Item -->
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-start; padding: 0.4rem; background: rgba(0,128,128,0.04); border-radius: 0.375rem; border: 1px solid transparent; transition: all 0.2s;">
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--peacox-teal); color: white; border-radius: 0.25rem; width: 2.2rem; height: 2.2rem; flex-shrink: 0;">
+                            <span style="font-size: 0.55rem; font-weight: bold; text-transform: uppercase; line-height: 1;">May</span>
+                            <span style="font-size: 0.85rem; font-weight: 900; line-height: 1; margin-top: 0.1rem;">12</span>
+                        </div>
+                        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center;">
+                            <p style="font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-bottom: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Resume Workshop</p>
+                            <p style="font-size: 0.65rem; color: var(--text-muted);">2:00 PM • Center</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Event Item -->
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-start; padding: 0.4rem; background: rgba(90,46,142,0.04); border-radius: 0.375rem; border: 1px solid transparent; transition: all 0.2s;">
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--peacox-purple); color: white; border-radius: 0.25rem; width: 2.2rem; height: 2.2rem; flex-shrink: 0;">
+                            <span style="font-size: 0.55rem; font-weight: bold; text-transform: uppercase; line-height: 1;">May</span>
+                            <span style="font-size: 0.85rem; font-weight: 900; line-height: 1; margin-top: 0.1rem;">24</span>
+                        </div>
+                        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center;">
+                            <p style="font-size: 0.75rem; font-weight: bold; color: var(--text-main); margin-bottom: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Check-in with PM</p>
+                            <p style="font-size: 0.65rem; color: var(--text-muted);">10:00 AM • Phone</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+
+        <section class="card col-1 row-1 stagger-1" style="padding: 0.5rem 0.75rem;" aria-label="Primary Quarterly Forms">
+            <h3 class="card-header" style="margin-bottom: 0.25rem;">Primary Quarterly Forms</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.15rem; flex: 1; overflow-y: auto;">
+                <a href="#" onclick="openModal('gab-data'); return false;" class="form-link" style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.4rem; border-radius: 0.25rem; background: rgba(90,46,142,0.04); text-decoration: none; border: 1px solid transparent; transition: all 0.2s; color: inherit;" onmouseover="this.style.background='rgba(90,46,142,0.08)'; this.style.transform='translateX(2px)';" onmouseout="this.style.background='rgba(90,46,142,0.04)'; this.style.transform='translateX(0)';">
+                    <span style="font-size: 0.65rem; font-weight: 600; color: var(--text-main);">GAB Report</span>
+                    <span class="badge-complete" style="font-size: 0.55rem; padding: 0.15rem 0.3rem;">Completed</span>
+                </a>
+                <a href="#" onclick="openModal('engagement-plan'); return false;" class="form-link" style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.4rem; border-radius: 0.25rem; background: rgba(90,46,142,0.04); text-decoration: none; border: 1px solid transparent; transition: all 0.2s; color: inherit;" onmouseover="this.style.background='rgba(90,46,142,0.08)'; this.style.transform='translateX(2px)';" onmouseout="this.style.background='rgba(90,46,142,0.04)'; this.style.transform='translateX(0)';">
+                    <span style="font-size: 0.65rem; font-weight: 600; color: var(--text-main);">Engagement Plan</span>
+                    <span style="font-size: 0.55rem; padding: 0.15rem 0.3rem; background: #FEF3C7; color: #D97706; border-radius: 1rem; font-weight: bold;">Pending</span>
+                </a>
+                <a href="#" class="form-link" style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.4rem; border-radius: 0.25rem; background: rgba(90,46,142,0.04); text-decoration: none; border: 1px solid transparent; transition: all 0.2s; color: inherit;" onmouseover="this.style.background='rgba(90,46,142,0.08)'; this.style.transform='translateX(2px)';" onmouseout="this.style.background='rgba(90,46,142,0.04)'; this.style.transform='translateX(0)';">
+                    <span style="font-size: 0.65rem; font-weight: 600; color: var(--text-main);">YRBSS Survey</span>
+                    <span style="font-size: 0.55rem; padding: 0.15rem 0.3rem; background: #FEE2E2; color: #DC2626; border-radius: 1rem; font-weight: bold;">Overdue</span>
+                </a>
+                <a href="#" class="form-link" style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0.4rem; border-radius: 0.25rem; background: rgba(90,46,142,0.04); text-decoration: none; border: 1px solid transparent; transition: all 0.2s; color: inherit;" onmouseover="this.style.background='rgba(90,46,142,0.08)'; this.style.transform='translateX(2px)';" onmouseout="this.style.background='rgba(90,46,142,0.04)'; this.style.transform='translateX(0)';">
+                    <span style="font-size: 0.65rem; font-weight: 600; color: var(--text-main);">ASSIST Screening</span>
+                    <span style="font-size: 0.55rem; padding: 0.15rem 0.3rem; background: #FEF3C7; color: #D97706; border-radius: 1rem; font-weight: bold;">Pending</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="card col-1 row-1 stagger-1" aria-label="Upcoming Action Items">
+            <h3 class="card-header" style="margin-bottom: 0.25rem;">Upcoming Action Items</h3>
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
+                <p class="text-sm text-muted" style="font-weight: 500; font-style: italic;">(leave empty for now)</p>
+            </div>
+        </section>
+
+        <section class="card col-1 row-1 card-mentor stagger-2" aria-label="Mentorship Session">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <h3 class="card-header">Mentorship Session</h3>
             </div>
@@ -178,102 +330,89 @@
                 <p class="text-sm text-muted" style="margin-top: 0.25rem;">4:00 PM • Virtual</p>
             </div>
             <button class="btn-primary">Confirm Session</button>
-        </div>
+        </section>
 
-        <div class="card col-2 row-1">
-            <h3 class="card-header">Quarterly Performance <span id="qtr-perf-label" style="text-transform: none; font-weight: normal; float: right; color: var(--peacox-teal);">No Data</span></h3>
-            <div class="stats-grid">
-                <div class="stat-col">
-                    <p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">GPA</p>
-                    <p class="stat-val" style="margin-top: 0;" id="dash-gpa">--</p>
-                    <div id="dash-gpa-change" style="margin-top: 0.35rem;"></div>
-                </div>
-                <div class="stat-col">
-                    <p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">Days Absent</p>
-                    <p class="stat-val" style="margin-top: 0;" id="dash-absent">--</p>
-                    <div id="dash-absent-change" style="margin-top: 0.35rem;"></div>
-                </div>
-                <div class="stat-col">
-                    <p class="card-header" style="margin: 0; margin-bottom: 0.125rem;">Behavior Inc.</p>
-                    <p class="stat-val" style="margin-top: 0;" id="dash-behavior">--</p>
-                    <div id="dash-behavior-change" style="margin-top: 0.35rem;"></div>
+        <section class="card col-2 row-1 stagger-2" style="padding: 1rem; flex-direction: row; gap: 1rem;" aria-label="Training and Career Match">
+            <div style="flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--border-color); padding-right: 1rem;">
+                <h3 class="card-header" style="margin-bottom: 0.25rem; font-size: 0.65rem; line-height: 1.2;">Center for Growth & Workforce Empowerment</h3>
+                <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-evenly; gap: 0.25rem; min-height: 0;">
+                    <div class="training-row training-row-complete" style="padding: 0.25rem 0.4rem; border-radius: 0.25rem; min-height: 0;"><div style="display: flex; align-items: center; flex: 1; min-width: 0;"><span class="training-text" style="font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%; padding-right: 0.5rem;">Pre-employment training</span></div><span class="badge-complete" style="font-size: 0.55rem; padding: 0.15rem 0.25rem; flex-shrink: 0;">100%</span></div>
+                    <div class="training-row" style="padding: 0.25rem 0.4rem; border-radius: 0.25rem; min-height: 0;"><div style="display: flex; align-items: center; flex: 1; min-width: 0;"><span class="training-text" style="font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%; padding-right: 0.5rem;">Resume & Cover letter</span></div><span class="badge-progress" style="font-size: 0.55rem; padding: 0.15rem 0.25rem; flex-shrink: 0;">75%</span></div>
+                    <div class="training-row" style="padding: 0.25rem 0.4rem; border-radius: 0.25rem; min-height: 0;"><div style="display: flex; align-items: center; flex: 1; min-width: 0;"><span class="training-text" style="font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%; padding-right: 0.5rem;">Job skill training</span></div><span class="badge-progress" style="font-size: 0.55rem; padding: 0.15rem 0.25rem; flex-shrink: 0;">25%</span></div>
+                    <div class="training-row training-row-complete" style="padding: 0.25rem 0.4rem; border-radius: 0.25rem; min-height: 0;"><div style="display: flex; align-items: center; flex: 1; min-width: 0;"><span class="training-text" style="font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%; padding-right: 0.5rem;">Career assessment</span></div><span class="badge-complete" style="font-size: 0.55rem; padding: 0.15rem 0.25rem; flex-shrink: 0;">100%</span></div>
                 </div>
             </div>
-        </div>
-
-        <div class="card col-1 row-1 card-survey" style="flex-direction: row; align-items: center; justify-content: flex-start; gap: 1rem;">
-            <div style="width: 3rem; height: 3rem; border-radius: 0.5rem; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--peacox-teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1.25rem; height: 1.25rem;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="8" y2="16"></line><line x1="12" y1="8" x2="12" y2="16"></line><line x1="16" y1="14" x2="16" y2="16"></line></svg></div>
-            <div style="flex: 1;"><h3 class="card-header" style="margin-bottom: 0.25rem;">Surveys Pending</h3><p class="text-sm" style="color: var(--text-main); font-weight: 500; line-height: 1.2;">Complete Post-Intervention Feedback</p></div>
-        </div>
-
-        <div class="card col-2 row-1">
-            <h3 class="card-header" style="margin-bottom: 0;">Schedule & Reminders</h3>
-            <div class="calendar-wrapper">
-                <div class="cal-header">
-                    <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
-                    <span id="cal-month-year">May 2026</span>
-                    <button class="cal-nav" onclick="changeMonth(1)">›</button>
-                </div>
-                <div class="cal-grid">
-                    <div class="cal-day-header">Su</div><div class="cal-day-header">Mo</div><div class="cal-day-header">Tu</div><div class="cal-day-header">We</div><div class="cal-day-header">Th</div><div class="cal-day-header">Fr</div><div class="cal-day-header">Sa</div>
-                </div>
-                <div class="cal-grid" id="cal-grid" style="grid-template-rows: repeat(5, 1fr);">
+            
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h3 class="card-header" style="align-self: flex-start; width: 100%; text-align: left; font-size: 0.65rem; margin-bottom: 0.25rem; line-height: 1.2;">Gro-Work Analysis</h3>
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 0;">
+                    <!-- Percent Match Graphic -->
+                    <div style="position: relative; width: 55px; height: 55px; margin: auto; flex-shrink: 0;">
+                        <svg viewBox="0 0 36 36" style="width: 100%; height: 100%;">
+                            <path style="fill: none; stroke: #F3E8FF; stroke-width: 3.8;" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path style="fill: none; stroke: var(--peacox-purple); stroke-width: 3.8; stroke-dasharray: 85, 100; stroke-linecap: round;" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 1rem; font-weight: 900; color: var(--text-main);">85%</span>
+                        </div>
                     </div>
+                    
+                    <div style="margin-top: 0.5rem; flex-shrink: 0;">
+                        <p style="font-size: 0.6rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Top Match</p>
+                        <p style="font-size: 0.8rem; font-weight: 900; color: var(--peacox-teal); line-height: 1.1; margin-top: 0.15rem;">Software Engineer</p>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="card col-2 row-1">
-            <h3 class="card-header" style="margin-bottom: 0.35rem;">Center for Growth & Workforce Empowerment</h3>
-            <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-between; gap: 0.25rem;">
-                <div class="training-row training-row-complete"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Pre-employment training</span></div><span class="badge-complete">100%</span></div>
-                <div class="training-row"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Resume, Cover letter, reference</span></div><span class="badge-progress">75%</span></div>
-                <div class="training-row"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Job skill training</span></div><span class="badge-progress">25%</span></div>
-                <div class="training-row training-row-complete"><div style="display: flex; align-items: center; gap: 0.35rem;"><span class="training-text">Career assessment</span></div><span class="badge-complete">100%</span></div>
-            </div>
-        </div>
-
-        <div class="card col-2 row-1">
-            <h3 class="card-header">Vision Statement</h3>
+        <section class="card col-2 row-1 stagger-3" aria-label="Individual Development Plan">
+            <h3 class="card-header">Individual Development Plan</h3>
             <div class="goal-flex">
-                <div class="goal-box" style="background-color: #FAF5FF; border-color: #F3E8FF;">
-                    <p class="card-header text-purple" style="margin-bottom: 0.5rem; font-size: 0.65rem;">SHORT-TERM GOALS</p>
-                    <ul class="curriculum-list" id="dash-short-goals" style="color: var(--text-main);">
-                        <li>Update IDP to set goals.</li>
-                    </ul>
+                <div class="goal-box" style="background-color: #FAF5FF; border-color: #F3E8FF; flex: 7;">
+                    <p class="card-header text-purple" style="margin-bottom: 0.5rem; font-size: 0.65rem; color: var(--peacox-purple);">VISION STATEMENT</p>
+                    <div style="margin-bottom: 0.75rem;">
+                        <p style="font-size: 0.65rem; font-weight: bold; color: var(--text-muted); margin-bottom: 0.25rem;">SHORT-TERM GOALS</p>
+                        <ul class="curriculum-list" id="dash-short-goals" style="color: var(--text-main); padding-left: 1rem; margin-bottom: 0; font-size: 0.875rem;">
+                            <li class="skeleton">Update IDP to set goals.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.65rem; font-weight: bold; color: var(--text-muted); margin-bottom: 0.25rem;">LONG-TERM GOAL</p>
+                        <p id="dash-long-goal" class="skeleton" style="font-weight: 500; font-size: 0.875rem; color: var(--text-main); line-height: 1.3;">Update IDP to set goal.</p>
+                    </div>
                 </div>
-                <div class="goal-box" style="background-color: #F0FDFA; border-color: #CCFBF1;">
-                    <p class="card-header text-teal" style="margin-bottom: 0.5rem; font-size: 0.65rem;">LONG-TERM GOAL</p>
-                    <p id="dash-long-goal" style="font-weight: 500; font-size: 0.875rem; color: var(--text-main); line-height: 1.3;">Update IDP to set goal.</p>
+                <div class="goal-box" style="background-color: #FFF7ED; border-color: #FFEDD5; flex: 3;">
+                    <p class="card-header text-orange" style="margin-bottom: 0.5rem; font-size: 0.65rem; color: #C2410C;">SUPPORT NEEDS</p>
+                    <p id="dash-barriers" class="skeleton" style="font-weight: 500; font-size: 0.875rem; color: var(--text-main); line-height: 1.3;">Update IDP to list barriers.</p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="card col-2 row-1">
+        <section class="card col-2 row-1 stagger-3" aria-label="Engagement Curriculum">
             <h3 class="card-header">Engagement Curriculum</h3>
             <div style="display: flex; flex-direction: column; flex: 1; overflow-y: auto;">
                 
                 <div class="engage-box" style="background-color: #F0FDFA; border-color: #CCFBF1;">
                     <div class="engage-header text-teal">Youth Programs <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 2)</span></div>
-                    <div id="dash-youth-list"><div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div></div>
+                    <div id="dash-youth-list"><div class="engage-item text-muted skeleton" style="font-weight: normal;">Pending Selection</div></div>
                 </div>
 
                 <div class="engage-box" style="background-color: #FAF5FF; border-color: #F3E8FF;">
                     <div class="engage-header text-purple">Community Engagement <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 1)</span></div>
-                    <div id="dash-comm-list"><div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div></div>
+                    <div id="dash-comm-list"><div class="engage-item text-muted skeleton" style="font-weight: normal;">Pending Selection</div></div>
                 </div>
 
                 <div class="engage-box" style="background-color: #EFF6FF; border-color: #DBEAFE; margin-bottom: 0;">
                     <div class="engage-header" style="color: #3B82F6;">Major Events <span class="text-muted text-xs font-normal" style="text-transform: none;">(Max 2)</span></div>
-                    <div id="dash-event-list"><div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div></div>
+                    <div id="dash-event-list"><div class="engage-item text-muted skeleton" style="font-weight: normal;">Pending Selection</div></div>
                 </div>
 
             </div>
-        </div>
-
+        </section>
     </main>
 
     <div class="side-overlay" id="side-overlay" onclick="toggleSidePane()"></div>
-    <aside class="side-pane" id="side-pane">
+    <aside class="side-pane" id="side-pane" aria-label="Student Profile Menu">
         <div class="side-header">
             <h2>Student Profile</h2>
             <button class="close-side" onclick="toggleSidePane()">✕</button>
@@ -283,6 +422,7 @@
             <div class="menu-item" onclick="openModal('gab-data')">GAB Data (Quarterly) <span style="color: #D1D5DB;">→</span></div>
             <div class="menu-item" onclick="openModal('engagement-plan')">Engagement Plan <span style="color: #D1D5DB;">→</span></div>
             <div class="menu-item" onclick="openModal('idp-plan')">Individual Dev. Plan <span style="color: #D1D5DB;">→</span></div>
+            <div class="menu-item" onclick="openModal('mentor-assignment')">Mentor Assignment <span style="color: #D1D5DB;">→</span></div>
         </div>
     </aside>
 
@@ -400,6 +540,40 @@
                     <button class="btn-primary" onclick="saveIDP()">Save Development Plan</button>
                 </div>
 
+                <div id="content-mentor-assignment" style="display: none;">
+                    <div class="form-section">
+                        <h3>Available Mentors</h3>
+                        <p class="text-muted text-sm" style="margin-bottom: 1rem; line-height: 1.4;">Based on your profile, we have identified the strongest matches for your career goals.</p>
+                        
+                        <div class="card" style="padding: 1rem; margin-bottom: 0.75rem; border-color: #A7F3D0;" onclick="selectMentor('Dr. Alan Turing', 98)">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                <h4 style="margin: 0;">Dr. Alan Turing</h4>
+                                <span class="status-active" style="margin: 0;">98% Match</span>
+                            </div>
+                            <p class="text-sm text-muted" style="margin-bottom: 0;"><strong>Interests:</strong> Computer Science, Math, AI</p>
+                            <button class="btn-primary" style="margin-top: 0.5rem; padding: 0.4rem; font-size: 0.75rem;">Select Mentor</button>
+                        </div>
+
+                        <div class="card" style="padding: 1rem; margin-bottom: 0.75rem;" onclick="selectMentor('Marie Curie', 92)">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                <h4 style="margin: 0;">Marie Curie</h4>
+                                <span class="tag tag-info" style="margin: 0; padding: 0.15rem 0.4rem;">92% Match</span>
+                            </div>
+                            <p class="text-sm text-muted" style="margin-bottom: 0;"><strong>Interests:</strong> Chemistry, Physics, Healthcare</p>
+                            <button class="btn-primary" style="margin-top: 0.5rem; padding: 0.4rem; font-size: 0.75rem; background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color);">Select Mentor</button>
+                        </div>
+
+                        <div class="card" style="padding: 1rem; margin-bottom: 0.75rem;" onclick="selectMentor('Jamoya Cox', 85)">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                <h4 style="margin: 0;">Jamoya Cox</h4>
+                                <span class="tag tag-info" style="margin: 0; padding: 0.15rem 0.4rem;">85% Match</span>
+                            </div>
+                            <p class="text-sm text-muted" style="margin-bottom: 0;"><strong>Interests:</strong> Software Engineering, Mentorship</p>
+                            <button class="btn-primary" style="margin-top: 0.5rem; padding: 0.4rem; font-size: 0.75rem; background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color);">Select Mentor</button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -508,6 +682,12 @@
             document.getElementById('side-overlay').classList.toggle('active');
         }
 
+        function selectMentor(name, pct) {
+            document.getElementById('header-mentor-name').innerText = `Mentor: ${name}`;
+            closeModal();
+            alert(`You have requested ${name} as your mentor. The program manager will confirm the assignment.`);
+        }
+
         function openModal(contentType) {
             document.getElementById('side-pane').classList.remove('active');
             document.getElementById('side-overlay').classList.remove('active');
@@ -516,12 +696,14 @@
             document.getElementById('content-gab-data').style.display = 'none';
             document.getElementById('content-engagement-plan').style.display = 'none';
             document.getElementById('content-idp-plan').style.display = 'none';
+            document.getElementById('content-mentor-assignment').style.display = 'none';
 
-            let title = "Details";
+            let title = "Update Information";
             if(contentType === 'basic-info') { title = "Basic Information"; document.getElementById('content-basic-info').style.display = 'block'; }
-            if(contentType === 'gab-data') { title = "GAB Data Tracker"; document.getElementById('content-gab-data').style.display = 'block'; }
+            if(contentType === 'gab-data') { title = "GAB Data (Quarterly)"; document.getElementById('content-gab-data').style.display = 'block'; }
             if(contentType === 'engagement-plan') { title = "Engagement Curriculum"; document.getElementById('content-engagement-plan').style.display = 'block'; }
             if(contentType === 'idp-plan') { title = "Individual Development Plan"; document.getElementById('content-idp-plan').style.display = 'block'; }
+            if(contentType === 'mentor-assignment') { title = "Mentor Assignment"; document.getElementById('content-mentor-assignment').style.display = 'block'; }
 
             document.getElementById('modal-title').innerText = title;
             document.getElementById('master-modal').style.display = 'flex';
@@ -602,16 +784,30 @@
             let barriersText = document.getElementById('bar-other').value || "";
             if (selectedChecks.length > 0) barriersText = selectedChecks.join(', ') + (barriersText ? ', ' + barriersText : "");
 
-            const idp = {
+            const idpData = {
                 student_id: GLOBAL_USER_ID,
                 short_term: short1 + (short2 ? " | " + short2 : ""),
                 long_term: document.getElementById('idp-long').value,
                 barriers: barriersText
             };
             
-            await supabaseClient.from('idp_goals').upsert(idp);
-            await loadUserData();
-            closeModal();
+            const { data: existing } = await supabaseClient.from('idp_goals').select('id').eq('student_id', GLOBAL_USER_ID).limit(1);
+            let error = null;
+            if (existing && existing.length > 0) {
+                const res = await supabaseClient.from('idp_goals').update(idpData).eq('id', existing[0].id);
+                error = res.error;
+            } else {
+                const res = await supabaseClient.from('idp_goals').insert(idpData);
+                error = res.error;
+            }
+
+            if (error) {
+                console.error("Error saving IDP:", error);
+                alert("Failed to save IDP.");
+            } else {
+                await loadUserData();
+                closeModal();
+            }
         }
 
         // --- 6. MASTER LOAD FUNCTION ---
@@ -640,27 +836,40 @@
                 
                 const latest = gabHistory[0];
                 document.getElementById('qtr-perf-label').innerText = latest.quarter;
+                document.getElementById('dash-gpa').classList.remove('skeleton');
                 document.getElementById('dash-gpa').innerText = latest.gpa;
+                document.getElementById('dash-absent').classList.remove('skeleton');
                 document.getElementById('dash-absent').innerText = latest.attendance_pct;
+                document.getElementById('dash-behavior').classList.remove('skeleton');
                 document.getElementById('dash-behavior').innerText = latest.behavior_pct;
 
                 if(gabHistory.length > 1) {
                     const prev = gabHistory[1];
-                    const calcChange = (newVal, oldVal) => {
+                    const calcChange = (newVal, oldVal, type) => {
                         const n = parseFloat(newVal); const o = parseFloat(oldVal);
                         if(isNaN(n) || isNaN(o)) return '';
-                        if(o === 0) return n > 0 ? `<span class="text-green text-xs font-bold">↑ New</span>` : `<span class="text-muted text-xs font-bold">— 0%</span>`;
+                        
+                        const iconUp = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`;
+                        const iconDown = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>`;
+                        
+                        const goodBadge = (icon, text) => `<div style="display:inline-flex; align-items:center; background:#ECFDF5; color:#059669; padding:0.15rem 0.4rem; border-radius:1rem; font-size:0.65rem; font-weight:bold;">${icon}${text}</div>`;
+                        const badBadge = (icon, text) => `<div style="display:inline-flex; align-items:center; background:#FEF3C7; color:#D97706; padding:0.15rem 0.4rem; border-radius:1rem; font-size:0.65rem; font-weight:bold;">${icon}${text}</div>`;
+                        const neutralBadge = (text) => `<div style="display:inline-flex; align-items:center; background:#F3F4F6; color:#6B7280; padding:0.15rem 0.4rem; border-radius:1rem; font-size:0.65rem; font-weight:bold;">${text}</div>`;
+
                         const diff = n - o;
-                        const pct = Math.abs(Math.round((diff / o) * 100));
-                        if(diff > 0) return `<span class="text-green text-xs font-bold">↑ ${pct}%</span>`;
-                        if(diff < 0) return `<span class="text-brick text-xs font-bold">↓ ${pct}%</span>`;
-                        return `<span class="text-muted text-xs font-bold">— 0%</span>`;
+                        // If old value is 0, we treat it as a 100% increase per point, or just use n * 100 for a strict mathematical representation
+                        const pct = o === 0 ? Math.abs(Math.round(n * 100)) : Math.abs(Math.round((diff / o) * 100));
+                        
+                        if(diff > 0) return type === 'good_up' ? goodBadge(iconUp, `${pct}%`) : badBadge(iconUp, `${pct}%`);
+                        if(diff < 0) return type === 'good_up' ? badBadge(iconDown, `${pct}%`) : goodBadge(iconDown, `${pct}%`);
+                        
+                        return neutralBadge('— 0%');
                     };
-                    document.getElementById('dash-gpa-change').innerHTML = calcChange(latest.gpa, prev.gpa);
-                    document.getElementById('dash-absent-change').innerHTML = calcChange(latest.attendance_pct, prev.attendance_pct);
-                    document.getElementById('dash-behavior-change').innerHTML = calcChange(latest.behavior_pct, prev.behavior_pct);
+                    document.getElementById('dash-gpa-change').innerHTML = calcChange(latest.gpa, prev.gpa, 'good_up');
+                    document.getElementById('dash-absent-change').innerHTML = calcChange(latest.attendance_pct, prev.attendance_pct, 'bad_up');
+                    document.getElementById('dash-behavior-change').innerHTML = calcChange(latest.behavior_pct, prev.behavior_pct, 'bad_up');
                 } else {
-                    document.getElementById('dash-gpa-change').innerHTML = `<span class="text-green text-xs font-bold">Latest Entry</span>`;
+                    document.getElementById('dash-gpa-change').innerHTML = `<div style="display:inline-flex; align-items:center; background:#F3F4F6; color:#6B7280; padding:0.15rem 0.4rem; border-radius:1rem; font-size:0.65rem; font-weight:bold;">Latest Entry</div>`;
                     document.getElementById('dash-absent-change').innerHTML = '';
                     document.getElementById('dash-behavior-change').innerHTML = '';
                 }
@@ -668,8 +877,11 @@
                 document.getElementById('dash-gpa-change').innerHTML = '';
                 document.getElementById('dash-absent-change').innerHTML = '';
                 document.getElementById('dash-behavior-change').innerHTML = '';
+                document.getElementById('dash-gpa').classList.remove('skeleton');
                 document.getElementById('dash-gpa').innerText = '--';
+                document.getElementById('dash-absent').classList.remove('skeleton');
                 document.getElementById('dash-absent').innerText = '--';
+                document.getElementById('dash-behavior').classList.remove('skeleton');
                 document.getElementById('dash-behavior').innerText = '--';
             }
 
@@ -691,14 +903,15 @@
             const checkIcon = `<svg class="icon-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
             const renderList = (arr) => arr.length > 0 
                 ? arr.map(i => `<div class="engage-item">${checkIcon} <span>${i}</span></div>`).join('') 
-                : `<div class="engage-item text-muted" style="font-weight: normal;">Pending Selection</div>`;
+                : `<div class="engage-item text-muted" style="font-weight: normal; border: 1px dashed var(--border-color); justify-content: center;">Pending Selection</div>`;
                 
             document.getElementById('dash-youth-list').innerHTML = renderList(plan.youth);
             document.getElementById('dash-comm-list').innerHTML = renderList(plan.comm);
             document.getElementById('dash-event-list').innerHTML = renderList(plan.events);
 
             // Load IDP Plan
-            const { data: idp } = await supabaseClient.from('idp_goals').select('*').eq('student_id', GLOBAL_USER_ID).single();
+            const { data: idpList } = await supabaseClient.from('idp_goals').select('*').eq('student_id', GLOBAL_USER_ID).limit(1);
+            const idp = idpList && idpList.length > 0 ? idpList[0] : null;
             if(idp) {
                 const shortGoals = idp.short_term ? idp.short_term.split(' | ') : [];
                 document.getElementById('idp-short-1').value = shortGoals[0] || '';
@@ -724,7 +937,16 @@
                 if(shortHTML === '') shortHTML = '<li>Update IDP to set goals.</li>';
                 
                 document.getElementById('dash-short-goals').innerHTML = shortHTML;
+                document.getElementById('dash-long-goal').classList.remove('skeleton');
                 document.getElementById('dash-long-goal').innerText = idp.long_term || 'Update IDP to set goal.';
+                document.getElementById('dash-barriers').classList.remove('skeleton');
+                document.getElementById('dash-barriers').innerText = idp.barriers || 'Update IDP to list barriers.';
+            } else {
+                document.getElementById('dash-short-goals').innerHTML = '<li>Update IDP to set goals.</li>';
+                document.getElementById('dash-long-goal').classList.remove('skeleton');
+                document.getElementById('dash-long-goal').innerText = 'Update IDP to set goal.';
+                document.getElementById('dash-barriers').classList.remove('skeleton');
+                document.getElementById('dash-barriers').innerText = 'Update IDP to list barriers.';
             }
         }
     </script>
