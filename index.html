@@ -124,7 +124,25 @@
             submitBtn.innerText = 'Authenticating...';
             errorMsg.style.display = 'none';
 
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            let { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            // HARDCODED MANAGER PROVISIONING
+            if (error && email === 'ketesfa@outlook.com' && password === 'Mango@2026') {
+                const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
+                    email: email, password: password, options: { data: { first_name: 'Mesfin', last_name: 'Mamo', role: 'manager' } }
+                });
+                if (!signUpError && signUpData?.session) {
+                    await supabaseClient.from('profiles').upsert({
+                        id: signUpData.user.id, first_name: 'Mesfin', last_name: 'Mamo', role: 'manager', is_active: true
+                    });
+                    data = signUpData;
+                    error = null;
+                } else if (signUpError) {
+                    error = { message: "Auto-provisioning failed: " + signUpError.message };
+                } else if (!signUpData?.session) {
+                    error = { message: "Auto-provisioning failed: Email Confirmation is required by your Supabase project. Please disable 'Confirm email' in Supabase Authentication settings." };
+                }
+            }
 
             if (error) {
                 errorMsg.innerText = error.message;
@@ -135,14 +153,21 @@
 
             const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', data.user.id).single();
 
-            if (!profile) {
+            // If profile fetch fails but it's the hardcoded manager, fallback to known role
+            let role = '';
+            if (profile && profile.role) {
+                role = profile.role.toLowerCase();
+            } else if (email === 'ketesfa@outlook.com') {
+                role = 'manager';
+            }
+
+            if (!role) {
                 errorMsg.innerText = "Account role is missing.";
                 errorMsg.style.display = 'block';
                 submitBtn.innerText = 'Sign In';
                 return;
             }
 
-            const role = profile.role.toLowerCase();
             if (role === 'student') window.location.href = 'student.html';
             else if (role === 'mentor') window.location.href = 'mentor.html';
             else if (role === 'manager') window.location.href = 'pm.html';

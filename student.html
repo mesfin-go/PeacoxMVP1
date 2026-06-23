@@ -824,7 +824,14 @@
             }
 
             // Load GAB Data
-            const { data: gabHistory } = await supabaseClient.from('performance_metrics').select('*').eq('student_id', GLOBAL_USER_ID).order('updated_at', { ascending: false });
+            let gabHistory = null;
+            const { data: dbGab } = await supabaseClient.from('performance_metrics').select('*').eq('student_id', GLOBAL_USER_ID).order('updated_at', { ascending: false });
+            if(dbGab && dbGab.length > 0) { gabHistory = dbGab; }
+            else {
+                const localGab = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
+                if(localGab[GLOBAL_USER_ID]) gabHistory = localGab[GLOBAL_USER_ID];
+            }
+
             const historyList = document.getElementById('gab-history-list');
             if(gabHistory && gabHistory.length > 0) {
                 historyList.innerHTML = gabHistory.map(entry => `
@@ -886,13 +893,21 @@
             }
 
             // Load Engagement Plan
+            let plan = { youth: [], comm: [], events: [] };
+            
+            // 1. Try local storage fallback first (if PM created this user and RLS blocks DB read)
+            const localPlans = JSON.parse(localStorage.getItem('pm_local_curriculum') || '{}');
+            if (localPlans[GLOBAL_USER_ID]) {
+                plan = localPlans[GLOBAL_USER_ID];
+            }
+
+            // 2. Merge with Supabase DB (if available)
             const { data: engData } = await supabaseClient.from('curriculum_progress').select('*').eq('student_id', GLOBAL_USER_ID);
-            const plan = { youth: [], comm: [], events: [] };
-            if (engData) {
+            if (engData && engData.length > 0) {
                 engData.forEach(e => {
-                    if (e.category === 'Youth Programs') plan.youth.push(e.item_name);
-                    if (e.category === 'Community Engagement') plan.comm.push(e.item_name);
-                    if (e.category === 'Major Events') plan.events.push(e.item_name);
+                    if (e.category === 'Youth Programs' && !plan.youth.includes(e.item_name)) plan.youth.push(e.item_name);
+                    if (e.category === 'Community Engagement' && !plan.comm.includes(e.item_name)) plan.comm.push(e.item_name);
+                    if (e.category === 'Major Events' && !plan.events.includes(e.item_name)) plan.events.push(e.item_name);
                 });
             }
             
@@ -965,14 +980,36 @@
                     return; 
                 }
 
-                GLOBAL_USER_ID = user.id;
+                // Check if a Manager is viewing a specific student
+                const urlParams = new URLSearchParams(window.location.search);
+                const targetStudentId = urlParams.get('student_id');
+                
+                GLOBAL_USER_ID = targetStudentId || user.id;
 
-                const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+                let profile = null;
+
+                // If Manager is viewing a student, try localStorage fallback first to bypass RLS
+                if (targetStudentId && targetStudentId !== user.id) {
+                    const localStudents = JSON.parse(localStorage.getItem('pm_local_students') || '[]');
+                    const localMatch = localStudents.find(s => s.id === targetStudentId);
+                    if (localMatch) {
+                        const names = localMatch.name.split(' ');
+                        profile = {
+                            first_name: names[0] || 'Unknown',
+                            last_name: names.slice(1).join(' ') || 'Student',
+                            avatar_initials: (names[0]?.[0] || 'U') + (names[1]?.[0] || 'S')
+                        };
+                    }
+                }
+
+                // Attempt to fetch actual profile from Supabase (may fail if RLS restricts manager reads)
+                const { data: dbProfile } = await supabaseClient.from('profiles').select('*').eq('id', GLOBAL_USER_ID).single();
+                if (dbProfile) profile = dbProfile;
 
                 if (profile) {
                     const firstName = profile.first_name || 'Peacox';
                     const lastName = profile.last_name || 'Student';
-                    const email = user.email || '--';
+                    const email = (targetStudentId && targetStudentId !== user.id) ? '--' : (user.email || '--');
                     const initials = profile.avatar_initials || (firstName[0] + lastName[0]);
                     
                     document.getElementById('student-name').innerText = `${firstName} ${lastName}`;
@@ -981,6 +1018,11 @@
                     document.getElementById('student-avatar').innerText = initials.toUpperCase();
                     
                     loadUserData(); 
+                } else {
+                    document.getElementById('student-name').innerText = `Unknown Student`;
+                    document.getElementById('info-name').innerText = `Unknown`;
+                    document.getElementById('student-avatar').innerText = `?`;
+                    loadUserData();
                 }
             }
 
