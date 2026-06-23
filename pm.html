@@ -187,23 +187,32 @@
                     <h3 class="card-header">GAB Risk Matrix <span id="risk-n-count">(N=0)</span></h3>
                     <div style="display: flex; gap: 1rem; flex: 1; margin-top: 0.5rem;">
                         <div style="display: flex; flex-direction: column; justify-content: space-around; font-size: 0.65rem; font-weight: bold; color: var(--text-muted); text-align: right;">
-                            <span>High Risk</span><span>Medium</span><span>On Track</span>
+                            <span>High Risk</span><span>On Track</span>
                         </div>
-                        <div class="heatmap" style="display: grid; grid-template-columns: 1fr; grid-template-rows: repeat(3, 1fr); gap: 0.25rem; flex: 1;">
-                            <div class="heat-cell heat-high" style="display:flex; justify-content:space-between; align-items:center; padding: 0.5rem;"><span id="risk-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.65rem;">Critical</span></div>
-                            <div class="heat-cell heat-med" style="display:flex; justify-content:space-between; align-items:center; padding: 0.5rem;"><span id="risk-med" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.65rem;">Warning</span></div>
-                            <div class="heat-cell heat-low" style="display:flex; justify-content:space-between; align-items:center; padding: 0.5rem;"><span id="risk-low" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.65rem;">On Track</span></div>
+                        <div class="heatmap" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr 1fr; gap: 0.25rem; flex: 1; text-align: center;">
+                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-gpa-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Low GPA</span></div>
+                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-att-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">High Absent</span></div>
+                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-beh-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Behavior</span></div>
+                            
+                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-gpa-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">GPA OK</span></div>
+                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-att-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Att OK</span></div>
+                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem;"><span id="risk-beh-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Behavior OK</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Urgent Escalations -->
-                <div class="card" style="border-left: 4px solid #EF4444; min-height: max-content;">
-                    <h3 class="card-header" style="color: #EF4444;">Urgent Student Escalations</h3>
-                    <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; gap: 0.5rem; margin-top: 0.5rem;">
-                        <div class="escalation-item"><span style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Formal Write-ups Pending</span><span class="badge" style="background: #EF4444;">2 Escalated</span></div>
-                        <div class="escalation-item"><span style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Food & Housing Support Req.</span><span class="badge" style="background: #F59E0B;">1 New</span></div>
-                        <div class="escalation-item"><span style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Mental Health Triage</span><span class="badge" style="background: #10B981;">0 Active</span></div>
+                <!-- Student and Mentor Feedback -->
+                <div class="card" style="border-left: 4px solid var(--peacox-purple); min-height: max-content; display: flex; flex-direction: column;">
+                    <h3 class="card-header" style="color: var(--peacox-purple);">Student & Mentor Feedback</h3>
+                    
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.75rem;">
+                        <button class="btn-secondary" style="flex: 1; padding: 0.25rem;" onclick="filterFeedback('program')">Program</button>
+                        <button class="btn-secondary" style="flex: 1; padding: 0.25rem;" onclick="filterFeedback('mentor')">Mentor</button>
+                        <button class="btn-primary" style="flex: 1; padding: 0.25rem;" onclick="filterFeedback('all')">All</button>
+                    </div>
+
+                    <div id="feedback-list" style="display: flex; flex-direction: column; flex: 1; gap: 0.5rem; margin-top: 0.75rem; overflow-y: auto; max-height: 150px;">
+                        <!-- Feedback items injected here -->
                     </div>
                 </div>
 
@@ -613,6 +622,7 @@
 
                 loadMetrics();
                 loadStudents();
+                if(window.filterFeedback) window.filterFeedback('all');
             }
 
             async function loadMetrics() {
@@ -690,9 +700,9 @@
                 });
 
                 // Calculate Risk Metrics
-                let highRiskCount = 0;
-                let medRiskCount = 0;
-                let onTrackCount = 0;
+                let gpaHigh = 0, gpaOk = 0;
+                let attHigh = 0, attOk = 0;
+                let behHigh = 0, behOk = 0;
                 
                 const localGab = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
 
@@ -709,21 +719,21 @@
                         behavior = parseInt(latest.behavior || 0);
                     }
                     
-                    if ((gpa > 0 && gpa < 2.0) || absent > 5 || behavior >= 3) {
-                        highRiskCount++;
-                    } else if ((gpa > 0 && gpa < 2.5) || absent > 3 || behavior >= 1) {
-                        medRiskCount++;
-                    } else {
-                        onTrackCount++;
-                    }
+                    if (gpa > 0 && gpa < 2.0) gpaHigh++; else gpaOk++;
+                    if (absent > 4) attHigh++; else attOk++;
+                    if (behavior > 0) behHigh++; else behOk++;
                 });
 
                 const rCountEl = document.getElementById('risk-n-count');
                 if (rCountEl) {
                     rCountEl.innerText = `(N=${filtered.length})`;
-                    document.getElementById('risk-high').innerText = highRiskCount;
-                    document.getElementById('risk-med').innerText = medRiskCount;
-                    document.getElementById('risk-low').innerText = onTrackCount;
+                    document.getElementById('risk-gpa-high').innerText = gpaHigh;
+                    document.getElementById('risk-att-high').innerText = attHigh;
+                    document.getElementById('risk-beh-high').innerText = behHigh;
+                    
+                    document.getElementById('risk-gpa-ok').innerText = gpaOk;
+                    document.getElementById('risk-att-ok').innerText = attOk;
+                    document.getElementById('risk-beh-ok').innerText = behOk;
                 }
 
                 if (filtered.length === 0) {
@@ -1035,7 +1045,43 @@
 
                 msg.innerText = `Changes saved successfully!`; msg.style.color = '#10B981'; msg.style.display = 'block'; btn.innerText = 'Save Changes';
                 setTimeout(() => { closeModal(); msg.style.display = 'none'; }, 2000);
-            });
+
+        // --- FEEDBACK LIST LOGIC ---
+        window.filterFeedback = function(type) {
+            const msgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
+            let filtered = msgs;
+            if (type !== 'all') {
+                filtered = msgs.filter(m => m.reason === type);
+            }
+            
+            const list = document.getElementById('feedback-list');
+            if (!list) return;
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">No feedback found.</p>`;
+                return;
+            }
+
+            // Sort by date newest first
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            list.innerHTML = filtered.map(m => {
+                const dateStr = new Date(m.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const badgeColor = m.reason === 'program' ? '#10B981' : '#F59E0B';
+                const specific = m.specific ? ` - ${m.specific}` : '';
+                
+                return `
+                    <div class="escalation-item" style="flex-direction: column; align-items: flex-start; gap: 0.25rem; padding: 0.5rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px;">
+                        <div style="display: flex; justify-content: space-between; width: 100%;">
+                            <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">${m.student_name || 'Student'}</span>
+                            <span style="font-size: 0.65rem; color: var(--text-muted);">${dateStr}</span>
+                        </div>
+                        <span class="badge" style="background: ${badgeColor}; align-self: flex-start; max-width: 100%; white-space: normal; text-align: left;">${m.reason.toUpperCase()}${specific}</span>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0; line-height: 1.3;">${m.message}</p>
+                    </div>
+                `;
+            }).join('');
+        };
 
             document.getElementById('logout-btn').addEventListener('click', async () => {
                 document.getElementById('logout-btn').innerText = 'Signing out...';
