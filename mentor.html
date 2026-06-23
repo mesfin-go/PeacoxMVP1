@@ -116,7 +116,11 @@
                 </div>
             </div>
         </div>
-        <button class="logout-btn" id="logout-btn">Sign Out</button>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="btn-primary" onclick="openModal('contact-program')" style="padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold; background: var(--peacox-teal); color: white; border: none; cursor: pointer; height: fit-content; margin: 0;">Contact Program</button>
+            <button class="logout-btn" id="logout-btn" style="height: fit-content;">Sign Out</button>
+        </div>
     </header>
 
     <main>
@@ -134,13 +138,10 @@
             </div>
         </div>
 
-        <div class="card col-2 row-1">
+        <div class="card col-2 row-1" style="display: flex; flex-direction: column;">
             <h3 class="card-header">Mentee Roster (Pulse Check)</h3>
-            <div class="roster-grid">
-                <div class="roster-card"><div class="roster-avatar">KJ</div><span style="font-size:0.75rem; font-weight:bold;">Kannan J.</span></div>
-                <div class="roster-card"><div class="roster-avatar" style="background:#3B82F6;">MS</div><span style="font-size:0.75rem; font-weight:bold;">Marcus S.</span></div>
-                <div class="roster-card"><div class="roster-avatar" style="background:#8B5CF6;">SJ</div><span style="font-size:0.75rem; font-weight:bold;">Sarah J.</span></div>
-                <div class="roster-card" style="border-color:#FCA5A5; background:#FEF2F2;"><div class="roster-avatar" style="background:#EF4444;">DL</div><span style="font-size:0.75rem; font-weight:bold;">David L.</span></div>
+            <div class="roster-grid" id="mentor-roster-grid" style="flex: 1; overflow-y: auto;">
+                <!-- dynamic -->
             </div>
         </div>
 
@@ -159,12 +160,20 @@
             </div>
         </div>
 
-        <div class="card col-1 row-2">
-            <h3 class="card-header">Mentee Engagement Curriculum</h3>
-            <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-evenly;">
-                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">Youth Programs</span><span style="color: var(--peacox-teal);">3/4 Mentees</span></div><div class="progress-track"><div class="progress-fill teal" style="width: 75%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">Community Eng.</span><span style="color: var(--peacox-teal);">4/4 Mentees</span></div><div class="progress-track"><div class="progress-fill teal" style="width: 100%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">Major Events</span><span style="color: var(--peacox-teal);">2/4 Mentees</span></div><div class="progress-track"><div class="progress-fill teal" style="width: 50%;"></div></div></div>
+        <div class="card col-1 row-2" style="display: flex; flex-direction: column;">
+            <h3 class="card-header">Assign Curriculum</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1;">
+                <label style="font-size: 0.75rem; font-weight: bold;">Select Mentee</label>
+                <select class="input-full" id="assign-mentee">
+                    <option value="">Loading...</option>
+                </select>
+                <label style="font-size: 0.75rem; font-weight: bold;">Program / Engagement Item</label>
+                <select class="input-full" id="assign-item">
+                    <option value="Youth Programs">Youth Programs</option>
+                    <option value="Community Engagement">Community Engagement</option>
+                    <option value="Major Events">Major Events</option>
+                </select>
+                <button class="btn-primary" style="margin-top: auto;" onclick="assignCurriculum()">+ Assign Item</button>
             </div>
         </div>
 
@@ -218,6 +227,26 @@
                 <div id="content-ethics" style="display: none;">
                     <h3 style="font-size: 1rem; color: var(--peacox-teal); margin-bottom: 0.5rem;">Ethics & Conduct Reminder</h3>
                     <p style="font-size: 0.875rem; color: var(--text-main); line-height: 1.5;">As a Peacox Mentor, you agree to maintain professional boundaries, log all sessions within 48 hours, and immediately escalate any issues regarding a mentee's safety, food security, or mental health to the Program Manager.</p>
+                </div>
+
+                <div id="content-contact-program" style="display: none;">
+                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Send a secure message directly to the Program Manager.</p>
+                    
+                    <label style="font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem; display: block;">What is this regarding?</label>
+                    <select class="input-full" id="contact-reason" onchange="toggleContactSpecific(this.value)" style="margin-bottom: 1rem;">
+                        <option value="program">Program / Curriculum Feedback</option>
+                        <option value="student">A specific Student / Mentee</option>
+                    </select>
+
+                    <div id="contact-specific-wrapper" style="display: none; margin-bottom: 1rem;">
+                        <label style="font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem; display: block;" id="contact-specific-label">Which Student?</label>
+                        <input type="text" class="input-full" id="contact-specific" placeholder="Enter student name">
+                    </div>
+
+                    <label style="font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem; display: block;">Your Message</label>
+                    <textarea class="input-full" id="contact-message" rows="5" placeholder="Type your message here..." style="resize: vertical;"></textarea>
+
+                    <button class="btn-primary" onclick="submitContactMessage()">Send Message</button>
                 </div>
 
             </div>
@@ -313,13 +342,87 @@
         // SIDE PANE & MODALS
         function toggleSidePane() { document.getElementById('side-pane').classList.toggle('active'); document.getElementById('side-overlay').classList.toggle('active'); }
         function openModal(type) {
-            toggleSidePane();
-            ['basic-info', 'mentor-profile', 'availability', 'ethics'].forEach(id => document.getElementById(`content-${id}`).style.display = 'none');
+            document.getElementById('side-pane').classList.remove('active'); document.getElementById('side-overlay').classList.remove('active');
+            ['basic-info', 'mentor-profile', 'availability', 'ethics', 'contact-program'].forEach(id => document.getElementById(`content-${id}`).style.display = 'none');
             document.getElementById(`content-${type}`).style.display = 'block';
             document.getElementById('modal-title').innerText = type.replace('-', ' ').toUpperCase();
             document.getElementById('master-modal').style.display = 'flex';
         }
         function closeModal() { document.getElementById('master-modal').style.display = 'none'; }
+
+        function toggleContactSpecific(val) {
+            const wrap = document.getElementById('contact-specific-wrapper');
+            const label = document.getElementById('contact-specific-label');
+            if(val === 'student') {
+                wrap.style.display = 'block';
+                label.innerText = 'Which Student?';
+                document.getElementById('contact-specific').placeholder = 'Enter student name';
+            } else {
+                wrap.style.display = 'none';
+            }
+        }
+
+        async function submitContactMessage() {
+            const reason = document.getElementById('contact-reason').value;
+            const specific = document.getElementById('contact-specific').value.trim();
+            const message = document.getElementById('contact-message').value.trim();
+            if(!message) { alert('Please enter a message.'); return; }
+            
+            const msgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
+            msgs.push({
+                student_id: GLOBAL_USER_ID,
+                student_name: document.getElementById('mentor-name').innerText,
+                reason: reason,
+                specific: specific,
+                message: message,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('pm_local_messages', JSON.stringify(msgs));
+            alert('Message sent securely to the Program Manager.');
+            closeModal();
+            document.getElementById('contact-message').value = '';
+            document.getElementById('contact-specific').value = '';
+        }
+
+        function loadMenteeRoster() {
+            const allStudents = JSON.parse(localStorage.getItem('pm_local_students') || '[]');
+            const myMentees = allStudents.slice(0, 4); // default to 4
+            const rosterGrid = document.getElementById('mentor-roster-grid');
+            const selectMentee = document.getElementById('assign-mentee');
+            
+            if(myMentees.length === 0) {
+                if(rosterGrid) rosterGrid.innerHTML = '<p style="font-size: 0.75rem; color: var(--text-muted); text-align:center;">No assigned mentees found in system.</p>';
+                if(selectMentee) selectMentee.innerHTML = '<option value="">No mentees</option>';
+                return;
+            }
+
+            if(rosterGrid) {
+                rosterGrid.innerHTML = myMentees.map((m, i) => {
+                    const initials = m.name.split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2);
+                    const colors = ['#008080', '#3B82F6', '#8B5CF6', '#EF4444'];
+                    return `<div class="roster-card"><div class="roster-avatar" style="background:${colors[i%4]}">${initials}</div><span style="font-size:0.75rem; font-weight:bold; text-align:center;">${m.name}</span></div>`;
+                }).join('');
+            }
+            if(selectMentee) {
+                selectMentee.innerHTML = myMentees.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+            }
+        }
+
+        function assignCurriculum() {
+            const studentId = document.getElementById('assign-mentee').value;
+            const item = document.getElementById('assign-item').value;
+            if(!studentId) return;
+            
+            const curr = JSON.parse(localStorage.getItem('pm_local_curriculum') || '{}');
+            if(!curr[studentId]) curr[studentId] = { youth: [], comm: [], events: [] };
+            
+            if(item === 'Youth Programs') { if(!curr[studentId].youth.includes('Mentor Assigned Program')) curr[studentId].youth.push('Mentor Assigned Program'); }
+            if(item === 'Community Engagement') { if(!curr[studentId].comm.includes('Mentor Assigned Project')) curr[studentId].comm.push('Mentor Assigned Project'); }
+            if(item === 'Major Events') { if(!curr[studentId].events.includes('Mentor Assigned Event')) curr[studentId].events.push('Mentor Assigned Event'); }
+            
+            localStorage.setItem('pm_local_curriculum', JSON.stringify(curr));
+            alert('Curriculum item successfully assigned to mentee!');
+        }
 
         // LOCAL STORAGE -> SUPABASE
         async function saveMentorData() {
@@ -381,6 +484,7 @@
                     document.getElementById('info-name').value = `${fn} ${ln}`; document.getElementById('info-email').value = user.email || '';
                     document.getElementById('mentor-avatar').innerText = (profile.avatar_initials || (fn[0]+ln[0])).toUpperCase();
                     loadMentorData(); 
+                    loadMenteeRoster();
                 }
             }
 

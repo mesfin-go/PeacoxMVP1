@@ -232,25 +232,10 @@
                 </div>
             </div>
 
-            <div class="card col-2 row-2">
-                <h3 class="card-header">Live Mentor Roster <span>Status</span></h3>
-                <div style="display: flex; flex-direction: column; flex: 1; overflow-y: auto;">
-                    <div class="escalation-item">
-                        <div><p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Jamoya Cox</p><p style="font-size: 0.75rem; color: var(--text-muted);">Capacity: 4/4</p></div>
-                        <span class="badge" style="background: #10B981;">Compliant</span>
-                    </div>
-                    <div class="escalation-item">
-                        <div><p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Dr. Sarah Jenkins</p><p style="font-size: 0.75rem; color: var(--text-muted);">Capacity: 2/3</p></div>
-                        <span class="badge" style="background: #10B981;">Compliant</span>
-                    </div>
-                    <div class="escalation-item">
-                        <div><p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Marcus Smith</p><p style="font-size: 0.75rem; color: var(--text-muted);">Capacity: 4/4</p></div>
-                        <span class="badge" style="background: #F59E0B;">Missing Logs</span>
-                    </div>
-                    <div class="escalation-item">
-                        <div><p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">David Larson</p><p style="font-size: 0.75rem; color: var(--text-muted);">Capacity: 1/2</p></div>
-                        <span class="badge" style="background: #10B981;">Compliant</span>
-                    </div>
+            <div class="card col-2 row-2" style="display: flex; flex-direction: column;">
+                <h3 class="card-header">Live Mentor Roster</h3>
+                <div style="display: flex; flex-direction: column; flex: 1; overflow-y: auto;" id="mentor-list-body">
+                    <!-- Dynamic mentors injected here -->
                 </div>
             </div>
 
@@ -637,6 +622,10 @@
                     await loadStudents();
                 } catch(e) { console.error("loadStudents error", e); }
                 
+                try {
+                    await loadMentors();
+                } catch(e) { console.error("loadMentors error", e); }
+                
                 if(window.filterFeedback) window.filterFeedback('all');
             });
 
@@ -651,6 +640,33 @@
             }
 
             let ALL_STUDENTS = [];
+            window.ALL_MENTORS = [];
+
+            async function loadMentors() {
+                const { data: mentors, error } = await supabaseClient.from('profiles').select('*').eq('role', 'mentor');
+                if (mentors) {
+                    window.ALL_MENTORS = mentors.map(m => ({
+                        id: m.id,
+                        name: `${m.first_name || 'No'} ${m.last_name || 'Name'}`,
+                    }));
+                }
+                renderMentorTable();
+            }
+
+            function renderMentorTable() {
+                const list = document.getElementById('mentor-list-body');
+                if(!list) return;
+                if(window.ALL_MENTORS.length === 0) {
+                    list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.875rem; padding: 1rem;">No mentors found.</p>`;
+                    return;
+                }
+                list.innerHTML = window.ALL_MENTORS.map(m => `
+                    <div class="escalation-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid var(--border-color);">
+                        <div><p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">${m.name}</p><p style="font-size: 0.75rem; color: var(--text-muted);">Capacity: 4/4</p></div>
+                        <span class="badge" style="background: #10B981;">Compliant</span>
+                    </div>
+                `).join('');
+            }
 
             async function loadStudents() {
                 const { data: students, error } = await supabaseClient
