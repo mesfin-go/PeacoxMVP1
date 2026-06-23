@@ -392,6 +392,17 @@
 
                         <div id="student-extra-fields">
                             <div class="form-section">
+                                <h3>Student Additional Info</h3>
+                                <div style="display: flex; gap: 1rem;">
+                                    <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">School / Grade</label><input type="text" class="input-full" id="new-school" placeholder="e.g. East High / 11th"></div>
+                                    <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Start Date</label><input type="date" class="input-full" id="new-start-date"></div>
+                                </div>
+                                <div style="display: flex; gap: 1rem;">
+                                    <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Guardian Name</label><input type="text" class="input-full" id="new-guardian-name"></div>
+                                    <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Guardian Phone</label><input type="tel" class="input-full" id="new-guardian-phone"></div>
+                                </div>
+                            </div>
+                            <div class="form-section">
                                 <h3>Engagement Plan (Curriculum Tracks)</h3>
                                 <div style="margin-bottom: 0.75rem;">
                                     <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Youth Programs (Select 2)</label>
@@ -782,6 +793,11 @@
                 const epComm = Array.from(document.querySelectorAll('.ep-comm:checked')).map(cb => cb.value);
                 const epEvent = Array.from(document.querySelectorAll('.ep-event:checked')).map(cb => cb.value);
 
+                const schoolGrade = document.getElementById('new-school') ? document.getElementById('new-school').value : '';
+                const startDate = document.getElementById('new-start-date') ? document.getElementById('new-start-date').value : '';
+                const guardianName = document.getElementById('new-guardian-name') ? document.getElementById('new-guardian-name').value : '';
+                const guardianPhone = document.getElementById('new-guardian-phone') ? document.getElementById('new-guardian-phone').value : '';
+
                 let payloadData = { 
                     first_name: fn, 
                     last_name: ln, 
@@ -797,7 +813,11 @@
                         ...payloadData,
                         engagement_youth: epYouth,
                         engagement_community: epComm,
-                        engagement_events: epEvent
+                        engagement_events: epEvent,
+                        school_grade: schoolGrade,
+                        start_date: startDate,
+                        guardian_name: guardianName,
+                        guardian_phone: guardianPhone
                     };
                 }
 

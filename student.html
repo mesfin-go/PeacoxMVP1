@@ -402,17 +402,17 @@
                         <h3>Student Details</h3>
                         <div class="info-grid">
                             <div class="info-box"><div class="info-label">Full Name</div><div class="info-val" id="info-name">--</div></div>
-                            <div class="info-box"><div class="info-label">School / Grade</div><div class="info-val">East High / 11th</div></div>
+                            <div class="info-box"><div class="info-label">School / Grade</div><div class="info-val" id="info-school">--</div></div>
                             <div class="info-box"><div class="info-label">Email</div><div class="info-val" id="info-email">--</div></div>
-                            <div class="info-box"><div class="info-label">Start Date</div><div class="info-val">Sept 01, 2025</div></div>
+                            <div class="info-box"><div class="info-label">Start Date</div><div class="info-val" id="info-start-date">--</div></div>
                         </div>
                     </div>
                     <div class="form-section" style="margin-bottom: 0;">
                         <h3>Guardian Details</h3>
                         <div class="info-grid">
-                            <div class="info-box"><div class="info-label">Guardian Name</div><div class="info-val">Martha Johnson</div></div>
-                            <div class="info-box"><div class="info-label">Phone</div><div class="info-val">(614) 555-0198</div></div>
-                            <div class="info-box" style="grid-column: span 2;"><div class="info-label">Home Address</div><div class="info-val">123 Peacox Way, Columbus OH</div></div>
+                            <div class="info-box"><div class="info-label">Guardian Name</div><div class="info-val" id="info-guardian-name">--</div></div>
+                            <div class="info-box"><div class="info-label">Phone</div><div class="info-val" id="info-guardian-phone">--</div></div>
+                            <div class="info-box" style="grid-column: span 2;"><div class="info-label">Home Address</div><div class="info-val" id="info-home-address">--</div></div>
                         </div>
                     </div>
                 </div>
@@ -984,6 +984,11 @@
                     document.getElementById('student-name').innerText = `${firstName} ${lastName}`;
                     document.getElementById('info-name').innerText = `${firstName} ${lastName}`;
                     document.getElementById('info-email').innerText = email;
+                    document.getElementById('info-school').innerText = profile.school_grade || '--';
+                    document.getElementById('info-start-date').innerText = profile.start_date || '--';
+                    document.getElementById('info-guardian-name').innerText = profile.guardian_name || '--';
+                    document.getElementById('info-guardian-phone').innerText = profile.guardian_phone || '--';
+                    document.getElementById('info-home-address').innerText = profile.address || '--';
                     document.getElementById('student-avatar').innerText = initials.toUpperCase();
                     
                     loadUserData(); 
