@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        :root { 
-            --peacox-purple: #5A2E8E; --peacox-teal: #008080; --bg-color: #F8FAFC; --card-bg: #FFFFFF; --text-main: #1F2937; --text-muted: #6B7280; --border-color: #E5E7EB; 
+        :root {
+            --peacox-purple: #5A2E8E;
+            --peacox-teal: #008080;
+            --bg-color: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
             /* Fluid Dimensions */
             --font-base: clamp(10px, 1vw, 24px);
             --font-heading: clamp(10px, 0.75vw, 16px);
@@ -18,82 +25,527 @@
             --card-radius: clamp(8px, 0.8vw, 24px);
             --navbar-height: clamp(80px, 7vw, 120px);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-color); height: 100vh; display: flex; flex-direction: column; overflow: hidden; font-size: var(--font-base); }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-size: var(--font-base);
+        }
 
         /* HEADER */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 1.5vw 2vw; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); flex-shrink: 0; height: var(--navbar-height); z-index: 100; position: relative;}
-        .header-profile { display: flex; align-items: center; gap: 1.25rem; min-height: min-content; padding-top: 0.5vw; }
-        .avatar-wrapper { position: relative; cursor: pointer; transition: transform 0.2s; }
-        .avatar-wrapper:hover { transform: scale(1.05); }
-        .avatar { width: 4.5rem; height: 4.5rem; border-radius: 0.5rem; background-color: var(--peacox-purple); color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.5rem; background-size: cover; background-position: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .upload-badge { position: absolute; bottom: 0; right: 0; background-color: var(--peacox-teal); border-radius: 50%; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center; border: 2px solid white; cursor: pointer; color: white; transition: background-color 0.2s;}
-        
-        .header-info { display: flex; flex-direction: column; justify-content: center;}
-        .name-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.125rem; }
-        .header-tags { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
-        .tag { padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: bold; border: 1px solid; white-space: nowrap; }
-        .tag-success { background-color: #ECFDF5; color: #047857; border-color: #A7F3D0; }
-        .tag-alert { background-color: #FFF7ED; color: #C2410C; border-color: #FFEDD5; display: flex; align-items: center; gap: 0.5rem;}
-        .tag-alert::before { content: ""; display: block; width: 0.5rem; height: 0.5rem; background-color: #F97316; border-radius: 50%; }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5vw 2vw;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            height: var(--navbar-height);
+            z-index: 100;
+            position: relative;
+        }
+
+        .header-profile {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            min-height: min-content;
+            padding-top: 0.5vw;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .avatar-wrapper:hover {
+            transform: scale(1.05);
+        }
+
+        .avatar {
+            width: 4.5rem;
+            height: 4.5rem;
+            border-radius: 0.5rem;
+            background-color: var(--peacox-purple);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--peacox-teal);
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            cursor: pointer;
+            color: white;
+            transition: background-color 0.2s;
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .name-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.125rem;
+        }
+
+        .header-tags {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border: 1px solid;
+            white-space: nowrap;
+        }
+
+        .tag-success {
+            background-color: #ECFDF5;
+            color: #047857;
+            border-color: #A7F3D0;
+        }
+
+        .tag-alert {
+            background-color: #FFF7ED;
+            color: #C2410C;
+            border-color: #FFEDD5;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag-alert::before {
+            content: "";
+            display: block;
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: #F97316;
+            border-radius: 50%;
+        }
 
         /* GRID (No Scroll) */
-        main { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); gap: var(--grid-gap); width: 100vw; height: calc(100vh - var(--navbar-height)); padding: var(--card-padding); box-sizing: border-box; }
-        .card { background-color: white; border: 1px solid var(--border-color); border-radius: var(--card-radius); padding: var(--card-padding); cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; height: 100%; box-sizing: border-box; }
-        .card-header { font-size: var(--font-heading); font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5vw; flex-shrink: 0; text-align: center;}
-        .col-1 { grid-column: span 1; } .col-2 { grid-column: span 2; } .col-3 { grid-column: span 3; } .row-1 { grid-row: span 1; } .row-2 { grid-row: span 2; }
+        main {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: var(--grid-gap);
+            width: 100vw;
+            height: calc(100vh - var(--navbar-height));
+            padding: var(--card-padding);
+            box-sizing: border-box;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--card-radius);
+            padding: var(--card-padding);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .card-header {
+            font-size: var(--font-heading);
+            font-weight: bold;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5vw;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .col-1 {
+            grid-column: span 1;
+        }
+
+        .col-2 {
+            grid-column: span 2;
+        }
+
+        .col-3 {
+            grid-column: span 3;
+        }
+
+        .row-1 {
+            grid-row: span 1;
+        }
+
+        .row-2 {
+            grid-row: span 2;
+        }
 
         /* CALENDAR */
-        .calendar-wrapper { display: flex; flex-direction: column; height: 100%; }
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; font-weight: bold; color: var(--text-main); font-size: 0.875rem; }
-        .cal-nav { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.25rem; }
-        .cal-nav:hover { color: var(--peacox-purple); }
-        .cal-grid-header { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 0.25rem;}
-        .cal-day-header { text-align: center; font-size: 0.65rem; color: var(--text-muted); font-weight: bold; }
-        .cal-grid { display: flex; flex-direction: column; flex: 1; gap: 2px;}
-        .cal-row { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; gap: 2px;}
-        .cal-day { border-radius: 0.25rem; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--text-main); cursor: pointer; background: #F9FAFB; position: relative; }
-        .cal-day:hover { border: 1px solid var(--peacox-teal); }
-        .cal-day.today { background: var(--peacox-teal); color: white; font-weight: bold; }
-        .cal-day.empty { background: transparent; cursor: default; }
-        .cal-note-dot { position: absolute; bottom: 2px; width: 4px; height: 4px; background: var(--peacox-purple); border-radius: 50%; }
+        .calendar-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .cal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+            font-weight: bold;
+            color: var(--text-main);
+            font-size: 0.875rem;
+        }
+
+        .cal-nav {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+        }
+
+        .cal-nav:hover {
+            color: var(--peacox-purple);
+        }
+
+        .cal-grid-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-bottom: 0.25rem;
+        }
+
+        .cal-day-header {
+            text-align: center;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+
+        .cal-grid {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 2px;
+        }
+
+        .cal-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            flex: 1;
+            gap: 2px;
+        }
+
+        .cal-day {
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: var(--text-main);
+            cursor: pointer;
+            background: #F9FAFB;
+            position: relative;
+        }
+
+        .cal-day:hover {
+            border: 1px solid var(--peacox-teal);
+        }
+
+        .cal-day.today {
+            background: var(--peacox-teal);
+            color: white;
+            font-weight: bold;
+        }
+
+        .cal-day.empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        .cal-note-dot {
+            position: absolute;
+            bottom: 2px;
+            width: 4px;
+            height: 4px;
+            background: var(--peacox-purple);
+            border-radius: 50%;
+        }
 
         /* PROGRESS BARS */
-        .progress-group { width: 100%; display: flex; flex-direction: column; justify-content: center; flex: 1;}
-        .progress-header { display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.875rem; font-weight: bold; margin-bottom: 0.35rem; }
-        .progress-track { width: 100%; height: 0.5rem; background-color: #F3F4F6; border-radius: 0.25rem; overflow: hidden; }
-        .progress-fill { height: 100%; background-color: var(--peacox-purple); border-radius: 0.25rem; }
-        .progress-fill.teal { background-color: var(--peacox-teal); }
+        .progress-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 0.875rem;
+            font-weight: bold;
+            margin-bottom: 0.35rem;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 0.5rem;
+            background-color: #F3F4F6;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--peacox-purple);
+            border-radius: 0.25rem;
+        }
+
+        .progress-fill.teal {
+            background-color: var(--peacox-teal);
+        }
 
         /* ROSTER */
-        .roster-grid { display: flex; justify-content: space-between; align-items: center; height: 100%; gap: 0.5rem;}
-        .roster-card { flex: 1; border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 0.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #F9FAFB; height: 100%;}
-        .roster-avatar { width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: var(--peacox-teal); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: bold; margin-bottom: 0.25rem; }
+        .roster-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            gap: 0.5rem;
+        }
+
+        .roster-card {
+            flex: 1;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #F9FAFB;
+            height: 100%;
+        }
+
+        .roster-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: var(--peacox-teal);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
 
         /* LISTS */
-        .session-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem;}
-        .session-item:last-child { border: none; margin: 0; padding: 0; }
-        
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .session-item:last-child {
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
         /* SIDE PANE & MODALS */
-        .side-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.4); z-index: 40; display: none; }
-        .side-pane { position: fixed; top: 0; left: 0; bottom: 0; width: 320px; background: white; z-index: 50; transform: translateX(-100%); transition: transform 0.3s; display: flex; flex-direction: column; padding-top: 5.5rem; }
-        .side-overlay.active { display: block; } .side-pane.active { transform: translateX(0); }
-        .side-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .side-header h2 { font-size: 1.125rem; font-weight: 900; }
-        .menu-list { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-        .menu-item { padding: 1rem; border-radius: 0.5rem; background-color: var(--bg-color); border: 1px solid var(--border-color); font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .menu-item:hover { background-color: #F0FDFA; border-color: #99F6E4; color: var(--peacox-teal); }
-        
-        .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 24px;}
-        .modal-container { background: white; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 1rem; display: flex; flex-direction: column; overflow: hidden; }
-        .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; background-color: var(--bg-color); }
-        .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
-        .btn-primary { width: 100%; padding: 0.75rem; border-radius: 0.5rem; background-color: var(--peacox-teal); color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 1rem;}
-        .input-full { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; margin-bottom: 0.75rem; }
-        .logout-btn { background: none; border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: bold; color: var(--text-muted); cursor: pointer; }
-        .logout-btn:hover { background: #FEF2F2; color: #DC2626; border-color: #FEE2E2; }
+        .side-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.4);
+            z-index: 40;
+            display: none;
+        }
+
+        .side-pane {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 320px;
+            background: white;
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            padding-top: 5.5rem;
+        }
+
+        .side-overlay.active {
+            display: block;
+        }
+
+        .side-pane.active {
+            transform: translateX(0);
+        }
+
+        .side-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .side-header h2 {
+            font-size: 1.125rem;
+            font-weight: 900;
+        }
+
+        .menu-list {
+            padding: 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .menu-item {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-item:hover {
+            background-color: #F0FDFA;
+            border-color: #99F6E4;
+            color: var(--peacox-teal);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 24px;
+        }
+
+        .modal-container {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--bg-color);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: var(--peacox-teal);
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .input-full {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: #FEF2F2;
+            color: #DC2626;
+            border-color: #FEE2E2;
+        }
     </style>
 </head>
+
 <body>
 
     <header>
@@ -101,9 +553,15 @@
             <div class="avatar-wrapper" onclick="toggleSidePane()">
                 <div class="avatar" id="mentor-avatar">--</div>
                 <label for="avatar-upload" class="upload-badge" onclick="event.stopPropagation()">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                        </path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
                 </label>
-                <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onclick="event.stopPropagation()">
+                <input type="file" id="avatar-upload" accept="image/*" style="display: none;"
+                    onclick="event.stopPropagation()">
             </div>
             <div class="header-info">
                 <div class="name-row">
@@ -118,7 +576,9 @@
         </div>
         </div>
         <div style="display: flex; gap: 0.5rem; align-items: center;">
-            <button class="btn-primary" onclick="openModal('contact-program')" style="padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold; background: var(--peacox-teal); color: white; border: none; cursor: pointer; height: fit-content; margin: 0;">Contact Program</button>
+            <button class="btn-primary" onclick="openModal('contact-program')"
+                style="padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold; background: var(--peacox-teal); color: white; border: none; cursor: pointer; height: fit-content; margin: 0;">Contact
+                Program</button>
             <button class="logout-btn" id="logout-btn" style="height: fit-content;">Sign Out</button>
         </div>
     </header>
@@ -128,12 +588,20 @@
             <h3 class="card-header">Upcoming Sessions</h3>
             <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
                 <div class="session-item">
-                    <div><p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Kannan J.</p><p style="font-size: 0.75rem; color: var(--text-muted);">Today, 4:00 PM</p></div>
-                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--peacox-purple); background: #F3E8FF; padding: 0.2rem 0.5rem; border-radius: 1rem;">Virtual</span>
+                    <div>
+                        <p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Kannan J.</p>
+                        <p style="font-size: 0.75rem; color: var(--text-muted);">Today, 4:00 PM</p>
+                    </div>
+                    <span
+                        style="font-size: 0.75rem; font-weight: bold; color: var(--peacox-purple); background: #F3E8FF; padding: 0.2rem 0.5rem; border-radius: 1rem;">Virtual</span>
                 </div>
                 <div class="session-item">
-                    <div><p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Marcus S.</p><p style="font-size: 0.75rem; color: var(--text-muted);">Tomorrow, 5:30 PM</p></div>
-                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--peacox-teal); background: #E6FFFA; padding: 0.2rem 0.5rem; border-radius: 1rem;">In-Person</span>
+                    <div>
+                        <p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">Marcus S.</p>
+                        <p style="font-size: 0.75rem; color: var(--text-muted);">Tomorrow, 5:30 PM</p>
+                    </div>
+                    <span
+                        style="font-size: 0.75rem; font-weight: bold; color: var(--peacox-teal); background: #E6FFFA; padding: 0.2rem 0.5rem; border-radius: 1rem;">In-Person</span>
                 </div>
             </div>
         </div>
@@ -148,14 +616,25 @@
         <div class="card col-1 row-1" style="justify-content: center; align-items: center; text-align: center;">
             <h3 class="card-header" style="margin-bottom: 0.25rem;">Action Items</h3>
             <p style="font-size: 0.875rem; font-weight: bold; color: var(--text-main);">2 Session Logs Overdue</p>
-            <button class="btn-primary" style="margin-top: 0.5rem; padding: 0.4rem; font-size: 0.75rem;">Submit Logs</button>
+            <button class="btn-primary" style="margin-top: 0.5rem; padding: 0.4rem; font-size: 0.75rem;">Submit
+                Logs</button>
         </div>
 
         <div class="card col-1 row-2">
             <h3 class="card-header">Mentor Schedule</h3>
             <div class="calendar-wrapper">
-                <div class="cal-header"><button class="cal-nav" onclick="changeMonth(-1)">‹</button><span id="cal-month-year">May 2026</span><button class="cal-nav" onclick="changeMonth(1)">›</button></div>
-                <div class="cal-grid-header"><div class="cal-day-header">Su</div><div class="cal-day-header">Mo</div><div class="cal-day-header">Tu</div><div class="cal-day-header">We</div><div class="cal-day-header">Th</div><div class="cal-day-header">Fr</div><div class="cal-day-header">Sa</div></div>
+                <div class="cal-header"><button class="cal-nav" onclick="changeMonth(-1)">‹</button><span
+                        id="cal-month-year">May 2026</span><button class="cal-nav" onclick="changeMonth(1)">›</button>
+                </div>
+                <div class="cal-grid-header">
+                    <div class="cal-day-header">Su</div>
+                    <div class="cal-day-header">Mo</div>
+                    <div class="cal-day-header">Tu</div>
+                    <div class="cal-day-header">We</div>
+                    <div class="cal-day-header">Th</div>
+                    <div class="cal-day-header">Fr</div>
+                    <div class="cal-day-header">Sa</div>
+                </div>
                 <div class="cal-grid" id="cal-grid"></div>
             </div>
         </div>
@@ -173,24 +652,52 @@
                     <option value="Community Engagement">Community Engagement</option>
                     <option value="Major Events">Major Events</option>
                 </select>
-                <button class="btn-primary" style="margin-top: auto;" onclick="assignCurriculum()">+ Assign Item</button>
+                <button class="btn-primary" style="margin-top: auto;" onclick="assignCurriculum()">+ Assign
+                    Item</button>
             </div>
         </div>
 
         <div class="card col-2 row-2">
             <h3 class="card-header">GRO-WORK Pipeline Status</h3>
             <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-evenly;">
-                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">1. Pre-employment</span><span style="color: var(--peacox-purple);">4/4 Mentees</span></div><div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">2. Resume / Cover Letter</span><span style="color: var(--peacox-purple);">3/4 Mentees</span></div><div class="progress-track"><div class="progress-fill" style="width: 75%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">3. Job Skills Training</span><span style="color: var(--peacox-purple);">1/4 Mentees</span></div><div class="progress-track"><div class="progress-fill" style="width: 25%;"></div></div></div>
-                <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main);">4. Career Assessment</span><span style="color: var(--peacox-purple);">0/4 Mentees</span></div><div class="progress-track"><div class="progress-fill" style="width: 0%;"></div></div></div>
+                <div class="progress-group">
+                    <div class="progress-header"><span style="color: var(--text-main);">1. Pre-employment</span><span
+                            style="color: var(--peacox-purple);">4/4 Mentees</span></div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="progress-group">
+                    <div class="progress-header"><span style="color: var(--text-main);">2. Resume / Cover
+                            Letter</span><span style="color: var(--peacox-purple);">3/4 Mentees</span></div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: 75%;"></div>
+                    </div>
+                </div>
+                <div class="progress-group">
+                    <div class="progress-header"><span style="color: var(--text-main);">3. Job Skills
+                            Training</span><span style="color: var(--peacox-purple);">1/4 Mentees</span></div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: 25%;"></div>
+                    </div>
+                </div>
+                <div class="progress-group">
+                    <div class="progress-header"><span style="color: var(--text-main);">4. Career Assessment</span><span
+                            style="color: var(--peacox-purple);">0/4 Mentees</span></div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
     <div class="side-overlay" id="side-overlay" onclick="toggleSidePane()"></div>
     <aside class="side-pane" id="side-pane">
-        <div class="side-header"><h2>Mentor Settings</h2><button onclick="toggleSidePane()" style="background:none;border:none;font-size:1.25rem;cursor:pointer;">✕</button></div>
+        <div class="side-header">
+            <h2>Mentor Settings</h2><button onclick="toggleSidePane()"
+                style="background:none;border:none;font-size:1.25rem;cursor:pointer;">✕</button>
+        </div>
         <div class="menu-list">
             <div class="menu-item" onclick="openModal('basic-info')">Basic Information <span>→</span></div>
             <div class="menu-item" onclick="openModal('mentor-profile')">Mentor Profile <span>→</span></div>
@@ -201,50 +708,76 @@
 
     <div class="modal-overlay" id="master-modal">
         <div class="modal-container">
-            <div class="modal-header"><h2 id="modal-title">Title</h2><button onclick="closeModal()" style="background:none;border:none;font-size:1.25rem;cursor:pointer;">✕</button></div>
+            <div class="modal-header">
+                <h2 id="modal-title">Title</h2><button onclick="closeModal()"
+                    style="background:none;border:none;font-size:1.25rem;cursor:pointer;">✕</button>
+            </div>
             <div class="modal-body" id="modal-body-content">
-                
+
                 <div id="content-basic-info" style="display: none;">
-                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">This information is managed by Peacox Admin.</p>
-                    <label style="font-size: 0.75rem; font-weight: bold;">Full Name</label><input type="text" class="input-full" id="info-name" disabled>
-                    <label style="font-size: 0.75rem; font-weight: bold;">Email Address</label><input type="text" class="input-full" id="info-email" disabled>
+                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">This information is
+                        managed by Peacox Admin.</p>
+                    <label style="font-size: 0.75rem; font-weight: bold;">Full Name</label><input type="text"
+                        class="input-full" id="info-name" disabled>
+                    <label style="font-size: 0.75rem; font-weight: bold;">Email Address</label><input type="text"
+                        class="input-full" id="info-email" disabled>
                 </div>
 
                 <div id="content-mentor-profile" style="display: none;">
-                    <label style="font-size: 0.75rem; font-weight: bold;">Education Background</label><input type="text" class="input-full" id="prof-edu" placeholder="e.g. BS Computer Science, OSU">
-                    <label style="font-size: 0.75rem; font-weight: bold;">Professional Industry</label><input type="text" class="input-full" id="prof-ind" placeholder="e.g. Software Engineering">
-                    <label style="font-size: 0.75rem; font-weight: bold;">Mentoring Topics (Comma separated)</label><input type="text" class="input-full" id="prof-topics" placeholder="e.g. Career Prep, STEM, Leadership">
+                    <label style="font-size: 0.75rem; font-weight: bold;">Education Background</label><input type="text"
+                        class="input-full" id="prof-edu" placeholder="e.g. BS Computer Science, OSU">
+                    <label style="font-size: 0.75rem; font-weight: bold;">Professional Industry</label><input
+                        type="text" class="input-full" id="prof-ind" placeholder="e.g. Software Engineering">
+                    <label style="font-size: 0.75rem; font-weight: bold;">Mentoring Topics (Comma
+                        separated)</label><input type="text" class="input-full" id="prof-topics"
+                        placeholder="e.g. Career Prep, STEM, Leadership">
                     <button class="btn-primary" onclick="saveMentorData()">Save Profile</button>
                 </div>
 
                 <div id="content-availability" style="display: none;">
-                    <label style="font-size: 0.75rem; font-weight: bold;">Hours Available Per Week</label><input type="number" class="input-full" id="avail-hours" placeholder="e.g. 5">
+                    <label style="font-size: 0.75rem; font-weight: bold;">Hours Available Per Week</label><input
+                        type="number" class="input-full" id="avail-hours" placeholder="e.g. 5">
                     <label style="font-size: 0.75rem; font-weight: bold;">Maximum Mentee Capacity</label>
-                    <select class="input-full" id="avail-cap"><option>1 Mentee</option><option>2 Mentees</option><option>3 Mentees</option><option selected>4 Mentees</option></select>
+                    <select class="input-full" id="avail-cap">
+                        <option>1 Mentee</option>
+                        <option>2 Mentees</option>
+                        <option>3 Mentees</option>
+                        <option selected>4 Mentees</option>
+                    </select>
                     <button class="btn-primary" onclick="saveMentorData()">Save Capacity</button>
                 </div>
 
                 <div id="content-ethics" style="display: none;">
-                    <h3 style="font-size: 1rem; color: var(--peacox-teal); margin-bottom: 0.5rem;">Ethics & Conduct Reminder</h3>
-                    <p style="font-size: 0.875rem; color: var(--text-main); line-height: 1.5;">As a Peacox Mentor, you agree to maintain professional boundaries, log all sessions within 48 hours, and immediately escalate any issues regarding a mentee's safety, food security, or mental health to the Program Manager.</p>
+                    <h3 style="font-size: 1rem; color: var(--peacox-teal); margin-bottom: 0.5rem;">Ethics & Conduct
+                        Reminder</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-main); line-height: 1.5;">As a Peacox Mentor, you
+                        agree to maintain professional boundaries, log all sessions within 48 hours, and immediately
+                        escalate any issues regarding a mentee's safety, food security, or mental health to the Program
+                        Manager.</p>
                 </div>
 
                 <div id="content-contact-program" style="display: none;">
-                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Send a secure message directly to the Program Manager.</p>
-                    
-                    <label style="font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem; display: block;">What is this regarding?</label>
-                    <select class="input-full" id="contact-reason" onchange="toggleContactSpecific(this.value)" style="margin-bottom: 1rem;">
+                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Send a secure message
+                        directly to the Program Manager.</p>
+
+                    <label style="font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem; display: block;">What
+                        is this regarding?</label>
+                    <select class="input-full" id="contact-reason" onchange="toggleContactSpecific(this.value)"
+                        style="margin-bottom: 1rem;">
                         <option value="program">Program / Curriculum Feedback</option>
                         <option value="student">A specific Student / Mentee</option>
                     </select>
 
                     <div id="contact-specific-wrapper" style="display: none; margin-bottom: 1rem;">
-                        <label style="font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem; display: block;" id="contact-specific-label">Which Student?</label>
+                        <label style="font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem; display: block;"
+                            id="contact-specific-label">Which Student?</label>
                         <input type="text" class="input-full" id="contact-specific" placeholder="Enter student name">
                     </div>
 
-                    <label style="font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem; display: block;">Your Message</label>
-                    <textarea class="input-full" id="contact-message" rows="5" placeholder="Type your message here..." style="resize: vertical;"></textarea>
+                    <label style="font-size: 0.75rem; font-weight: bold; margin-bottom: 0.25rem; display: block;">Your
+                        Message</label>
+                    <textarea class="input-full" id="contact-message" rows="5" placeholder="Type your message here..."
+                        style="resize: vertical;"></textarea>
 
                     <button class="btn-primary" onclick="submitContactMessage()">Send Message</button>
                 </div>
@@ -254,28 +787,28 @@
     </div>
 
     <script>
-        let GLOBAL_USER_ID = null; 
+        let GLOBAL_USER_ID = null;
         let supabaseClient = null;
-        let currentCalDate = new Date(); 
+        let currentCalDate = new Date();
 
         // AVATAR UPLOAD
-        document.getElementById('avatar-upload').addEventListener('change', async function(e) {
+        document.getElementById('avatar-upload').addEventListener('change', async function (e) {
             const file = e.target.files[0];
-            if(file && GLOBAL_USER_ID) {
+            if (file && GLOBAL_USER_ID) {
                 const avatar = document.getElementById('mentor-avatar');
-                avatar.innerText = '...'; 
-                
+                avatar.innerText = '...';
+
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${GLOBAL_USER_ID}.${fileExt}`;
                 const { data, error } = await supabaseClient.storage.from('avatars').upload(fileName, file, { upsert: true });
-                
-                if(!error) {
+
+                if (!error) {
                     const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(fileName);
                     const publicURL = urlData.publicUrl;
-                    
+
                     await supabaseClient.from('profiles').update({ avatar_url: publicURL }).eq('id', GLOBAL_USER_ID);
-                    
-                    avatar.innerText = ''; 
+
+                    avatar.innerText = '';
                     avatar.style.backgroundImage = `url("${publicURL}?t=${new Date().getTime()}")`;
                 } else {
                     console.error("Upload error:", error);
@@ -290,30 +823,30 @@
             const year = currentCalDate.getFullYear(); const month = currentCalDate.getMonth();
             const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate();
             document.getElementById('cal-month-year').innerText = `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month]} ${year}`;
-            
+
             let savedNotes = {};
-            if(GLOBAL_USER_ID) {
-                const startStr = `${year}-${String(month+1).padStart(2,'0')}-01`;
-                const endStr = `${year}-${String(month+1).padStart(2,'0')}-${daysInMonth}`;
+            if (GLOBAL_USER_ID) {
+                const startStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+                const endStr = `${year}-${String(month + 1).padStart(2, '0')}-${daysInMonth}`;
                 const { data } = await supabaseClient.from('calendar_notes')
                     .select('date, note')
                     .eq('user_id', GLOBAL_USER_ID)
                     .gte('date', startStr)
                     .lte('date', endStr);
-                if(data) data.forEach(row => savedNotes[row.date] = row.note);
+                if (data) data.forEach(row => savedNotes[row.date] = row.note);
             }
 
             let html = '';
-            for(let r=0; r<5; r++) { // 5 rows to fit card perfectly
+            for (let r = 0; r < 5; r++) { // 5 rows to fit card perfectly
                 html += '<div class="cal-row">';
-                for(let c=0; c<7; c++) {
-                    let d = (r*7 + c) - firstDay + 1;
-                    if(d > 0 && d <= daysInMonth) {
-                        const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                for (let c = 0; c < 7; c++) {
+                    let d = (r * 7 + c) - firstDay + 1;
+                    if (d > 0 && d <= daysInMonth) {
+                        const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                         const note = savedNotes[dateKey];
                         const isToday = (d === new Date().getDate() && month === new Date().getMonth()) ? 'today' : '';
                         const dot = note ? `<div class="cal-note-dot"></div>` : '';
-                        html += `<div class="cal-day ${isToday}" onclick="addCalNote('${dateKey}')" title="${note||''}">${d}${dot}</div>`;
+                        html += `<div class="cal-day ${isToday}" onclick="addCalNote('${dateKey}')" title="${note || ''}">${d}${dot}</div>`;
                     } else {
                         html += `<div class="cal-day empty"></div>`;
                     }
@@ -325,12 +858,12 @@
 
         function changeMonth(dir) { currentCalDate.setMonth(currentCalDate.getMonth() + dir); renderCalendar(); }
         async function addCalNote(dateKey) {
-            if(!GLOBAL_USER_ID) return;
+            if (!GLOBAL_USER_ID) return;
             const { data } = await supabaseClient.from('calendar_notes').select('note').eq('user_id', GLOBAL_USER_ID).eq('date', dateKey).single();
             const existing = data ? data.note : '';
             const note = prompt("Enter mentor note/reminder:", existing);
-            if(note !== null) {
-                if(note.trim() === '') {
+            if (note !== null) {
+                if (note.trim() === '') {
                     await supabaseClient.from('calendar_notes').delete().eq('user_id', GLOBAL_USER_ID).eq('date', dateKey);
                 } else {
                     await supabaseClient.from('calendar_notes').upsert({ user_id: GLOBAL_USER_ID, date: dateKey, note: note.trim() });
@@ -353,7 +886,7 @@
         function toggleContactSpecific(val) {
             const wrap = document.getElementById('contact-specific-wrapper');
             const label = document.getElementById('contact-specific-label');
-            if(val === 'student') {
+            if (val === 'student') {
                 wrap.style.display = 'block';
                 label.innerText = 'Which Student?';
                 document.getElementById('contact-specific').placeholder = 'Enter student name';
@@ -366,8 +899,8 @@
             const reason = document.getElementById('contact-reason').value;
             const specific = document.getElementById('contact-specific').value.trim();
             const message = document.getElementById('contact-message').value.trim();
-            if(!message) { alert('Please enter a message.'); return; }
-            
+            if (!message) { alert('Please enter a message.'); return; }
+
             const msgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
             msgs.push({
                 student_id: GLOBAL_USER_ID,
@@ -389,21 +922,21 @@
             const myMentees = allStudents.slice(0, 4); // default to 4
             const rosterGrid = document.getElementById('mentor-roster-grid');
             const selectMentee = document.getElementById('assign-mentee');
-            
-            if(myMentees.length === 0) {
-                if(rosterGrid) rosterGrid.innerHTML = '<p style="font-size: 0.75rem; color: var(--text-muted); text-align:center;">No assigned mentees found in system.</p>';
-                if(selectMentee) selectMentee.innerHTML = '<option value="">No mentees</option>';
+
+            if (myMentees.length === 0) {
+                if (rosterGrid) rosterGrid.innerHTML = '<p style="font-size: 0.75rem; color: var(--text-muted); text-align:center;">No assigned mentees found in system.</p>';
+                if (selectMentee) selectMentee.innerHTML = '<option value="">No mentees</option>';
                 return;
             }
 
-            if(rosterGrid) {
+            if (rosterGrid) {
                 rosterGrid.innerHTML = myMentees.map((m, i) => {
-                    const initials = m.name.split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2);
+                    const initials = m.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
                     const colors = ['#008080', '#3B82F6', '#8B5CF6', '#EF4444'];
-                    return `<div class="roster-card"><div class="roster-avatar" style="background:${colors[i%4]}">${initials}</div><span style="font-size:0.75rem; font-weight:bold; text-align:center;">${m.name}</span></div>`;
+                    return `<div class="roster-card"><div class="roster-avatar" style="background:${colors[i % 4]}">${initials}</div><span style="font-size:0.75rem; font-weight:bold; text-align:center;">${m.name}</span></div>`;
                 }).join('');
             }
-            if(selectMentee) {
+            if (selectMentee) {
                 selectMentee.innerHTML = myMentees.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
             }
         }
@@ -411,27 +944,27 @@
         function assignCurriculum() {
             const studentId = document.getElementById('assign-mentee').value;
             const item = document.getElementById('assign-item').value;
-            if(!studentId) return;
-            
+            if (!studentId) return;
+
             const curr = JSON.parse(localStorage.getItem('pm_local_curriculum') || '{}');
-            if(!curr[studentId]) curr[studentId] = { youth: [], comm: [], events: [] };
-            
-            if(item === 'Youth Programs') { if(!curr[studentId].youth.includes('Mentor Assigned Program')) curr[studentId].youth.push('Mentor Assigned Program'); }
-            if(item === 'Community Engagement') { if(!curr[studentId].comm.includes('Mentor Assigned Project')) curr[studentId].comm.push('Mentor Assigned Project'); }
-            if(item === 'Major Events') { if(!curr[studentId].events.includes('Mentor Assigned Event')) curr[studentId].events.push('Mentor Assigned Event'); }
-            
+            if (!curr[studentId]) curr[studentId] = { youth: [], comm: [], events: [] };
+
+            if (item === 'Youth Programs') { if (!curr[studentId].youth.includes('Mentor Assigned Program')) curr[studentId].youth.push('Mentor Assigned Program'); }
+            if (item === 'Community Engagement') { if (!curr[studentId].comm.includes('Mentor Assigned Project')) curr[studentId].comm.push('Mentor Assigned Project'); }
+            if (item === 'Major Events') { if (!curr[studentId].events.includes('Mentor Assigned Event')) curr[studentId].events.push('Mentor Assigned Event'); }
+
             localStorage.setItem('pm_local_curriculum', JSON.stringify(curr));
             alert('Curriculum item successfully assigned to mentee!');
         }
 
         // LOCAL STORAGE -> SUPABASE
         async function saveMentorData() {
-            if(!GLOBAL_USER_ID) return;
+            if (!GLOBAL_USER_ID) return;
             const data = {
                 mentor_id: GLOBAL_USER_ID,
-                education: document.getElementById('prof-edu').value, 
+                education: document.getElementById('prof-edu').value,
                 industry: document.getElementById('prof-ind').value,
-                topics: document.getElementById('prof-topics').value, 
+                topics: document.getElementById('prof-topics').value,
                 capacity_hours: document.getElementById('avail-hours').value || 0,
                 max_mentees: parseInt(document.getElementById('avail-cap').value) || 4
             };
@@ -441,22 +974,22 @@
 
         async function loadMentorData() {
             renderCalendar();
-            if(!GLOBAL_USER_ID) return;
-            
+            if (!GLOBAL_USER_ID) return;
+
             const { data: profile } = await supabaseClient.from('profiles').select('avatar_url').eq('id', GLOBAL_USER_ID).single();
-            if(profile && profile.avatar_url) {
+            if (profile && profile.avatar_url) {
                 const avatarDiv = document.getElementById('mentor-avatar');
                 avatarDiv.innerText = '';
                 avatarDiv.style.backgroundImage = `url("${profile.avatar_url}")`;
             }
-            
+
             const { data } = await supabaseClient.from('mentor_profiles').select('*').eq('mentor_id', GLOBAL_USER_ID).single();
-            if(data) {
-                document.getElementById('prof-edu').value = data.education || ''; 
+            if (data) {
+                document.getElementById('prof-edu').value = data.education || '';
                 document.getElementById('prof-ind').value = data.industry || '';
-                document.getElementById('prof-topics').value = data.topics || ''; 
+                document.getElementById('prof-topics').value = data.topics || '';
                 document.getElementById('avail-hours').value = data.capacity_hours || '';
-                
+
                 const selectElement = document.getElementById('avail-cap');
                 const targetText = `${data.max_mentees} Mentee${data.max_mentees !== 1 ? 's' : ''}`;
                 Array.from(selectElement.options).forEach(opt => {
@@ -469,12 +1002,13 @@
     <script>
         try {
             const SUPABASE_URL = 'https://lgmzqktvkvyfycyrhrbt.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97-15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
+            lZiI6ImxnbXpxa3R2a3Z5ZnljeXJocmJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDA2OTUsImV4cCI6MjA5NjExNjY5NX0.oDSGz97 - 15p3OFhHTPALbgnJ1lDRJNBM9ayA17uF2Lc';
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             async function loadDatabaseData() {
                 const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-                if (authError || !user) { if(window.location.protocol !== 'file:') window.location.href = 'index.html'; return; }
+                if (authError || !user) { if (window.location.protocol !== 'file:') window.location.href = 'index.html'; return; }
                 GLOBAL_USER_ID = user.id;
 
                 const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
@@ -482,19 +1016,20 @@
                     const fn = profile.first_name || 'Peacox'; const ln = profile.last_name || 'Mentor';
                     document.getElementById('mentor-name').innerText = `Dr. ${fn} ${ln}`;
                     document.getElementById('info-name').value = `${fn} ${ln}`; document.getElementById('info-email').value = user.email || '';
-                    document.getElementById('mentor-avatar').innerText = (profile.avatar_initials || (fn[0]+ln[0])).toUpperCase();
-                    loadMentorData(); 
+                    document.getElementById('mentor-avatar').innerText = (profile.avatar_initials || (fn[0] + ln[0])).toUpperCase();
+                    loadMentorData();
                     loadMenteeRoster();
                 }
             }
 
             document.getElementById('logout-btn').addEventListener('click', async () => {
                 document.getElementById('logout-btn').innerText = 'Signing out...';
-                try { await supabaseClient.auth.signOut(); } catch(e){} finally { window.location.replace('index.html'); }
+                try { await supabaseClient.auth.signOut(); } catch (e) { } finally { window.location.replace('index.html'); }
             });
 
             loadDatabaseData();
         } catch (error) { console.warn("Supabase bypassed locally."); }
     </script>
 </body>
+
 </html>
