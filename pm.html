@@ -272,6 +272,15 @@
                                 <clipPath id="clipG"><use href="#cG"/></clipPath>
                                 <clipPath id="clipA"><use href="#cA"/></clipPath>
                                 <clipPath id="clipB"><use href="#cB"/></clipPath>
+                                <clipPath id="clipGok">
+                                    <rect x="0" y="0" width="400" height="92" />
+                                </clipPath>
+                                <clipPath id="clipAok">
+                                    <polygon points="0,9 0,330 180,330" />
+                                </clipPath>
+                                <clipPath id="clipBok">
+                                    <polygon points="400,9 400,330 220,330" />
+                                </clipPath>
                               </defs>
 
                               <style>
@@ -279,10 +288,28 @@
                                 .venn-region:hover { filter: brightness(0.9); }
                               </style>
 
-                              <!-- Outer Crescents -->
-                              <path id="crescentG" class="venn-region" d="M 110 128 A 115 115 0 0 1 290 128 A 90 90 0 0 0 110 128 Z" fill="#387635" onclick="window.openRiskTable('g-ok', 'Grade OK')"><title>Grade OK</title></path>
-                              <path id="crescentA" class="venn-region" d="M 200 283.94 A 115 115 0 0 1 110 128 A 90 90 0 0 0 200 283.94 Z" fill="#387635" onclick="window.openRiskTable('a-ok', 'Attendance OK')"><title>Attendance OK</title></path>
-                              <path id="crescentB" class="venn-region" d="M 290 128 A 115 115 0 0 1 200 283.94 A 90 90 0 0 0 290 128 Z" fill="#387635" onclick="window.openRiskTable('b-ok', 'Behavior OK')"><title>Behavior OK</title></path>
+                              <!-- Ok crescents — angled clip-path boundaries -->
+                              <g clip-path="url(#clipGok)">
+                                  <use href="#cG" fill="#387635" mask="url(#mask-G-only)"
+                                      class="venn-region"
+                                      onclick="window.openRiskTable('g-ok','Grade OK')">
+                                      <title>Grade OK</title>
+                                  </use>
+                              </g>
+                              <g clip-path="url(#clipAok)">
+                                  <use href="#cA" fill="#387635" mask="url(#mask-A-only)"
+                                      class="venn-region"
+                                      onclick="window.openRiskTable('a-ok','Attendance OK')">
+                                      <title>Attendance OK</title>
+                                  </use>
+                              </g>
+                              <g clip-path="url(#clipBok)">
+                                  <use href="#cB" fill="#387635" mask="url(#mask-B-only)"
+                                      class="venn-region"
+                                      onclick="window.openRiskTable('b-ok','Behavior OK')">
+                                      <title>Behavior OK</title>
+                                  </use>
+                              </g>
 
                               <!-- Inner Venn Regions -->
                               <use href="#cG" fill="#9CD273" mask="url(#mask-G-only)" class="venn-region" onclick="window.openRiskTable('g-only', 'Grade Risk')"><title>Grade Risk</title></use>
@@ -298,9 +325,6 @@
                               </g></g>
 
                               <!-- Strokes -->
-                              <use href="#crescentG" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
-                              <use href="#crescentA" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
-                              <use href="#crescentB" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
                               
                               <use href="#cG" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
                               <use href="#cA" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
@@ -308,23 +332,59 @@
 
                               <!-- Text Labels -->
                               <g text-anchor="middle" font-size="9" fill="#1F2937" pointer-events="none">
-                                <text x="200" y="25"><tspan id="venn-g-ok" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G. Ok</tspan></text>
-                                <text x="65" y="245"><tspan id="venn-a-ok" x="65" font-weight="bold">0</tspan><tspan x="65" dy="12">A. Ok</tspan></text>
-                                <text x="335" y="245"><tspan id="venn-b-ok" x="335" font-weight="bold">0</tspan><tspan x="335" dy="12">B. Ok</tspan></text>
 
-                                <text x="200" y="85"><tspan id="venn-g-only" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G. Risk</tspan></text>
-                                <text x="127" y="225"><tspan id="venn-a-only" x="127" font-weight="bold">0</tspan><tspan x="127" dy="12">A. Risk</tspan></text>
-                                <text x="273" y="225"><tspan id="venn-b-only" x="273" font-weight="bold">0</tspan><tspan x="273" dy="12">B. Risk</tspan></text>
+                                  <!-- Ok crescents: white text on dark green -->
+                                  <text x="200" y="57" fill="white">
+                                      <tspan id="venn-g-ok" x="200" font-weight="bold" dy="0">0</tspan>
+                                      <tspan x="200" dy="11">G. Ok</tspan>
+                                  </text>
+                                  <text x="97" y="235" fill="white">
+                                      <tspan id="venn-a-ok" x="97" font-weight="bold" dy="0">0</tspan>
+                                      <tspan x="97" dy="11">A. Ok</tspan>
+                                  </text>
+                                  <text x="303" y="235" fill="white">
+                                      <tspan id="venn-b-ok" x="303" font-weight="bold" dy="0">0</tspan>
+                                      <tspan x="303" dy="11">B. Ok</tspan>
+                                  </text>
 
-                                <text x="165" y="155"><tspan id="venn-ga" x="165" font-weight="bold">0</tspan><tspan x="165" dy="12">G.A. Risk</tspan></text>
-                                <text x="235" y="155"><tspan id="venn-gb" x="235" font-weight="bold">0</tspan><tspan x="235" dy="12">G.B. Risk</tspan></text>
-                                <text x="200" y="230"><tspan id="venn-ab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">A.B Risk</tspan></text>
+                                  <!-- Single-risk zones: dark ink on light green -->
+                                  <text x="200" y="105">
+                                      <tspan id="venn-g-only" x="200" font-weight="bold" dy="0">0</tspan>
+                                      <tspan x="200" dy="11">G. Risk</tspan>
+                                  </text>
+                                  <text x="120" y="210">
+                                      <tspan id="venn-a-only" x="120" font-weight="bold" dy="0">0</tspan>
+                                      <tspan x="120" dy="11">A. Risk</tspan>
+                                  </text>
+                                  <text x="280" y="210">
+                                      <tspan id="venn-b-only" x="280" font-weight="bold" dy="0">0</tspan>
+                                      <tspan x="280" dy="11">B. Risk</tspan>
+                                  </text>
 
-                                <text x="200" y="175" fill="white"><tspan id="venn-gab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G.A.B. Risk</tspan></text>
-                                
-                                <text x="200" y="15" font-size="14" font-weight="bold">Grd.</text>
-                                <text x="40" y="195" font-size="14" font-weight="bold">Att.</text>
-                                <text x="360" y="195" font-size="14" font-weight="bold">Bhv.</text>
+                                  <!-- Dual-risk petals: dark ink on yellow -->
+                                  <text x="160" y="162">
+                                      <tspan id="venn-ga" x="160" font-weight="bold" dy="0">0</tspan>
+                                      <tspan x="160" dy="11">G.A. Risk</tspan>
+                                  </text>
+                                  <text x="240" y="162">
+                                      <tspan id="venn-gb" x="240" font-weight="bold" dy="0">0</tspan>
+                                      <tspan x="240" dy="11">G.B. Risk</tspan>
+                                  </text>
+                                  <text x="200" y="243">
+                                      <tspan id="venn-ab" x="200" font-weight="bold" dy="0">0</tspan>
+                                      <tspan x="200" dy="11">A.B Risk</tspan>
+                                  </text>
+
+                                  <!-- Triple-risk centre: white on orange -->
+                                  <text x="200" y="173" fill="white">
+                                      <tspan id="venn-gab" x="200" font-weight="bold" dy="0">0</tspan>
+                                      <tspan x="200" dy="11">G.A.B. Risk</tspan>
+                                  </text>
+
+                                  <!-- Circle title labels -->
+                                  <text x="200" y="15" font-size="13" font-weight="bold">Grd.</text>
+                                  <text x="38"  y="198" font-size="13" font-weight="bold">Att.</text>
+                                  <text x="362" y="198" font-size="13" font-weight="bold">Bhv.</text>
                               </g>
                             </svg>
                         </div>
