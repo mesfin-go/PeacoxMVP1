@@ -184,10 +184,16 @@
                 
                 <!-- Risk Matrix -->
                 <div class="card" style="min-height: max-content;">
-                    <h3 class="card-header">GAB Risk Matrix <span id="risk-n-count">(N=0)</span></h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center;" class="card-header">
+                        <h3 style="margin: 0; padding: 0; border: none; font-size: inherit;">GAB Risk Matrix <span id="risk-n-count">(N=0)</span></h3>
+                        <button class="btn-secondary" onclick="window.openThresholdModal()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem; height: max-content;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            Thresholds
+                        </button>
+                    </div>
                     <div style="display: flex; flex-direction: row; gap: 1rem; margin-top: 0.5rem; max-height: 250px;">
                         <div style="flex: 0 0 60%; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: visible;">
-                            <svg viewBox="0 0 400 320" style="width: 100%; max-height: 220px; font-family: Inter, sans-serif;">
+                            <svg viewBox="0 0 400 320" style="width: 100%; max-height: 250px; font-family: Inter, sans-serif;">
                               <defs>
                                 <circle id="cG" cx="200" cy="128" r="90" />
                                 <circle id="cA" cx="155" cy="206" r="90" />
@@ -257,7 +263,6 @@
                                 <text x="360" y="195" font-size="14" font-weight="bold">Bhv.</text>
                               </g>
                             </svg>
-                            <button onclick="window.openThresholdModal()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--peacox-purple); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.75rem;">Configure Risk Thresholds</button>
                         </div>
                         <div style="flex: 0 0 40%; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid var(--border-color); padding-left: 1rem; max-height: 250px;">
                             <h4 id="venn-table-title" style="margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: bold; color: var(--text-color);">Select a category</h4>
