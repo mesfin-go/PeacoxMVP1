@@ -186,8 +186,8 @@
                 <div class="card" style="min-height: max-content;">
                     <h3 class="card-header">GAB Risk Matrix <span id="risk-n-count">(N=0)</span></h3>
                     <div style="display: flex; flex-direction: row; gap: 1rem; margin-top: 0.5rem; max-height: 250px;">
-                        <div style="flex: 0 0 60%; display: flex; justify-content: center; align-items: center; overflow: visible;">
-                            <svg viewBox="0 0 400 320" style="width: 100%; max-height: 250px; font-family: Inter, sans-serif;">
+                        <div style="flex: 0 0 60%; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: visible;">
+                            <svg viewBox="0 0 400 320" style="width: 100%; max-height: 220px; font-family: Inter, sans-serif;">
                               <defs>
                                 <circle id="cG" cx="200" cy="128" r="90" />
                                 <circle id="cA" cx="155" cy="206" r="90" />
@@ -257,6 +257,7 @@
                                 <text x="360" y="195" font-size="14" font-weight="bold">Bhv.</text>
                               </g>
                             </svg>
+                            <button onclick="window.openThresholdModal()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--peacox-purple); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.75rem;">Configure Risk Thresholds</button>
                         </div>
                         <div style="flex: 0 0 40%; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid var(--border-color); padding-left: 1rem; max-height: 250px;">
                             <h4 id="venn-table-title" style="margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: bold; color: var(--text-color);">Select a category</h4>
@@ -411,6 +412,24 @@
                 <div id="content-basic-info" style="display: none;">
                     <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Full Name</label><input type="text" class="input-full" id="info-name" disabled>
                     <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Email Address</label><input type="text" class="input-full" id="info-email" disabled>
+                </div>
+
+                <div id="content-thresholds" style="display: none;">
+                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;">Configure the thresholds used to calculate GAB risk metrics.</p>
+                    <form id="threshold-form">
+                        <div class="form-section">
+                            <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">GPA Threshold (Risk if &le;)</label>
+                            <input type="number" step="0.1" class="input-full" id="thresh-gpa" required>
+                            
+                            <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Absences Threshold (Risk if &gt;)</label>
+                            <input type="number" class="input-full" id="thresh-absent" required>
+                            
+                            <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Behavior Threshold (Risk if &gt;)</label>
+                            <input type="number" class="input-full" id="thresh-behavior" required>
+                        </div>
+                        <p id="thresh-msg" style="display:none; font-size: 0.875rem; margin-bottom: 1rem;"></p>
+                        <button type="submit" id="save-thresh-btn" style="width: 100%; padding: 0.75rem; background: var(--peacox-purple); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Save Thresholds</button>
+                    </form>
                 </div>
 
                 <div id="content-add-user" style="display: none;">
@@ -668,13 +687,13 @@
             document.getElementById('side-pane').classList.remove('active'); 
             document.getElementById('side-overlay').classList.remove('active');
             
-            ['basic-info', 'add-user', 'edit-user', 'risk-table'].forEach(id => {
+            ['basic-info', 'add-user', 'edit-user', 'risk-table', 'thresholds'].forEach(id => {
                 const el = document.getElementById(`content-${id}`);
                 if(el) el.style.display = 'none';
             });
             document.getElementById(`content-${type}`).style.display = (type === 'risk-table') ? 'flex' : 'block';
             
-            const titles = {'basic-info': 'Manager Details', 'add-user': 'Add System User', 'edit-user': 'Edit Student Profile', 'risk-table': 'Risk Matrix Details'};
+            const titles = {'basic-info': 'Manager Details', 'add-user': 'Add System User', 'edit-user': 'Edit Student Profile', 'risk-table': 'Risk Matrix Details', 'thresholds': 'Compound Risk Thresholds'};
             if (titles[type]) document.getElementById('modal-title').innerText = titles[type];
             document.getElementById('modal-header-controls').style.display = (type === 'add-user') ? 'block' : 'none';
             document.getElementById('master-modal').style.display = 'flex';
@@ -789,6 +808,8 @@
                         const meta = s.raw_user_meta_data || {};
                         const gpa = meta.gpa || s.gpa || 0; 
                         const att = meta.attendance_pct || s.attendance_pct || 0;
+                        const absent = meta.absent || s.absent || 0;
+                        const behavior = meta.behavior || s.behavior || 0;
                         const isActive = meta.is_active === undefined ? true : meta.is_active; 
                         
                         return {
@@ -797,6 +818,8 @@
                             created_at: s.created_at,
                             gpa: parseFloat(gpa),
                             attendance: parseInt(att),
+                            absent: parseInt(absent),
+                            behavior: parseInt(behavior),
                             is_active: isActive
                         };
                     });
@@ -847,21 +870,22 @@
                 const localGab = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
 
                 filtered.forEach(s => {
-                    let gpa = s.gpa || 0;
-                    let absent = 0;
-                    let behavior = 0;
+                    let gpa = s.gpa;
+                    let absent = s.absent || 0;
+                    let behavior = s.behavior || 0;
                     
                     const history = localGab[s.id] || [];
                     if (history.length > 0) {
                         const latest = history[history.length - 1];
-                        gpa = parseFloat(latest.gpa || gpa);
-                        absent = parseInt(latest.absent || 0);
-                        behavior = parseInt(latest.behavior || 0);
+                        if (latest.gpa !== undefined) gpa = parseFloat(latest.gpa);
+                        if (latest.absent !== undefined) absent = parseInt(latest.absent);
+                        if (latest.behavior !== undefined) behavior = parseInt(latest.behavior);
                     }
                     
-                    const hasG = (gpa > 0 && gpa < 2.0);
-                    const hasA = (absent > 4);
-                    const hasB = (behavior > 0);
+                    const t = window.GAB_THRESHOLDS || { gpa: 2.0, absent: 4, behavior: 0 };
+                    const hasG = (gpa <= t.gpa);
+                    const hasA = (absent > t.absent);
+                    const hasB = (behavior > t.behavior);
 
                     // Oks (No risk in that category)
                     if (!hasG) vG_Ok++;
@@ -927,6 +951,34 @@
                 }).join('');
             };
 
+            window.GAB_THRESHOLDS = JSON.parse(localStorage.getItem('pm_gab_thresholds')) || { gpa: 2.0, absent: 4, behavior: 0 };
+
+            window.openThresholdModal = function() {
+                document.getElementById('thresh-gpa').value = window.GAB_THRESHOLDS.gpa;
+                document.getElementById('thresh-absent').value = window.GAB_THRESHOLDS.absent;
+                document.getElementById('thresh-behavior').value = window.GAB_THRESHOLDS.behavior;
+                openModal('thresholds');
+            };
+
+            document.getElementById('threshold-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                window.GAB_THRESHOLDS = {
+                    gpa: parseFloat(document.getElementById('thresh-gpa').value),
+                    absent: parseInt(document.getElementById('thresh-absent').value),
+                    behavior: parseInt(document.getElementById('thresh-behavior').value)
+                };
+                localStorage.setItem('pm_gab_thresholds', JSON.stringify(window.GAB_THRESHOLDS));
+                const msg = document.getElementById('thresh-msg');
+                msg.innerText = 'Thresholds saved successfully!';
+                msg.style.color = '#10B981';
+                msg.style.display = 'block';
+                
+                if (window.renderStudentTable) window.renderStudentTable();
+                if (window.currentRiskFilter && window.renderVennTable) window.renderVennTable();
+
+                setTimeout(() => { closeModal(); msg.style.display = 'none'; }, 1500);
+            });
+
             window.currentRiskFilter = null;
             window.openRiskTable = function(type, label) {
                 window.currentRiskFilter = type;
@@ -944,21 +996,22 @@
                 let filtered = ALL_STUDENTS.filter(s => {
                     if (!s.is_active) return false;
 
-                    let gpa = s.gpa || 0;
-                    let absent = 0;
-                    let behavior = 0;
+                    let gpa = s.gpa;
+                    let absent = s.absent || 0;
+                    let behavior = s.behavior || 0;
                     
                     const history = localGab[s.id] || [];
                     if (history.length > 0) {
                         const latest = history[history.length - 1];
-                        gpa = parseFloat(latest.gpa || gpa);
-                        absent = parseInt(latest.absent || 0);
-                        behavior = parseInt(latest.behavior || 0);
+                        if (latest.gpa !== undefined) gpa = parseFloat(latest.gpa);
+                        if (latest.absent !== undefined) absent = parseInt(latest.absent);
+                        if (latest.behavior !== undefined) behavior = parseInt(latest.behavior);
                     }
 
-                    const hasG = (gpa > 0 && gpa < 2.0);
-                    const hasA = (absent > 4);
-                    const hasB = (behavior > 0);
+                    const t = window.GAB_THRESHOLDS || { gpa: 2.0, absent: 4, behavior: 0 };
+                    const hasG = (gpa <= t.gpa);
+                    const hasA = (absent > t.absent);
+                    const hasB = (behavior > t.behavior);
 
                     if (riskType === 'g-ok') return !hasG;
                     if (riskType === 'a-ok') return !hasA;
