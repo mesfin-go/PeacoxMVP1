@@ -765,13 +765,24 @@
                 updated_at: new Date().toISOString()
             };
             
-            await supabaseClient.from('performance_metrics').insert(entry);
+            const newReq = {
+                id: 'req-' + Date.now(),
+                type: 'request',
+                category: 'Update Request',
+                requestType: 'GAB Report',
+                student_id: GLOBAL_USER_ID,
+                student_name: document.getElementById('student-name').innerText,
+                message: `Requesting to add a new GAB record for ${entry.quarter} (GPA: ${entry.gpa}, Absent: ${entry.attendance_pct}, Behavior: ${entry.behavior_pct}).`,
+                payload: [entry],
+                date: new Date().toISOString(),
+                status: 'pending'
+            };
             
-            // Push to local storage fallback
-            let localGabCache = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
-            if (!localGabCache[GLOBAL_USER_ID]) localGabCache[GLOBAL_USER_ID] = [];
-            localGabCache[GLOBAL_USER_ID].unshift(entry);
-            localStorage.setItem('pm_local_gab', JSON.stringify(localGabCache));
+            let allMsgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
+            allMsgs.push(newReq);
+            localStorage.setItem('pm_local_messages', JSON.stringify(allMsgs));
+            
+            alert("Your GAB report update has been sent to the program manager for approval.");
             
             document.getElementById('gab-gpa').value = '';
             document.getElementById('gab-absent').value = '';
@@ -797,7 +808,22 @@
             events.forEach(item => inserts.push({ student_id: GLOBAL_USER_ID, category: 'Major Events', item_name: item, status: 'in-progress' }));
             
             if (inserts.length > 0) {
-                await supabaseClient.from('curriculum_progress').insert(inserts);
+                const newReq = {
+                    id: 'req-' + Date.now(),
+                    type: 'request',
+                    category: 'Update Request',
+                    requestType: 'Engagement Plan',
+                    student_id: GLOBAL_USER_ID,
+                    student_name: document.getElementById('student-name').innerText,
+                    message: `Requesting to update Engagement Plan with ${inserts.length} selected items.`,
+                    payload: inserts,
+                    date: new Date().toISOString(),
+                    status: 'pending'
+                };
+                let allMsgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
+                allMsgs.push(newReq);
+                localStorage.setItem('pm_local_messages', JSON.stringify(allMsgs));
+                alert("Your Engagement Plan update has been sent to the program manager for approval.");
             }
             
             await loadUserData();
@@ -822,23 +848,26 @@
                 barriers: barriersText
             };
             
-            const { data: existing } = await supabaseClient.from('idp_goals').select('id').eq('student_id', GLOBAL_USER_ID).limit(1);
-            let error = null;
-            if (existing && existing.length > 0) {
-                const res = await supabaseClient.from('idp_goals').update(idpData).eq('id', existing[0].id);
-                error = res.error;
-            } else {
-                const res = await supabaseClient.from('idp_goals').insert(idpData);
-                error = res.error;
-            }
-
-            if (error) {
-                console.error("Error saving IDP:", error);
-                alert("Failed to save IDP.");
-            } else {
-                await loadUserData();
-                closeModal();
-            }
+            const newReq = {
+                id: 'req-' + Date.now(),
+                type: 'request',
+                category: 'Update Request',
+                requestType: 'IDP',
+                student_id: GLOBAL_USER_ID,
+                student_name: document.getElementById('student-name').innerText,
+                message: `Requesting to update IDP. Short Term: ${idpData.short_term}. Long Term: ${idpData.long_term}.`,
+                payload: idpData,
+                date: new Date().toISOString(),
+                status: 'pending'
+            };
+            
+            let allMsgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
+            allMsgs.push(newReq);
+            localStorage.setItem('pm_local_messages', JSON.stringify(allMsgs));
+            alert("Your IDP update has been sent to the program manager for approval.");
+            
+            await loadUserData();
+            closeModal();
         }
 
         // --- 6. MASTER LOAD FUNCTION ---

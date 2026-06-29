@@ -341,18 +341,12 @@
                     </div>
                 </div>
 
-                <!-- Student and Mentor Feedback -->
+                <!-- Student Inbox -->
                 <div class="card" style="border-left: 4px solid var(--peacox-purple); min-height: max-content; display: flex; flex-direction: column;">
-                    <h3 class="card-header" style="color: var(--peacox-purple);">Student & Mentor Feedback</h3>
+                    <h3 class="card-header" style="color: var(--peacox-purple);">Student Inbox</h3>
                     
-                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.75rem;">
-                        <button class="btn-secondary" style="flex: 1; padding: 0.25rem;" onclick="filterFeedback('program')">Program</button>
-                        <button class="btn-secondary" style="flex: 1; padding: 0.25rem;" onclick="filterFeedback('mentor')">Mentor</button>
-                        <button class="btn-primary" style="flex: 1; padding: 0.25rem;" onclick="filterFeedback('all')">All</button>
-                    </div>
-
-                    <div id="feedback-list" style="display: flex; flex-direction: column; flex: 1; gap: 0.5rem; margin-top: 0.75rem; overflow-y: auto; max-height: 150px;">
-                        <!-- Feedback items injected here -->
+                    <div id="feedback-list" style="display: flex; flex-direction: column; flex: 1; gap: 0.5rem; margin-top: 0.75rem; overflow-y: auto; max-height: 250px;">
+                        <!-- Feedback/Request items injected here -->
                     </div>
                 </div>
 
@@ -492,6 +486,29 @@
                 <div id="content-basic-info" style="display: none;">
                     <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Full Name</label><input type="text" class="input-full" id="info-name" disabled>
                     <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Email Address</label><input type="text" class="input-full" id="info-email" disabled>
+                </div>
+
+                <div id="content-inbox-msg" style="display: none;">
+                    <div style="background: rgba(90,46,142,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 0.5rem;" id="inbox-msg-sender">--</p>
+                        <p style="font-size: 1rem; color: var(--text-main);" id="inbox-msg-content">--</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button class="btn-secondary" id="btn-unresolve-msg" onclick="resolveInboxMessage(false)" style="display: none;">Mark Unresolved</button>
+                        <button class="btn-primary" id="btn-resolve-msg" onclick="resolveInboxMessage(true)">Mark Resolved</button>
+                    </div>
+                </div>
+
+                <div id="content-update-request" style="display: none;">
+                    <div style="background: rgba(255,166,0,0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 0.5rem;" id="update-req-sender">--</p>
+                        <p style="font-size: 0.875rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.25rem;">Requested Change:</p>
+                        <p style="font-size: 1rem; color: var(--text-main);" id="update-req-content">--</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button class="btn-secondary" onclick="processUpdateRequest(false)" style="color: #EF4444; border-color: #EF4444;">Deny Request</button>
+                        <button class="btn-primary" onclick="processUpdateRequest(true)">Approve Change</button>
+                    </div>
                 </div>
 
                 <div id="content-thresholds" style="display: none;">
@@ -956,7 +973,7 @@
                     await loadMentors();
                 } catch(e) { console.error("loadMentors error", e); }
                 
-                if(window.filterFeedback) window.filterFeedback('all');
+                if(window.renderStudentInbox) window.renderStudentInbox();
             }
 
             async function loadMetrics() {
@@ -1719,41 +1736,131 @@
                 setTimeout(() => { closeModal(); msg.style.display = 'none'; }, 2000);
             });
 
-        // --- FEEDBACK LIST LOGIC ---
-        window.filterFeedback = function(type) {
+        // --- STUDENT INBOX LOGIC ---
+        let currentInboxItem = null;
+
+        window.renderStudentInbox = function() {
             const msgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
-            let filtered = msgs;
-            if (type !== 'all') {
-                filtered = msgs.filter(m => m.reason === type);
-            }
-            
             const list = document.getElementById('feedback-list');
             if (!list) return;
 
-            if (filtered.length === 0) {
-                list.innerHTML = `<p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">No feedback found.</p>`;
+            // Filter out resolved or approved/denied if desired, but let's show all or just pending for now.
+            // Actually, we'll show all and indicate status.
+            if (msgs.length === 0) {
+                list.innerHTML = `<p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">Inbox is empty.</p>`;
                 return;
             }
 
             // Sort by date newest first
-            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            msgs.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            list.innerHTML = filtered.map(m => {
+            list.innerHTML = msgs.map(m => {
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                const badgeColor = m.reason === 'program' ? '#10B981' : '#F59E0B';
-                const specific = m.specific ? ` - ${m.specific}` : '';
+                const isRequest = m.type === 'request';
+                const isUnread = m.status === 'unread' || m.status === 'pending';
+                const statusColor = isUnread ? '#EF4444' : 'var(--text-muted)';
+                const badgeColor = isRequest ? '#F59E0B' : '#10B981';
+                const titleStr = isRequest ? m.category : m.reason.toUpperCase();
                 
+                let snippet = m.message;
+                if(snippet.length > 50) snippet = snippet.substring(0, 50) + '...';
+
                 return `
-                    <div class="escalation-item" style="flex-direction: column; align-items: flex-start; gap: 0.25rem; padding: 0.5rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px;">
-                        <div style="display: flex; justify-content: space-between; width: 100%;">
-                            <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-main);">${m.student_name || 'Student'}</span>
+                    <div class="escalation-item" style="flex-direction: column; align-items: flex-start; gap: 0.25rem; padding: 0.5rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer;" onclick="openInboxItem('${m.id}')">
+                        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                            <span style="font-size: 0.75rem; font-weight: ${isUnread ? '900' : 'bold'}; color: var(--text-main);"><span style="color: ${statusColor}; margin-right: 4px;">●</span>${m.student_name || 'Student'}</span>
                             <span style="font-size: 0.65rem; color: var(--text-muted);">${dateStr}</span>
                         </div>
-                        <span class="badge" style="background: ${badgeColor}; align-self: flex-start; max-width: 100%; white-space: normal; text-align: left;">${m.reason.toUpperCase()}${specific}</span>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0; line-height: 1.3;">${m.message}</p>
+                        <span class="badge" style="background: ${badgeColor}; align-self: flex-start;">${titleStr}</span>
+                        <p style="font-size: 0.75rem; color: ${isUnread ? 'var(--text-main)' : 'var(--text-muted)'}; margin: 0; line-height: 1.3;">${snippet}</p>
                     </div>
                 `;
             }).join('');
+        };
+
+        window.openInboxItem = function(id) {
+            const msgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
+            const item = msgs.find(m => m.id === id);
+            if(!item) return;
+
+            currentInboxItem = item;
+
+            if (item.type === 'request') {
+                document.getElementById('update-req-sender').innerText = `From: ${item.student_name} (${new Date(item.date).toLocaleDateString()})`;
+                document.getElementById('update-req-content').innerText = item.message;
+                openModal('update-request');
+            } else {
+                document.getElementById('inbox-msg-sender').innerText = `From: ${item.student_name} (${new Date(item.date).toLocaleDateString()})`;
+                document.getElementById('inbox-msg-content').innerText = item.message;
+                
+                const btnRes = document.getElementById('btn-resolve-msg');
+                const btnUnres = document.getElementById('btn-unresolve-msg');
+                if(item.status === 'resolved') {
+                    btnRes.style.display = 'none';
+                    btnUnres.style.display = 'block';
+                } else {
+                    btnRes.style.display = 'block';
+                    btnUnres.style.display = 'none';
+                }
+
+                // mark read if unread
+                if(item.status === 'unread') {
+                    item.status = 'read';
+                    localStorage.setItem('pm_local_messages', JSON.stringify(msgs));
+                    renderStudentInbox();
+                }
+
+                openModal('inbox-msg');
+            }
+        };
+
+        window.resolveInboxMessage = function(resolved) {
+            if(!currentInboxItem) return;
+            const msgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
+            const idx = msgs.findIndex(m => m.id === currentInboxItem.id);
+            if(idx !== -1) {
+                msgs[idx].status = resolved ? 'resolved' : 'read';
+                localStorage.setItem('pm_local_messages', JSON.stringify(msgs));
+                renderStudentInbox();
+                closeModal();
+            }
+        };
+
+        window.processUpdateRequest = function(approved) {
+            if(!currentInboxItem) return;
+            const msgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
+            const idx = msgs.findIndex(m => m.id === currentInboxItem.id);
+            if(idx !== -1) {
+                msgs[idx].status = approved ? 'approved' : 'denied';
+                
+                if (approved) {
+                    // Apply changes based on requestType
+                    if(currentInboxItem.requestType === 'Engagement Plan' && currentInboxItem.payload) {
+                        let eps = JSON.parse(localStorage.getItem('pm_engagement_plans') || '{}');
+                        eps[currentInboxItem.student_id] = currentInboxItem.payload;
+                        localStorage.setItem('pm_engagement_plans', JSON.stringify(eps));
+                    }
+                    if(currentInboxItem.requestType === 'GAB Report' && currentInboxItem.payload) {
+                        let gabs = JSON.parse(localStorage.getItem('pm_gab_reports') || '[]');
+                        // Payload might be an array of reports for this student, just merge it
+                        const existingGabs = gabs.filter(g => g.student_id !== currentInboxItem.student_id);
+                        const newGabs = currentInboxItem.payload.map(g => ({...g, student_id: currentInboxItem.student_id}));
+                        localStorage.setItem('pm_gab_reports', JSON.stringify([...existingGabs, ...newGabs]));
+                    }
+                    if(currentInboxItem.requestType === 'IDP' && currentInboxItem.payload) {
+                        let idps = JSON.parse(localStorage.getItem('pm_idp_records') || '{}');
+                        idps[currentInboxItem.student_id] = currentInboxItem.payload;
+                        localStorage.setItem('pm_idp_records', JSON.stringify(idps));
+                    }
+                    alert("Request Approved and changes applied.");
+                } else {
+                    alert("Request Denied.");
+                }
+
+                localStorage.setItem('pm_local_messages', JSON.stringify(msgs));
+                renderStudentInbox();
+                closeModal();
+            }
         };
 
             document.getElementById('logout-btn').addEventListener('click', async () => {
