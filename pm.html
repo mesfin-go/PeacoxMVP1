@@ -723,8 +723,32 @@
                     </div>
                 </div>
 
+                <div id="content-edit-curriculum" style="display: none; flex-direction: column; gap: 1rem;">
+                    <form id="edit-curriculum-form" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <input type="hidden" id="edit-curr-id">
+                        <div>
+                            <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Element Name</label>
+                            <input type="text" id="edit-curr-name" class="input-full" required>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Category</label>
+                            <select id="edit-curr-category" class="input-full">
+                                <option value="Engagement Plan">Engagement Plan</option>
+                                <option value="Individual Development Plan">Individual Development Plan</option>
+                                <option value="Primary Quarterly Forms">Primary Quarterly Forms</option>
+                                <option value="Upcoming Action Items">Upcoming Action Items</option>
+                                <option value="Center for Growth">Center for Growth</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                            <button type="button" onclick="deleteCurriculumElement()" style="background: #EF4444; color: white; border: none; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer;">Delete</button>
+                            <button type="submit" style="background: var(--peacox-teal); color: white; border: none; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer;">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+
                 <div id="content-assign-curriculum" style="display: none; flex-direction: column; gap: 1rem;">
-                    <p style="font-size: 0.875rem; color: var(--text-muted);">Assign curriculum elements to the students currently visible in your Pipeline tracking list.</p>
+                    <p style="font-size: 0.875rem; color: var(--text-muted);">Step 1: Select curriculum elements to assign.</p>
                     
                     <div>
                         <h3 style="font-size: 1rem; color: var(--text-main); margin-bottom: 0.5rem;">Select Elements to Assign</h3>
@@ -733,7 +757,48 @@
                         </div>
                     </div>
 
-                    <button onclick="executeBulkAssign()" style="background: var(--peacox-purple); color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; width: 100%;">Assign to Filtered Cohort</button>
+                    <button onclick="goToAssignStep2()" style="background: var(--peacox-purple); color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; width: 100%;">Select Students (Next Step)</button>
+                </div>
+
+                <div id="content-bulk-assign-students" style="display: none; flex-direction: column; gap: 1rem; height: 100%;">
+                    <p style="font-size: 0.875rem; color: var(--text-muted); flex-shrink: 0;">Step 2: Select students and optional due date.</p>
+                    
+                    <div style="display: flex; gap: 0.5rem; font-weight: normal; margin-bottom: 0.5rem; flex-shrink: 0;">
+                        <input type="text" id="assign-search" class="input-full" placeholder="Search by name..." style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0;" onkeyup="window.renderAssignStudentTable()">
+                        <select id="assign-filter-status" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="window.renderAssignStudentTable()">
+                            <option value="all">All Status</option>
+                            <option value="active" selected>Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <select id="assign-sort-by" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="window.renderAssignStudentTable()">
+                            <option value="name">Sort by Name</option>
+                            <option value="date">Sort by Enrollment Date</option>
+                        </select>
+                    </div>
+
+                    <div style="flex: 1; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem;">
+                            <thead style="position: sticky; top: 0; background: var(--bg-color); z-index: 10;">
+                                <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+                                    <th style="padding: 0.5rem; width: 40px; text-align: center;"><input type="checkbox" id="assign-select-all" onclick="toggleAllAssignStudents(this)"></th>
+                                    <th style="padding: 0.5rem;">Student Name</th>
+                                    <th style="padding: 0.5rem;">Date Enrolled</th>
+                                    <th style="padding: 0.5rem; text-align: center;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assign-student-list">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; align-items: flex-end; flex-shrink: 0; margin-top: 0.5rem;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Due Date (Optional)</label>
+                            <input type="date" id="assign-due-date" class="input-full" style="margin-bottom: 0;">
+                        </div>
+                        <button onclick="executeBulkAssign()" style="background: var(--peacox-teal); color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; flex: 1;">Confirm Assignment</button>
+                    </div>
                     <p id="assign-msg" style="text-align: center; color: var(--peacox-teal); font-weight: bold; font-size: 0.875rem; display: none; margin-top: 0.5rem;"></p>
                 </div>
 
@@ -815,11 +880,11 @@
             document.getElementById('side-pane').classList.remove('active'); 
             document.getElementById('side-overlay').classList.remove('active');
             
-            ['basic-info', 'add-user', 'edit-user', 'risk-table', 'thresholds', 'manage-curriculum', 'assign-curriculum'].forEach(id => {
+            ['basic-info', 'add-user', 'edit-user', 'risk-table', 'thresholds', 'manage-curriculum', 'assign-curriculum', 'edit-curriculum', 'bulk-assign-students'].forEach(id => {
                 const el = document.getElementById(`content-${id}`);
                 if(el) el.style.display = 'none';
             });
-            document.getElementById(`content-${type}`).style.display = (type === 'risk-table' || type === 'manage-curriculum' || type === 'assign-curriculum') ? 'flex' : 'block';
+            document.getElementById(`content-${type}`).style.display = (type === 'risk-table' || type === 'manage-curriculum' || type === 'assign-curriculum' || type === 'edit-curriculum' || type === 'bulk-assign-students') ? 'flex' : 'block';
             
             const titles = {
                 'basic-info': 'Manager Details', 
@@ -828,7 +893,9 @@
                 'risk-table': 'Risk Matrix Details', 
                 'thresholds': 'Compound Risk Thresholds',
                 'manage-curriculum': 'Manage Curriculum Elements',
-                'assign-curriculum': 'Bulk Assign Curriculum'
+                'assign-curriculum': 'Step 1: Select Elements',
+                'edit-curriculum': 'Edit Curriculum Element',
+                'bulk-assign-students': 'Step 2: Assign Students'
             };
             if (titles[type]) document.getElementById('modal-title').innerText = titles[type];
             document.getElementById('modal-header-controls').style.display = (type === 'add-user') ? 'block' : 'none';
