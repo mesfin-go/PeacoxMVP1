@@ -149,6 +149,9 @@
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0;">
                     <h3 style="margin: 0;">Cohort Roster</h3>
                     <div style="display: flex; gap: 0.5rem; font-weight: normal;">
+                        <select id="filter-enrollment" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="renderStudentTable()">
+                            <option value="all">All Periods</option>
+                        </select>
                         <select id="filter-status" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="renderStudentTable()">
                             <option value="all">All Status</option>
                             <option value="active" selected>Active</option>
@@ -158,6 +161,7 @@
                             <option value="name">Sort by Name</option>
                             <option value="date">Sort by Enrollment Date</option>
                             <option value="gpa">Sort by GAB Score</option>
+                            <option value="enrollment">Sort by Period</option>
                         </select>
                     </div>
                 </div>
@@ -167,6 +171,7 @@
                         <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 10;">
                             <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
                                 <th style="padding: 0.5rem;">Student Name</th>
+                                <th style="padding: 0.5rem;">Enrollment</th>
                                 <th style="padding: 0.5rem;">Date Enrolled</th>
                                 <th style="padding: 0.5rem; text-align: center;" title="Grade (GPA)">Grd.</th>
                                 <th style="padding: 0.5rem; text-align: center;" title="Absences">Att.</th>
@@ -483,7 +488,11 @@
                                 <h3>Student Additional Info</h3>
                                 <div style="display: flex; gap: 1rem;">
                                     <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">School / Grade</label><input type="text" class="input-full" id="new-school" placeholder="e.g. East High / 11th"></div>
+                                    <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Enrollment Period</label><input type="text" class="input-full" id="new-enrollment-period" placeholder="e.g. Fall 2026 - Spring 2027"></div>
+                                </div>
+                                <div style="display: flex; gap: 1rem;">
                                     <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Start Date</label><input type="date" class="input-full" id="new-start-date"></div>
+                                    <div style="flex: 1;"></div>
                                 </div>
                                 <div style="display: flex; gap: 1rem;">
                                     <div style="flex: 1;"><label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Guardian Name</label><input type="text" class="input-full" id="new-guardian-name"></div>
@@ -859,6 +868,25 @@
                 });
 
                 ALL_STUDENTS = merged;
+                
+                // Populate Enrollment filter
+                const enrollFilter = document.getElementById('filter-enrollment');
+                if (enrollFilter) {
+                    const uniquePeriods = [...new Set(ALL_STUDENTS.map(s => s.enrollment_period).filter(p => p && p !== 'Not Specified'))];
+                    
+                    const currentValue = enrollFilter.value;
+                    enrollFilter.innerHTML = '<option value="all">All Periods</option>';
+                    uniquePeriods.sort().forEach(period => {
+                        const opt = document.createElement('option');
+                        opt.value = period;
+                        opt.textContent = period;
+                        enrollFilter.appendChild(opt);
+                    });
+                    if (uniquePeriods.includes(currentValue)) {
+                        enrollFilter.value = currentValue;
+                    }
+                }
+                
                 renderStudentTable();
             }
 
@@ -884,10 +912,13 @@
                     }
                 });
 
+                const enrollFilter = document.getElementById('filter-enrollment') ? document.getElementById('filter-enrollment').value : 'all';
+
                 // Filter
                 let filtered = ALL_STUDENTS.filter(s => {
-                    if (statusFilter === 'active') return s.is_active;
-                    if (statusFilter === 'inactive') return !s.is_active;
+                    if (statusFilter === 'active' && !s.is_active) return false;
+                    if (statusFilter === 'inactive' && s.is_active) return false;
+                    if (enrollFilter !== 'all' && s.enrollment_period !== enrollFilter) return false;
                     return true;
                 });
 
@@ -896,6 +927,7 @@
                     if (sortBy === 'name') return a.name.localeCompare(b.name);
                     if (sortBy === 'date') return new Date(b.created_at) - new Date(a.created_at);
                     if (sortBy === 'gpa') return b.gpa - a.gpa;
+                    if (sortBy === 'enrollment') return (a.enrollment_period || '').localeCompare(b.enrollment_period || '');
                     return 0;
                 });
 
@@ -959,6 +991,7 @@
                             <td style="padding: 0.25rem;">
                                 <a href="student.html?student_id=${s.id}" style="text-decoration: none; color: var(--peacox-purple); font-weight: bold; font-size: 0.85rem;">${s.name}</a>
                             </td>
+                            <td style="padding: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">${s.enrollment_period || 'Not Specified'}</td>
                             <td style="padding: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">${dateStr}</td>
                             <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${gpaColor}; font-size: 0.8rem;">${s.gpa.toFixed(1)}</td>
                             <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${attColor}; font-size: 0.8rem;">${s.absent || 0}</td>
@@ -1284,6 +1317,7 @@
                 const epEvent = Array.from(document.querySelectorAll('.ep-event:checked')).map(cb => cb.value);
 
                 const schoolGrade = document.getElementById('new-school') ? document.getElementById('new-school').value : '';
+                const enrollmentPeriod = document.getElementById('new-enrollment-period') ? document.getElementById('new-enrollment-period').value : '';
                 const startDate = document.getElementById('new-start-date') ? document.getElementById('new-start-date').value : '';
                 const guardianName = document.getElementById('new-guardian-name') ? document.getElementById('new-guardian-name').value : '';
                 const guardianPhone = document.getElementById('new-guardian-phone') ? document.getElementById('new-guardian-phone').value : '';
@@ -1305,6 +1339,7 @@
                         engagement_community: epComm,
                         engagement_events: epEvent,
                         school_grade: schoolGrade,
+                        enrollment_period: enrollmentPeriod,
                         start_date: startDate,
                         guardian_name: guardianName,
                         guardian_phone: guardianPhone

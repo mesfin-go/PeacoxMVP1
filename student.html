@@ -201,7 +201,7 @@
                 </div>
                 <p class="text-sm text-muted" id="header-mentor-name">Mentor: Pending Assignment</p>
                 <div class="header-tags">
-                    <span class="tag tag-info">Program: Sept 2025 – Sept 2026</span>
+                    <span class="tag tag-info" id="student-enrollment-period">Program: Sept 2025 – Sept 2026</span>
                 </div>
             </div>
         </div>
@@ -1079,6 +1079,11 @@
                     document.getElementById('info-guardian-phone').innerText = profile.guardian_phone || meta.guardian_phone || '--';
                     document.getElementById('info-home-address').innerText = profile.address || '--';
                     document.getElementById('student-avatar').innerText = initials.toUpperCase();
+                    
+                    const ep = profile.enrollment_period || meta.enrollment_period;
+                    if (ep) {
+                        document.getElementById('student-enrollment-period').innerText = `Program: ${ep}`;
+                    }
                     
                     loadUserData(); 
                 } else {
