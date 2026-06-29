@@ -205,7 +205,10 @@
                 </div>
             </div>
         </div>
-        <button class="logout-btn" id="logout-btn">Sign Out</button>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <button onclick="openModal('contact-program')" style="padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 4px; background: white; color: var(--peacox-purple); border: 1px solid var(--peacox-purple); font-weight: bold; cursor: pointer;">Contact Program</button>
+            <button class="logout-btn" id="logout-btn">Sign Out</button>
+        </div>
     </header>    <main>
         <section class="card col-1 row-1 stagger-1" aria-label="Quarterly Performance">
             <h3 class="card-header">Quarterly Performance <span id="qtr-perf-label" style="text-transform: none; font-weight: normal; float: right; color: var(--peacox-teal);">No Data</span></h3>
@@ -502,6 +505,45 @@
                     <button class="btn-primary" onclick="saveIDP()">Save Development Plan</button>
                 </div>
 
+                <div id="content-contact-program" style="display: none;">
+                    <div class="form-section">
+                        <h3>Contact Program Manager</h3>
+                        <label class="info-label">Reason for Contact</label>
+                        <select id="contact-reason" class="input-full" onchange="toggleContactSubOptions()">
+                            <option value="">Select a reason...</option>
+                            <option value="program">Program / Curriculum Concern</option>
+                            <option value="mentor">Mentor Concern</option>
+                        </select>
+
+                        <div id="contact-program-sub" style="display: none; margin-top: 1rem;">
+                            <label class="info-label">Which Program/Curriculum Aspect?</label>
+                            <select id="contact-program-aspect" class="input-full">
+                                <option value="Positive Action">Positive Action</option>
+                                <option value="Youth Advisory Committee">Youth Advisory Committee</option>
+                                <option value="Family Game Night">Family Game Night</option>
+                                <option value="Gracehaven">Gracehaven</option>
+                                <option value="The Message Campaign">The Message Campaign</option>
+                                <option value="STEM Academy">STEM Academy</option>
+                                <option value="Community Engagement">Community Engagement</option>
+                                <option value="Major Events">Major Events</option>
+                                <option value="Other">Other (General Program)</option>
+                            </select>
+                        </div>
+
+                        <div id="contact-mentor-sub" style="display: none; margin-top: 1rem;">
+                            <label class="info-label">Which Mentor?</label>
+                            <input type="text" id="contact-mentor-name" class="input-full" placeholder="Enter mentor's name">
+                        </div>
+
+                        <div style="margin-top: 1rem;">
+                            <label class="info-label">Message Details</label>
+                            <textarea id="contact-message" class="input-full" rows="4" placeholder="Describe your concern or question here..."></textarea>
+                        </div>
+                        
+                        <button class="btn-primary" onclick="submitContactProgram()" style="margin-top: 1rem;">Send Message</button>
+                    </div>
+                </div>
+
                 <div id="content-mentor-assignment" style="display: none;">
                     <div class="form-section">
                         <h3>Available Mentors</h3>
@@ -721,6 +763,7 @@
             document.getElementById('content-engagement-plan').style.display = 'none';
             document.getElementById('content-idp-plan').style.display = 'none';
             document.getElementById('content-mentor-assignment').style.display = 'none';
+            document.getElementById('content-contact-program').style.display = 'none';
 
             let title = "Update Information";
             if(contentType === 'basic-info') { title = "Basic Information"; document.getElementById('content-basic-info').style.display = 'block'; }
@@ -728,12 +771,60 @@
             if(contentType === 'engagement-plan') { title = "Engagement Curriculum"; document.getElementById('content-engagement-plan').style.display = 'block'; }
             if(contentType === 'idp-plan') { title = "Individual Development Plan"; document.getElementById('content-idp-plan').style.display = 'block'; }
             if(contentType === 'mentor-assignment') { title = "Mentor Assignment"; document.getElementById('content-mentor-assignment').style.display = 'block'; }
+            if(contentType === 'contact-program') { title = "Contact the Program"; document.getElementById('content-contact-program').style.display = 'block'; }
+
 
             document.getElementById('modal-title').innerText = title;
             document.getElementById('master-modal').style.display = 'flex';
         }
 
         function closeModal() { document.getElementById('master-modal').style.display = 'none'; }
+
+        function toggleContactSubOptions() {
+            const reason = document.getElementById('contact-reason').value;
+            document.getElementById('contact-program-sub').style.display = (reason === 'program') ? 'block' : 'none';
+            document.getElementById('contact-mentor-sub').style.display = (reason === 'mentor') ? 'block' : 'none';
+        }
+
+        function submitContactProgram() {
+            const reason = document.getElementById('contact-reason').value;
+            const msg = document.getElementById('contact-message').value;
+            
+            if (!reason || !msg.trim()) {
+                alert("Please select a reason and enter a message.");
+                return;
+            }
+            
+            let specific = "";
+            if (reason === 'program') {
+                specific = document.getElementById('contact-program-aspect').value;
+            } else if (reason === 'mentor') {
+                specific = document.getElementById('contact-mentor-name').value;
+            }
+            
+            const newMsg = {
+                id: 'msg-' + Date.now(),
+                type: 'message',
+                student_id: GLOBAL_USER_ID,
+                student_name: document.getElementById('student-name').innerText,
+                reason: reason,
+                specific: specific,
+                message: msg,
+                date: new Date().toISOString(),
+                status: 'unread'
+            };
+            
+            let allMsgs = JSON.parse(localStorage.getItem('pm_local_messages') || '[]');
+            allMsgs.push(newMsg);
+            localStorage.setItem('pm_local_messages', JSON.stringify(allMsgs));
+            
+            alert("Your message has been sent to the program manager.");
+            document.getElementById('contact-reason').value = '';
+            document.getElementById('contact-message').value = '';
+            toggleContactSubOptions();
+            closeModal();
+        }
+
 
         // --- 4. SMART CHECKBOX LIMITERS ---
         function enforceLimits(groupId, maxAllowed) {
