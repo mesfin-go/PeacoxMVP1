@@ -20,6 +20,7 @@
             --tabs-height: clamp(30px, 3vw, 60px);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        html { font-size: clamp(12px, 1.2vw, 18px); }
         body { background-color: var(--bg-color); height: 100vh; display: flex; flex-direction: column; overflow: hidden; font-size: var(--font-base); }
 
         /* HEADER & AVATAR */
@@ -413,7 +414,28 @@
 
                 <!-- Student Inbox -->
                 <div class="card" style="border-left: 4px solid var(--peacox-purple); min-height: max-content; display: flex; flex-direction: column;">
-                    <h3 class="card-header" style="color: var(--peacox-purple);">Student Inbox</h3>
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0;">
+                        <h3 style="margin: 0; color: var(--peacox-purple);">Student Inbox</h3>
+                        <div style="display: flex; gap: 0.5rem; font-weight: normal; align-items: center;">
+                            <select id="inbox-filter-status" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="window.renderStudentInbox()">
+                                <option value="all">All Status</option>
+                                <option value="unread">Unread / Pending</option>
+                                <option value="unresolved">Unresolved</option>
+                                <option value="resolved">Resolved / Approved</option>
+                            </select>
+                            <select id="inbox-filter-category" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="window.renderStudentInbox()">
+                                <option value="all">All Categories</option>
+                                <option value="request">Update Requests</option>
+                                <option value="mentor">About Mentor</option>
+                                <option value="program">About Program</option>
+                            </select>
+                            <select id="inbox-sort" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="window.renderStudentInbox()">
+                                <option value="date-desc">Newest First</option>
+                                <option value="date-asc">Oldest First</option>
+                                <option value="enrollment">Enrollment Period</option>
+                            </select>
+                        </div>
+                    </div>
                     
                     <div id="feedback-list" style="display: flex; flex-direction: column; flex: 1; gap: 0.5rem; margin-top: 0.75rem; overflow-y: auto;">
                         <!-- Feedback/Request items injected here -->
@@ -1856,17 +1878,54 @@
             const list = document.getElementById('feedback-list');
             if (!list) return;
 
-            // Filter out resolved or approved/denied if desired, but let's show all or just pending for now.
-            // Actually, we'll show all and indicate status.
-            if (msgs.length === 0) {
-                list.innerHTML = `<p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">Inbox is empty.</p>`;
+            // Apply Filters
+            const filterStatus = document.getElementById('inbox-filter-status')?.value || 'all';
+            const filterCategory = document.getElementById('inbox-filter-category')?.value || 'all';
+            const sortBy = document.getElementById('inbox-sort')?.value || 'date-desc';
+
+            let filteredMsgs = msgs.filter(m => {
+                const isRequest = m.type === 'request';
+                let normStatus = '';
+                if (isRequest) {
+                    if (m.status === 'pending') normStatus = 'unread';
+                    else normStatus = 'resolved';
+                } else {
+                    if (m.status === 'unread') normStatus = 'unread';
+                    else if (m.status === 'read') normStatus = 'unresolved';
+                    else normStatus = 'resolved';
+                }
+
+                if (filterStatus === 'unread' && normStatus !== 'unread') return false;
+                if (filterStatus === 'unresolved' && normStatus !== 'unresolved') return false;
+                if (filterStatus === 'resolved' && normStatus !== 'resolved') return false;
+
+                if (filterCategory === 'request' && !isRequest) return false;
+                if (filterCategory === 'mentor' && m.category !== 'Mentor') return false;
+                if (filterCategory === 'program' && m.category !== 'Program') return false;
+
+                return true;
+            });
+
+            // Apply Sort
+            filteredMsgs.sort((a, b) => {
+                if (sortBy === 'date-desc') return new Date(b.date) - new Date(a.date);
+                if (sortBy === 'date-asc') return new Date(a.date) - new Date(b.date);
+                if (sortBy === 'enrollment') {
+                    const studentA = ALL_STUDENTS.find(s => s.id === a.student_id);
+                    const studentB = ALL_STUDENTS.find(s => s.id === b.student_id);
+                    const ea = studentA ? (studentA.enrollment_period || '') : '';
+                    const eb = studentB ? (studentB.enrollment_period || '') : '';
+                    return ea.localeCompare(eb);
+                }
+                return 0;
+            });
+
+            if (filteredMsgs.length === 0) {
+                list.innerHTML = `<p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">No messages match the current filters.</p>`;
                 return;
             }
 
-            // Sort by date newest first
-            msgs.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            list.innerHTML = msgs.map(m => {
+            list.innerHTML = filteredMsgs.map(m => {
                 const dateStr = new Date(m.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 const isRequest = m.type === 'request';
                 const isUnread = m.status === 'unread' || m.status === 'pending';
