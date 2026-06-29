@@ -40,8 +40,9 @@
         .tab-btn.active { color: var(--peacox-purple); border-bottom-color: var(--peacox-purple); }
 
         /* TAB CONTENT GRIDS */
-        main { display: flex; flex-direction: column; width: 100vw; height: calc(100vh - var(--navbar-height) - var(--tabs-height)); padding: var(--card-padding); box-sizing: border-box; }
-        .tab-pane { display: none; flex: 1; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: var(--grid-gap); }
+        /* TAB CONTENT GRIDS */
+        main { display: flex; flex-direction: column; width: 100vw; flex: 1; min-height: 0; padding: var(--card-padding); box-sizing: border-box; }
+        .tab-pane { display: none; flex: 1; min-height: 0; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: var(--grid-gap); }
         .tab-pane.active { display: grid; }
         
         .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--card-radius); padding: var(--card-padding); display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; height: 100%; box-sizing: border-box; }
@@ -437,7 +438,7 @@
                         </div>
                     </div>
                     
-                    <div id="feedback-list" style="display: flex; flex-direction: column; flex: 1; gap: 0.5rem; margin-top: 0.75rem; overflow-y: auto;">
+                    <div id="feedback-list" style="display: flex; flex-direction: column; flex: 1; gap: 0.25rem; margin-top: 0.75rem; overflow-y: auto;">
                         <!-- Feedback/Request items injected here -->
                     </div>
                 </div>
@@ -1952,7 +1953,7 @@
                 if(snippet.length > 50) snippet = snippet.substring(0, 50) + '...';
 
                 return `
-                    <div class="escalation-item" style="flex-direction: column; align-items: flex-start; gap: 0.15rem; padding: 0.3rem 0.4rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer;" onclick="openInboxItem('${m.id}')">
+                    <div class="escalation-item" style="margin: 0; flex-direction: column; align-items: flex-start; gap: 0.15rem; padding: 0.25rem 0.4rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer;" onclick="openInboxItem('${m.id}')">
                         <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
                             <span style="font-size: 0.7rem; font-weight: ${isUnread ? '900' : 'bold'}; color: var(--text-main);"><span style="color: ${statusColor}; margin-right: 4px;">●</span>${m.student_name || 'Student'}</span>
                             <span style="font-size: 0.6rem; color: var(--text-muted);">${dateStr}</span>
