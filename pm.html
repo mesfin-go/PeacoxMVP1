@@ -184,16 +184,6 @@
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0;">
                     <h3 style="margin: 0;">Cohort Roster</h3>
                     <div style="display: flex; gap: 0.5rem; font-weight: normal; align-items: center;">
-                        <div style="display: flex; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.25rem; overflow: hidden; margin-right: 0.5rem;">
-                            <button onclick="window.copyCohortList()" style="background: none; border: none; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer; border-right: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.25rem;" title="Copy list to clipboard">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                Copy
-                            </button>
-                            <button onclick="window.exportCohortList()" style="background: none; border: none; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;" title="Export as CSV">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                                Export
-                            </button>
-                        </div>
                         <select id="filter-enrollment" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="renderStudentTable()">
                             <option value="all">All Periods</option>
                         </select>
@@ -208,6 +198,16 @@
                             <option value="gpa">Sort by GAB Score</option>
                             <option value="enrollment">Sort by Period</option>
                         </select>
+                        <div style="display: flex; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.25rem; overflow: hidden; margin-left: 0.5rem;">
+                            <button onclick="window.copyCohortList()" style="background: none; border: none; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer; border-right: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.25rem;" title="Copy list to clipboard">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                Copy
+                            </button>
+                            <button onclick="window.exportCohortList()" style="background: none; border: none; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;" title="Export as CSV">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Export
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -239,7 +239,11 @@
                     <div style="display: flex; justify-content: space-between; align-items: center;" class="card-header">
                         <h3 style="margin: 0; padding: 0; border: none; font-size: inherit;">GAB Risk Matrix <span id="risk-n-count">(N=0)</span></h3>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
-                            <div style="display: flex; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.25rem; overflow: hidden;">
+                            <button class="btn-secondary" onclick="window.openThresholdModal()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem; height: max-content;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                Thresholds
+                            </button>
+                            <div style="display: flex; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.25rem; overflow: hidden; margin-left: 0.5rem;">
                                 <button onclick="window.copyVennList()" style="background: none; border: none; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer; border-right: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.25rem;" title="Copy list to clipboard">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                     Copy
@@ -249,10 +253,6 @@
                                     Export
                                 </button>
                             </div>
-                            <button class="btn-secondary" onclick="window.openThresholdModal()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem; height: max-content;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                                Thresholds
-                            </button>
                         </div>
                     </div>
                     <div style="display: flex; flex-direction: row; gap: 1rem; margin-top: 0.5rem;">
