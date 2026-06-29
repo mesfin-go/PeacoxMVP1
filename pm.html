@@ -290,7 +290,7 @@
                                     <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 10;">
                                         <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
                                             <th style="padding: 0.5rem;">Student Name</th>
-                                            <th style="padding: 0.5rem;">Date Enrolled</th>
+                                            <th style="padding: 0.5rem;">Enrollment</th>
                                             <th style="padding: 0.5rem; text-align: center;" title="Grade (GPA)">Grd.</th>
                                             <th style="padding: 0.5rem; text-align: center;" title="Absences">Att.</th>
                                             <th style="padding: 0.5rem; text-align: center;" title="Behavior Incidents">Bhv.</th>
@@ -1116,7 +1116,7 @@
                             <td style="padding: 0.25rem;">
                                 <a href="student.html?student_id=${s.id}" style="text-decoration: none; color: var(--peacox-purple); font-weight: bold; font-size: 0.85rem;">${s.name}</a>
                             </td>
-                            <td style="padding: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">${dateStr}</td>
+                            <td style="padding: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">${s.enrollment_period || 'Not Specified'}</td>
                             <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${gpaColor}; font-size: 0.8rem;">${s.gpa.toFixed(1)}</td>
                             <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${attColor}; font-size: 0.8rem;">${s.absent || 0}</td>
                             <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${bhvColor}; font-size: 0.8rem;">${s.behavior || 0}</td>
@@ -1154,7 +1154,7 @@
                 const rows = Array.from(tbody.querySelectorAll('tr'));
                 if (rows.length === 0 || rows[0].querySelector('td[colspan]')) return alert("No students in the selected category.");
                 
-                let csvContent = "data:text/csv;charset=utf-8,Student Name,Date Enrolled,Grd.,Att.,Bhv.,Status\n";
+                let csvContent = "data:text/csv;charset=utf-8,Student Name,Enrollment,Grd.,Att.,Bhv.,Status\n";
                 
                 rows.forEach(row => {
                     const name = row.querySelector('a')?.textContent || "";
