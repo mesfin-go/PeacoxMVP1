@@ -249,9 +249,9 @@
             
             <!-- Lower Half: Events List -->
             <div class="events-wrapper" style="flex: 1; display: flex; flex-direction: column; overflow-y: auto; min-height: 0;">
-                <h4 style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; letter-spacing: 0.05em; flex-shrink: 0; margin-bottom: 0.5rem;">May Events</h4>
+                <h4 id="cal-events-title" style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; letter-spacing: 0.05em; flex-shrink: 0; margin-bottom: 0.5rem;">May Events</h4>
                 
-                <div style="display: flex; flex-direction: column; gap: 0.4rem; flex: 1; overflow-y: auto; padding-right: 0.25rem;">
+                <div id="cal-events-list" style="display: flex; flex-direction: column; gap: 0.4rem; flex: 1; overflow-y: auto; padding-right: 0.25rem;">
                     <p class="text-sm text-muted" style="text-align: center; margin-top: 1rem; font-style: italic;">No events scheduled.</p>
                 </div>
             </div>
@@ -578,17 +578,79 @@
                     .lte('date', endStr);
                 if(data) data.forEach(row => savedNotes[row.date] = row.note);
             }
+
+            // Fetch curriculum assignments
+            let currAssignments = [];
+            let currElements = [];
+            if(GLOBAL_USER_ID) {
+                const storedElements = localStorage.getItem('pm_curriculum_elements');
+                if(storedElements) currElements = JSON.parse(storedElements);
+
+                const storedAssn = localStorage.getItem('pm_curriculum_assignments');
+                if(storedAssn) {
+                    const allAssn = JSON.parse(storedAssn);
+                    if(allAssn[GLOBAL_USER_ID]) {
+                        currAssignments = allAssn[GLOBAL_USER_ID];
+                    }
+                }
+            }
+
+            let monthEvents = [];
             
             for(let d = 1; d <= daysInMonth; d++) {
                 const isToday = (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) ? 'today' : '';
                 const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 const note = savedNotes[dateKey];
-                const noteDot = note ? `<div class="cal-note-dot"></div>` : '';
-                const titleAttr = note ? `title="${note}"` : '';
+
+                // Find curriculum events due today
+                const dueToday = currAssignments.filter(a => a.dueDate && a.dueDate.startsWith(dateKey));
                 
-                html += `<div class="cal-day ${isToday}" onclick="addCalNote('${dateKey}')" ${titleAttr}>${d}${noteDot}</div>`;
+                let noteDot = note ? `<div class="cal-note-dot"></div>` : '';
+                if(dueToday.length > 0) noteDot += `<div class="cal-note-dot" style="background: var(--peacox-purple);"></div>`;
+
+                let titleLines = [];
+                if(note) {
+                    titleLines.push(note);
+                    monthEvents.push({ date: d, title: 'Reminder', desc: note, color: 'var(--peacox-teal)' });
+                }
+                dueToday.forEach(a => {
+                    const elData = currElements.find(e => e.id === a.id);
+                    if(elData) {
+                        titleLines.push(`Due: ${elData.name}`);
+                        monthEvents.push({ date: d, title: elData.name, desc: elData.category, color: 'var(--peacox-purple)' });
+                    }
+                });
+
+                const titleAttr = titleLines.length > 0 ? `title="${titleLines.join('\n')}"` : '';
+                html += `<div class="cal-day ${isToday}" onclick="addCalNote('${dateKey}')" ${titleAttr}>${d}<div style="display: flex; gap: 2px; justify-content: center; margin-top: 2px;">${noteDot}</div></div>`;
             }
             calGrid.innerHTML = html;
+
+            // Render Events List
+            const eventsTitle = document.getElementById('cal-events-title');
+            if (eventsTitle) eventsTitle.innerText = `${monthNames[month]} Events`;
+
+            const eventsList = document.getElementById('cal-events-list');
+            if (eventsList) {
+                if (monthEvents.length === 0) {
+                    eventsList.innerHTML = `<p class="text-sm text-muted" style="text-align: center; margin-top: 1rem; font-style: italic;">No events scheduled.</p>`;
+                } else {
+                    // Sort events by date ascending
+                    monthEvents.sort((a,b) => a.date - b.date);
+                    
+                    eventsList.innerHTML = monthEvents.map(ev => `
+                        <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-left: 3px solid ${ev.color}; padding: 0.4rem 0.5rem; border-radius: 4px; display: flex; align-items: flex-start; gap: 0.5rem;">
+                            <div style="background: ${ev.color}20; color: ${ev.color}; font-weight: bold; font-size: 0.7rem; padding: 0.2rem 0.4rem; border-radius: 4px; min-width: 35px; text-align: center;">
+                                ${monthNames[month].substring(0,3)} ${ev.date}
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <h5 style="margin: 0; font-size: 0.75rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ev.title}</h5>
+                                <p style="margin: 0; font-size: 0.65rem; color: var(--text-muted); line-height: 1.2;">${ev.desc}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
         }
 
         function changeMonth(dir) {
