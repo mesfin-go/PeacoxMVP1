@@ -916,7 +916,7 @@
                 if (rCountEl) {
                     rCountEl.innerText = `(N=${filtered.length})`;
                     
-                    const el = (id, val) => { const e = document.getElementById(id); if(e) e.innerText = val; };
+                    const el = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
                     el('venn-g-ok', vG_Ok); el('venn-a-ok', vA_Ok); el('venn-b-ok', vB_Ok);
                     el('venn-g-only', vG_Only); el('venn-a-only', vA_Only); el('venn-b-only', vB_Only);
                     el('venn-ga', vGA); el('venn-gb', vGB); el('venn-ab', vAB);
