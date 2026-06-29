@@ -850,6 +850,21 @@
 
                 const statusFilter = document.getElementById('filter-status').value;
                 const sortBy = document.getElementById('sort-by').value;
+                const localGab = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
+
+                // First, apply local storage GAB overrides to ALL_STUDENTS
+                ALL_STUDENTS.forEach(s => {
+                    const history = localGab[s.id] || [];
+                    if (history.length > 0) {
+                        // student.html uses unshift, so the newest is at index 0
+                        const latest = history[0];
+                        if (latest.gpa !== undefined) s.gpa = parseFloat(latest.gpa) || 0;
+                        if (latest.absent !== undefined) s.absent = parseInt(latest.absent) || 0;
+                        else if (latest.attendance_pct !== undefined) s.absent = parseInt(latest.attendance_pct) || 0;
+                        if (latest.behavior !== undefined) s.behavior = parseInt(latest.behavior) || 0;
+                        else if (latest.behavior_pct !== undefined) s.behavior = parseInt(latest.behavior_pct) || 0;
+                    }
+                });
 
                 // Filter
                 let filtered = ALL_STUDENTS.filter(s => {
@@ -872,20 +887,10 @@
                 let vGA = 0, vGB = 0, vAB = 0;
                 let vGAB = 0;
                 
-                const localGab = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
-
                 filtered.forEach(s => {
                     let gpa = s.gpa;
                     let absent = s.absent || 0;
                     let behavior = s.behavior || 0;
-                    
-                    const history = localGab[s.id] || [];
-                    if (history.length > 0) {
-                        const latest = history[history.length - 1];
-                        if (latest.gpa !== undefined) gpa = parseFloat(latest.gpa);
-                        if (latest.absent !== undefined) absent = parseInt(latest.absent);
-                        if (latest.behavior !== undefined) behavior = parseInt(latest.behavior);
-                    }
                     
                     const t = window.GAB_THRESHOLDS || { gpa: 2.0, absent: 4, behavior: 0 };
                     const hasG = (gpa <= t.gpa);
