@@ -183,7 +183,17 @@
             <div class="card col-1 row-2" style="overflow: hidden; display: flex; flex-direction: column;">
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0;">
                     <h3 style="margin: 0;">Cohort Roster</h3>
-                    <div style="display: flex; gap: 0.5rem; font-weight: normal;">
+                    <div style="display: flex; gap: 0.5rem; font-weight: normal; align-items: center;">
+                        <div style="display: flex; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.25rem; overflow: hidden; margin-right: 0.5rem;">
+                            <button onclick="window.copyCohortList()" style="background: none; border: none; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer; border-right: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.25rem;" title="Copy list to clipboard">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                Copy
+                            </button>
+                            <button onclick="window.exportCohortList()" style="background: none; border: none; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;" title="Export as CSV">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Export
+                            </button>
+                        </div>
                         <select id="filter-enrollment" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="renderStudentTable()">
                             <option value="all">All Periods</option>
                         </select>
@@ -302,15 +312,15 @@
                                 <text x="80" y="250"><tspan id="venn-a-ok" x="80" font-weight="bold">0</tspan><tspan x="80" dy="12">A. Ok</tspan></text>
                                 <text x="320" y="250"><tspan id="venn-b-ok" x="320" font-weight="bold">0</tspan><tspan x="320" dy="12">B. Ok</tspan></text>
 
-                                <text x="200" y="90"><tspan id="venn-g-only" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G. Risk</tspan></text>
-                                <text x="125" y="215"><tspan id="venn-a-only" x="125" font-weight="bold">0</tspan><tspan x="125" dy="12">A. Risk</tspan></text>
-                                <text x="275" y="215"><tspan id="venn-b-only" x="275" font-weight="bold">0</tspan><tspan x="275" dy="12">B. Risk</tspan></text>
+                                <text x="200" y="75"><tspan id="venn-g-only" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G. Risk</tspan></text>
+                                <text x="110" y="235"><tspan id="venn-a-only" x="110" font-weight="bold">0</tspan><tspan x="110" dy="12">A. Risk</tspan></text>
+                                <text x="290" y="235"><tspan id="venn-b-only" x="290" font-weight="bold">0</tspan><tspan x="290" dy="12">B. Risk</tspan></text>
 
-                                <text x="150" y="150"><tspan id="venn-ga" x="150" font-weight="bold">0</tspan><tspan x="150" dy="12">G.A. Risk</tspan></text>
-                                <text x="250" y="150"><tspan id="venn-gb" x="250" font-weight="bold">0</tspan><tspan x="250" dy="12">G.B. Risk</tspan></text>
-                                <text x="200" y="240"><tspan id="venn-ab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">A.B Risk</tspan></text>
+                                <text x="155" y="160"><tspan id="venn-ga" x="155" font-weight="bold">0</tspan><tspan x="155" dy="12">G.A. Risk</tspan></text>
+                                <text x="245" y="160"><tspan id="venn-gb" x="245" font-weight="bold">0</tspan><tspan x="245" dy="12">G.B. Risk</tspan></text>
+                                <text x="200" y="245"><tspan id="venn-ab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">A.B Risk</tspan></text>
 
-                                <text x="200" y="175" fill="white"><tspan id="venn-gab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G.A.B. Risk</tspan></text>
+                                <text x="200" y="180" fill="white"><tspan id="venn-gab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G.A.B. Risk</tspan></text>
                                 
                                 <text x="200" y="15" font-size="14" font-weight="bold">Grd.</text>
                                 <text x="40" y="195" font-size="14" font-weight="bold">Att.</text>
@@ -1359,6 +1369,48 @@
                 const link = document.createElement("a");
                 link.setAttribute("href", encodedUri);
                 link.setAttribute("download", `GAB_Risk_Category_${window.currentRiskFilter}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            window.copyCohortList = function() {
+                const tbody = document.getElementById('student-table-body');
+                if(!tbody) return alert("Table not found.");
+                
+                const names = Array.from(tbody.querySelectorAll('tr')).map(tr => tr.cells[0]?.textContent.trim()).filter(n => n && n !== 'Loading students...').join('\n');
+                if (!names) return alert("No students in the current view.");
+                
+                navigator.clipboard.writeText(names)
+                    .then(() => alert("Copied " + names.split('\n').length + " student names to clipboard!"))
+                    .catch(err => alert("Failed to copy: " + err));
+            };
+
+            window.exportCohortList = function() {
+                const tbody = document.getElementById('student-table-body');
+                if(!tbody) return alert("Table not found.");
+                
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                if (rows.length === 0 || rows[0].querySelector('td[colspan]')) return alert("No students in the current view.");
+                
+                let csvContent = "data:text/csv;charset=utf-8,Student Name,Enrollment,Date Enrolled,Grd.,Att.,Bhv.,Status\n";
+                
+                rows.forEach(row => {
+                    const name = row.cells[0]?.textContent.trim() || "";
+                    const enroll = row.cells[1]?.textContent.trim() || "";
+                    const date = row.cells[2]?.textContent.trim() || "";
+                    const grd = row.cells[3]?.textContent.trim() || "";
+                    const att = row.cells[4]?.textContent.trim() || "";
+                    const bhv = row.cells[5]?.textContent.trim() || "";
+                    const status = row.cells[6]?.textContent.trim() || "";
+                    
+                    csvContent += `"${name}","${enroll}","${date}","${grd}","${att}","${bhv}","${status}"\n`;
+                });
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `Cohort_Roster.csv`);
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
