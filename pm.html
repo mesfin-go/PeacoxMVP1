@@ -111,6 +111,41 @@
         .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
         .input-full { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; margin-bottom: 0.75rem; font-family: inherit;}
         .input-full:focus { outline: none; border-color: var(--peacox-purple); }
+
+        /* 6. Pipeline & Curriculum Layout */
+        .pipeline-layout { display: flex; height: 100%; gap: var(--grid-gap); }
+        .pipeline-left { width: 40%; display: flex; flex-direction: column; gap: var(--grid-gap); }
+        .pipeline-right { width: 60%; display: flex; flex-direction: column; gap: var(--grid-gap); }
+        .student-row-hover:hover { background-color: #F9FAFB; cursor: pointer; }
+        .student-row-hover.selected { background-color: #F3F4F6; border-left: 4px solid var(--peacox-purple); }
+        
+        /* 7. Circular Progress */
+        .circular-progress { position: relative; width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: conic-gradient(var(--peacox-teal) 0deg, #E5E7EB 0deg); transition: background 0.5s ease-out; }
+        .circular-progress::before { content: ""; position: absolute; inset: 8px; border-radius: 50%; background-color: var(--card-bg); }
+        .progress-value { position: relative; font-weight: 900; font-size: 1.25rem; color: var(--text-main); }
+        
+        /* 8. Vertical Timeline */
+        .timeline { position: relative; padding: 1rem 0 1rem 1rem; margin-top: 1rem; }
+        .timeline::before { content: ''; position: absolute; left: 1rem; top: 0; bottom: 0; width: 2px; background: var(--border-color); }
+        .timeline-item { position: relative; padding-left: 2rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.25rem; }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-item::before { content: ''; position: absolute; left: -0.45rem; top: 0.25rem; width: 1rem; height: 1rem; border-radius: 50%; background: white; border: 2px solid var(--border-color); transition: all 0.3s; z-index: 1;}
+        
+        .timeline-item.status-completed::before { background: var(--peacox-teal); border-color: var(--peacox-teal); }
+        .timeline-item.status-in_progress::before { background: #F59E0B; border-color: #F59E0B; }
+        .timeline-item.status-not_started::before { background: white; border-color: var(--border-color); }
+
+        .timeline-content { background: #F9FAFB; border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem; display: flex; justify-content: space-between; align-items: center; transition: box-shadow 0.2s;}
+        .timeline-content:hover { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        
+        .timeline-title { font-weight: bold; color: var(--text-main); font-size: 0.875rem; margin-bottom: 0.25rem; }
+        .timeline-category { font-size: 0.75rem; color: var(--peacox-purple); font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; }
+        .timeline-date { font-size: 0.75rem; color: var(--text-muted); }
+
+        .status-select { padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color); font-size: 0.75rem; font-weight: bold; background: white; cursor: pointer; outline: none; }
+        .status-select.completed { color: var(--peacox-teal); border-color: var(--peacox-teal); }
+        .status-select.in_progress { color: #F59E0B; border-color: #F59E0B; }
+        .status-select.not_started { color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -367,47 +402,64 @@
 
         </div>
 
-        <div id="tab-pipeline" class="tab-pane">
-            
-            <div class="card col-2 row-2">
-                <h3 class="card-header">Global GRO-WORK Pipeline <span style="text-transform: none; color: var(--text-muted);">N=150</span></h3>
-                <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-evenly;">
-                    <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main); font-size: 0.75rem;">1. Pre-employment</span><span style="color: var(--text-muted); font-size: 0.75rem;">150 (100%)</span></div><div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div></div>
-                    <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main); font-size: 0.75rem;">2. Resume & Cover Letter</span><span style="color: var(--text-muted); font-size: 0.75rem;">112 (74%)</span></div><div class="progress-track"><div class="progress-fill" style="width: 74%;"></div></div></div>
-                    <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main); font-size: 0.75rem;">3. Job Skill Training</span><span style="color: var(--text-muted); font-size: 0.75rem;">68 (45%)</span></div><div class="progress-track"><div class="progress-fill purple" style="width: 45%;"></div></div></div>
-                    <div class="progress-group"><div class="progress-header"><span style="color: var(--text-main); font-size: 0.75rem;">4. Career Assessment</span><span style="color: var(--text-muted); font-size: 0.75rem;">32 (21%)</span></div><div class="progress-track"><div class="progress-fill purple" style="width: 21%;"></div></div></div>
+        <div id="tab-pipeline" class="tab-pane" style="display: none; grid-template-columns: 1fr; grid-template-rows: 1fr; overflow: hidden;">
+            <div class="pipeline-layout">
+                <!-- Left: Student List -->
+                <div class="card pipeline-left" style="overflow: hidden; padding-bottom: 0;">
+                    <div class="card-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0;">
+                        <h3 style="margin: 0;">Curriculum Tracking</h3>
+                        <div style="display: flex; gap: 0.5rem; font-weight: normal;">
+                            <select id="pl-filter-enrollment" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="renderPipelineTable()">
+                                <option value="all">All Periods</option>
+                            </select>
+                            <select id="pl-filter-status" class="input-full" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; margin: 0; width: auto; font-weight: bold;" onchange="renderPipelineTable()">
+                                <option value="all">All Status</option>
+                                <option value="active" selected>Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="flex: 1; overflow-y: auto; padding-right: 0.5rem; margin-top: 0.5rem;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 10;">
+                                <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+                                    <th style="padding: 0.5rem;">Student Name</th>
+                                    <th style="padding: 0.5rem; text-align: center;">Completion</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pipeline-student-list">
+                                <tr><td colspan="2" style="text-align: center; padding: 1rem; color: var(--text-muted);">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right: Timeline Details -->
+                <div class="card pipeline-right" style="overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <div class="circular-progress" id="pl-progress-ring">
+                                <span class="progress-value" id="pl-progress-val">0%</span>
+                            </div>
+                            <div>
+                                <h2 id="pl-student-name" style="color: var(--text-main); margin-bottom: 0.25rem;">Select a Student</h2>
+                                <p id="pl-student-enrollment" style="color: var(--text-muted); font-size: 0.875rem; font-weight: bold;">--</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button onclick="openModal('modal-manage-curriculum')" style="background: white; color: var(--peacox-purple); border: 1px solid var(--peacox-purple); padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Manage Elements</button>
+                            <button onclick="openModal('modal-assign-curriculum')" style="background: var(--peacox-purple); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Bulk Assign</button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 900;">Assigned Curriculum</h3>
+                        <div class="timeline" id="pl-timeline">
+                            <p style="color: var(--text-muted); font-size: 0.875rem;">Please select a student from the left panel to view their timeline.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="card col-2 row-1">
-                <h3 class="card-header">Youth Program Distribution</h3>
-                <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
-                    <div class="stacked-bar-container">
-                        <div class="stack-segment" style="width: 40%; background: var(--peacox-purple);">40%</div>
-                        <div class="stack-segment" style="width: 35%; background: var(--peacox-teal);">35%</div>
-                        <div class="stack-segment" style="width: 15%; background: #F59E0B;">15%</div>
-                        <div class="stack-segment" style="width: 10%; background: #9CA3AF;">10%</div>
-                    </div>
-                    <div class="legend">
-                        <div><span class="legend-dot" style="background: var(--peacox-purple);"></span>Positive Action</div>
-                        <div><span class="legend-dot" style="background: var(--peacox-teal);"></span>STEM</div>
-                        <div><span class="legend-dot" style="background: #F59E0B;"></span>Game Night</div>
-                        <div><span class="legend-dot" style="background: #9CA3AF;"></span>Other</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card col-2 row-1">
-                <h3 class="card-header">Major Events Tracker (Annually)</h3>
-                <div style="display: flex; flex-direction: column; justify-content: center; flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.25rem;">
-                        <div><p style="font-weight: bold; color: var(--text-main); font-size: 1rem;">Peacox Showcase Conference</p><p style="font-size: 0.75rem; color: var(--text-muted);">Dec 19 • 80% RSVP Confirmed</p></div>
-                        <span style="font-weight: bold; color: var(--peacox-teal);">120 / 150</span>
-                    </div>
-                    <div class="progress-track" style="height: 10px;"><div class="progress-fill" style="width: 80%;"></div></div>
-                </div>
-            </div>
-
         </div>
     </main>
 
@@ -639,6 +691,50 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                <div id="content-manage-curriculum" style="display: none; flex-direction: column; gap: 1rem;">
+                    <div>
+                        <h3 style="font-size: 1rem; color: var(--text-main); margin-bottom: 0.5rem;">Add New Element</h3>
+                        <form id="add-curriculum-form" style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                            <div style="flex: 2;">
+                                <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Element Name</label>
+                                <input type="text" id="new-curr-name" class="input-full" style="margin-bottom: 0;" required placeholder="e.g. YRBS Form">
+                            </div>
+                            <div style="flex: 2;">
+                                <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">Category</label>
+                                <select id="new-curr-category" class="input-full" style="margin-bottom: 0;">
+                                    <option value="Engagement Plan">Engagement Plan</option>
+                                    <option value="Individual Development Plan">Individual Development Plan</option>
+                                    <option value="Primary Quarterly Forms">Primary Quarterly Forms</option>
+                                    <option value="Upcoming Action Items">Upcoming Action Items</option>
+                                    <option value="Center for Growth">Center for Growth</option>
+                                </select>
+                            </div>
+                            <button type="submit" style="background: var(--peacox-teal); color: white; border: none; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer;">Add</button>
+                        </form>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid var(--border-color);">
+                    <div>
+                        <h3 style="font-size: 1rem; color: var(--text-main); margin-bottom: 0.5rem;">Existing Curriculum Library</h3>
+                        <div id="curr-library-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto; padding-right: 0.5rem;">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-assign-curriculum" style="display: none; flex-direction: column; gap: 1rem;">
+                    <p style="font-size: 0.875rem; color: var(--text-muted);">Assign curriculum elements to the students currently visible in your Pipeline tracking list.</p>
+                    
+                    <div>
+                        <h3 style="font-size: 1rem; color: var(--text-main); margin-bottom: 0.5rem;">Select Elements to Assign</h3>
+                        <div id="assign-curr-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; max-height: 300px; overflow-y: auto; background: var(--bg-color); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <button onclick="executeBulkAssign()" style="background: var(--peacox-purple); color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; width: 100%;">Assign to Filtered Cohort</button>
+                    <p id="assign-msg" style="text-align: center; color: var(--peacox-teal); font-weight: bold; font-size: 0.875rem; display: none; margin-top: 0.5rem;"></p>
                 </div>
 
             </div>
@@ -1589,6 +1685,265 @@
                 document.getElementById('logout-btn').innerText = 'Signing out...';
                 try { await supabaseClient.auth.signOut(); } catch(e){} finally { window.location.replace('index.html'); }
             });
+
+            /* =========================================
+               CURRICULUM & PIPELINE LOGIC
+               ========================================= */
+            let pm_curriculum_elements = [];
+            let pm_curriculum_assignments = {};
+            window.PL_SELECTED_STUDENT = null;
+
+            function initCurriculumData() {
+                const storedElements = localStorage.getItem('pm_curriculum_elements');
+                if (storedElements) {
+                    pm_curriculum_elements = JSON.parse(storedElements);
+                } else {
+                    // Default Elements
+                    pm_curriculum_elements = [
+                        { id: 'c1', name: 'Engagement Plan Creation', category: 'Engagement Plan' },
+                        { id: 'c2', name: 'Individual Development Plan (IDP)', category: 'Individual Development Plan' },
+                        { id: 'c3', name: 'YRBS Form Completion', category: 'Primary Quarterly Forms' },
+                        { id: 'c4', name: 'ASISIST Check-in', category: 'Primary Quarterly Forms' },
+                        { id: 'c5', name: 'Resume Workshop', category: 'Center for Growth' }
+                    ];
+                    localStorage.setItem('pm_curriculum_elements', JSON.stringify(pm_curriculum_elements));
+                }
+
+                const storedAssignments = localStorage.getItem('pm_curriculum_assignments');
+                if (storedAssignments) {
+                    pm_curriculum_assignments = JSON.parse(storedAssignments);
+                } else {
+                    pm_curriculum_assignments = {};
+                }
+                
+                populateCurriculumLibrary();
+                populateAssignModal();
+            }
+
+            function populateCurriculumLibrary() {
+                const list = document.getElementById('curr-library-list');
+                if (!list) return;
+                list.innerHTML = pm_curriculum_elements.map(e => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: white; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <div>
+                            <p style="font-weight: bold; font-size: 0.875rem; color: var(--text-main); margin: 0;">${e.name}</p>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">${e.category}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function populateAssignModal() {
+                const list = document.getElementById('assign-curr-list');
+                if (!list) return;
+                list.innerHTML = pm_curriculum_elements.map(e => `
+                    <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--text-main); cursor: pointer;">
+                        <input type="checkbox" value="${e.id}" class="bulk-assign-cb"> ${e.name}
+                    </label>
+                `).join('');
+            }
+
+            const addCurrForm = document.getElementById('add-curriculum-form');
+            if (addCurrForm) {
+                addCurrForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('new-curr-name').value;
+                    const cat = document.getElementById('new-curr-category').value;
+                    const id = 'c' + new Date().getTime();
+                    pm_curriculum_elements.push({ id, name, category: cat });
+                    localStorage.setItem('pm_curriculum_elements', JSON.stringify(pm_curriculum_elements));
+                    document.getElementById('new-curr-name').value = '';
+                    populateCurriculumLibrary();
+                    populateAssignModal();
+                });
+            }
+
+            window.renderPipelineTable = function() {
+                const tbody = document.getElementById('pipeline-student-list');
+                if(!tbody) return;
+
+                const statusFilter = document.getElementById('pl-filter-status').value;
+                
+                const enrollFilterEl = document.getElementById('pl-filter-enrollment');
+                if (enrollFilterEl && enrollFilterEl.options.length <= 1) {
+                    const uniquePeriods = [...new Set(ALL_STUDENTS.map(s => s.enrollment_period).filter(p => p && p !== 'Not Specified'))];
+                    uniquePeriods.sort().forEach(period => {
+                        const opt = document.createElement('option');
+                        opt.value = period;
+                        opt.textContent = period;
+                        enrollFilterEl.appendChild(opt);
+                    });
+                }
+                const enrollFilter = enrollFilterEl ? enrollFilterEl.value : 'all';
+
+                window.PL_FILTERED_STUDENTS = ALL_STUDENTS.filter(s => {
+                    if (statusFilter === 'active' && !s.is_active) return false;
+                    if (statusFilter === 'inactive' && s.is_active) return false;
+                    if (enrollFilter !== 'all' && s.enrollment_period !== enrollFilter) return false;
+                    return true;
+                });
+
+                if (window.PL_FILTERED_STUDENTS.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="2" style="text-align: center; padding: 1rem; color: var(--text-muted);">No students match filter.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = window.PL_FILTERED_STUDENTS.map(s => {
+                    const assigned = pm_curriculum_assignments[s.id] || [];
+                    const completedCount = assigned.filter(a => a.status === 'completed').length;
+                    const total = assigned.length;
+                    const pct = total === 0 ? 0 : Math.round((completedCount / total) * 100);
+                    
+                    const isSelected = window.PL_SELECTED_STUDENT === s.id ? 'selected' : '';
+
+                    return `
+                        <tr class="student-row-hover ${isSelected}" onclick="selectPipelineStudent('${s.id}')" style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;">
+                            <td style="padding: 0.5rem;">
+                                <div style="font-weight: bold; color: var(--text-main); font-size: 0.85rem;">${s.name}</div>
+                                <div style="color: var(--text-muted); font-size: 0.75rem;">${s.enrollment_period || 'Not Specified'}</div>
+                            </td>
+                            <td style="padding: 0.5rem; text-align: center;">
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem;">
+                                    <div class="progress-track" style="height: 6px; width: 60px;"><div class="progress-fill" style="width: ${pct}%;"></div></div>
+                                    <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: bold;">${pct}%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            };
+
+            window.selectPipelineStudent = function(studentId) {
+                window.PL_SELECTED_STUDENT = studentId;
+                renderPipelineTable(); // Re-render to show selected row highlight
+                
+                const student = ALL_STUDENTS.find(s => s.id === studentId);
+                if(!student) return;
+
+                document.getElementById('pl-student-name').innerText = student.name;
+                document.getElementById('pl-student-enrollment').innerText = student.enrollment_period || 'Not Specified';
+                
+                renderTimeline(studentId);
+            };
+
+            function renderTimeline(studentId) {
+                const assigned = pm_curriculum_assignments[studentId] || [];
+                const timelineEl = document.getElementById('pl-timeline');
+                
+                if (assigned.length === 0) {
+                    timelineEl.innerHTML = `<p style="color: var(--text-muted); font-size: 0.875rem;">No curriculum elements assigned to this student yet.</p>`;
+                    updateProgressRing(0, 0);
+                    return;
+                }
+
+                // Sort by date assigned (assuming order of array is order of assignment)
+                timelineEl.innerHTML = assigned.map(a => {
+                    const elData = pm_curriculum_elements.find(e => e.id === a.id);
+                    if (!elData) return '';
+                    
+                    const dateStr = a.dateAssigned ? new Date(a.dateAssigned).toLocaleDateString() : 'Unknown Date';
+                    
+                    return `
+                        <div class="timeline-item status-${a.status}">
+                            <div class="timeline-content">
+                                <div>
+                                    <div class="timeline-category">${elData.category}</div>
+                                    <div class="timeline-title">${elData.name}</div>
+                                    <div class="timeline-date">Assigned: ${dateStr}</div>
+                                </div>
+                                <select class="status-select ${a.status}" onchange="updateCurriculumStatus('${studentId}', '${a.id}', this.value)">
+                                    <option value="not_started" ${a.status === 'not_started' ? 'selected' : ''}>Not Started</option>
+                                    <option value="in_progress" ${a.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                                    <option value="completed" ${a.status === 'completed' ? 'selected' : ''}>Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const completedCount = assigned.filter(a => a.status === 'completed').length;
+                updateProgressRing(completedCount, assigned.length);
+            }
+
+            window.updateCurriculumStatus = function(studentId, currId, newStatus) {
+                const assigned = pm_curriculum_assignments[studentId];
+                if(assigned) {
+                    const item = assigned.find(a => a.id === currId);
+                    if(item) {
+                        item.status = newStatus;
+                        if(newStatus === 'completed') item.dateCompleted = new Date().toISOString();
+                        localStorage.setItem('pm_curriculum_assignments', JSON.stringify(pm_curriculum_assignments));
+                        renderTimeline(studentId);
+                        renderPipelineTable();
+                    }
+                }
+            };
+
+            function updateProgressRing(completed, total) {
+                const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+                document.getElementById('pl-progress-val').innerText = `${pct}%`;
+                document.getElementById('pl-progress-ring').style.background = `conic-gradient(var(--peacox-teal) ${pct * 3.6}deg, #E5E7EB 0deg)`;
+            }
+
+            window.executeBulkAssign = function() {
+                const checkboxes = document.querySelectorAll('.bulk-assign-cb:checked');
+                const selectedElIds = Array.from(checkboxes).map(cb => cb.value);
+                
+                if(selectedElIds.length === 0) {
+                    alert("Please select at least one curriculum element to assign.");
+                    return;
+                }
+
+                if(!window.PL_FILTERED_STUDENTS || window.PL_FILTERED_STUDENTS.length === 0) {
+                    alert("No students in the current filter to assign to.");
+                    return;
+                }
+
+                let count = 0;
+                window.PL_FILTERED_STUDENTS.forEach(s => {
+                    if(!pm_curriculum_assignments[s.id]) {
+                        pm_curriculum_assignments[s.id] = [];
+                    }
+                    
+                    selectedElIds.forEach(elId => {
+                        // Avoid duplicates
+                        if(!pm_curriculum_assignments[s.id].find(a => a.id === elId)) {
+                            pm_curriculum_assignments[s.id].push({
+                                id: elId,
+                                status: 'not_started',
+                                dateAssigned: new Date().toISOString()
+                            });
+                        }
+                    });
+                    count++;
+                });
+
+                localStorage.setItem('pm_curriculum_assignments', JSON.stringify(pm_curriculum_assignments));
+                
+                const msg = document.getElementById('assign-msg');
+                msg.innerText = `Successfully assigned ${selectedElIds.length} element(s) to ${count} student(s).`;
+                msg.style.display = 'block';
+                
+                renderPipelineTable();
+                if(window.PL_SELECTED_STUDENT) {
+                    renderTimeline(window.PL_SELECTED_STUDENT);
+                }
+
+                setTimeout(() => {
+                    msg.style.display = 'none';
+                    closeModal();
+                    // uncheck
+                    checkboxes.forEach(cb => cb.checked = false);
+                }, 2000);
+            };
+
+            // Hook initCurriculumData into the main load flow
+            const originalLoadStudents = loadStudents;
+            loadStudents = async function() {
+                await originalLoadStudents();
+                initCurriculumData();
+                renderPipelineTable();
+            };
 
             loadDatabaseData();
         } catch (error) { console.warn("Supabase bypassed locally."); }
