@@ -185,16 +185,77 @@
                 <!-- Risk Matrix -->
                 <div class="card" style="min-height: max-content;">
                     <h3 class="card-header">GAB Risk Matrix <span id="risk-n-count">(N=0)</span></h3>
-                    <div style="display: flex; justify-content: flex-start; margin-top: 0.5rem; height: 40%;">
-                        <div class="heatmap" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr 1fr; gap: 0.25rem; width: 50%; text-align: center;">
-                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('gpa-high', 'Low GPA')"><span id="risk-gpa-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Low GPA</span></div>
-                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('att-high', 'High Absent')"><span id="risk-att-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">High Absent</span></div>
-                            <div class="heat-cell heat-high" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('beh-high', 'Behavior')"><span id="risk-beh-high" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Behavior</span></div>
+                    <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 0.5rem; overflow: visible;">
+                        <svg viewBox="0 0 400 320" style="width: 100%; max-height: 250px; cursor: pointer; font-family: Inter, sans-serif;">
+                          <defs>
+                            <circle id="cG" cx="200" cy="120" r="70" />
+                            <circle id="cA" cx="160" cy="190" r="70" />
+                            <circle id="cB" cx="240" cy="190" r="70" />
                             
-                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('gpa-ok', 'GPA OK')"><span id="risk-gpa-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">GPA OK</span></div>
-                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('att-ok', 'Att OK')"><span id="risk-att-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Att OK</span></div>
-                            <div class="heat-cell heat-low" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.25rem; cursor: pointer;" onclick="window.openRiskTable('beh-ok', 'Behavior OK')"><span id="risk-beh-ok" style="font-size: 1.25rem; font-weight: bold;">0</span><span style="font-size: 0.55rem;">Behavior OK</span></div>
-                        </div>
+                            <circle id="cGOk" cx="200" cy="110" r="85" />
+                            <circle id="cAOk" cx="150" cy="200" r="85" />
+                            <circle id="cBOk" cx="250" cy="200" r="85" />
+                            
+                            <clipPath id="clipG"><use href="#cG"/></clipPath>
+                            <clipPath id="clipA"><use href="#cA"/></clipPath>
+                            <clipPath id="clipB"><use href="#cB"/></clipPath>
+                            
+                            <mask id="mask-G-only"><rect width="400" height="320" fill="white"/><use href="#cA" fill="black"/><use href="#cB" fill="black"/></mask>
+                            <mask id="mask-A-only"><rect width="400" height="320" fill="white"/><use href="#cG" fill="black"/><use href="#cB" fill="black"/></mask>
+                            <mask id="mask-B-only"><rect width="400" height="320" fill="white"/><use href="#cG" fill="black"/><use href="#cA" fill="black"/></mask>
+                            <mask id="mask-GA"><rect width="400" height="320" fill="white"/><use href="#cB" fill="black"/></mask>
+                            <mask id="mask-GB"><rect width="400" height="320" fill="white"/><use href="#cA" fill="black"/></mask>
+                            <mask id="mask-AB"><rect width="400" height="320" fill="white"/><use href="#cG" fill="black"/></mask>
+                            <mask id="mask-not-G"><rect width="400" height="320" fill="white"/><use href="#cG" fill="black"/></mask>
+                            <mask id="mask-not-A"><rect width="400" height="320" fill="white"/><use href="#cA" fill="black"/></mask>
+                            <mask id="mask-not-B"><rect width="400" height="320" fill="white"/><use href="#cB" fill="black"/></mask>
+                          </defs>
+
+                          <g stroke="#1F2937" stroke-width="1.5">
+                              <use href="#cGOk" fill="#387635" mask="url(#mask-not-G)" onclick="window.openRiskTable('g-ok', 'Grade OK')"><title>Grade OK</title></use>
+                              <use href="#cAOk" fill="#387635" mask="url(#mask-not-A)" onclick="window.openRiskTable('a-ok', 'Attendance OK')"><title>Attendance OK</title></use>
+                              <use href="#cBOk" fill="#387635" mask="url(#mask-not-B)" onclick="window.openRiskTable('b-ok', 'Behavior OK')"><title>Behavior OK</title></use>
+
+                              <use href="#cG" fill="#9CD273" mask="url(#mask-G-only)" onclick="window.openRiskTable('g-only', 'Grade Risk')"><title>Grade Risk</title></use>
+                              <use href="#cA" fill="#9CD273" mask="url(#mask-A-only)" onclick="window.openRiskTable('a-only', 'Attendance Risk')"><title>Attendance Risk</title></use>
+                              <use href="#cB" fill="#9CD273" mask="url(#mask-B-only)" onclick="window.openRiskTable('b-only', 'Behavior Risk')"><title>Behavior Risk</title></use>
+
+                              <use href="#cG" fill="#FEE372" clip-path="url(#clipA)" mask="url(#mask-GA)" onclick="window.openRiskTable('ga-risk', 'Grade & Att Risk')"><title>Grade & Att Risk</title></use>
+                              <use href="#cG" fill="#FEE372" clip-path="url(#clipB)" mask="url(#mask-GB)" onclick="window.openRiskTable('gb-risk', 'Grade & Beh Risk')"><title>Grade & Beh Risk</title></use>
+                              <use href="#cA" fill="#FEE372" clip-path="url(#clipB)" mask="url(#mask-AB)" onclick="window.openRiskTable('ab-risk', 'Att & Beh Risk')"><title>Att & Beh Risk</title></use>
+
+                              <g clip-path="url(#clipG)"><g clip-path="url(#clipA)">
+                                 <use href="#cB" fill="#F99C31" onclick="window.openRiskTable('gab-risk', 'Grade, Att & Beh Risk')"><title>G, A, B Risk</title></use>
+                              </g></g>
+                              
+                              <use href="#cG" fill="none" pointer-events="none"/>
+                              <use href="#cA" fill="none" pointer-events="none"/>
+                              <use href="#cB" fill="none" pointer-events="none"/>
+                              <use href="#cGOk" fill="none" mask="url(#mask-not-G)" pointer-events="none"/>
+                              <use href="#cAOk" fill="none" mask="url(#mask-not-A)" pointer-events="none"/>
+                              <use href="#cBOk" fill="none" mask="url(#mask-not-B)" pointer-events="none"/>
+                          </g>
+
+                          <g text-anchor="middle" font-size="9" fill="#1F2937" pointer-events="none">
+                            <text x="200" y="45"><tspan id="venn-g-ok" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G. Ok</tspan></text>
+                            <text x="80" y="250"><tspan id="venn-a-ok" x="80" font-weight="bold">0</tspan><tspan x="80" dy="12">A. Ok</tspan></text>
+                            <text x="320" y="250"><tspan id="venn-b-ok" x="320" font-weight="bold">0</tspan><tspan x="320" dy="12">B. Ok</tspan></text>
+
+                            <text x="200" y="90"><tspan id="venn-g-only" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G. Risk</tspan></text>
+                            <text x="135" y="205"><tspan id="venn-a-only" x="135" font-weight="bold">0</tspan><tspan x="135" dy="12">A. Risk</tspan></text>
+                            <text x="265" y="205"><tspan id="venn-b-only" x="265" font-weight="bold">0</tspan><tspan x="265" dy="12">B. Risk</tspan></text>
+
+                            <text x="150" y="140"><tspan id="venn-ga" x="150" font-weight="bold">0</tspan><tspan x="150" dy="12">G.A. Risk</tspan></text>
+                            <text x="250" y="140"><tspan id="venn-gb" x="250" font-weight="bold">0</tspan><tspan x="250" dy="12">G.B. Risk</tspan></text>
+                            <text x="200" y="230"><tspan id="venn-ab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">A.B Risk</tspan></text>
+
+                            <text x="200" y="160" fill="white"><tspan id="venn-gab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G.A.B. Risk</tspan></text>
+                            
+                            <text x="200" y="15" font-size="12" font-weight="bold">Grade</text>
+                            <text x="45" y="195" font-size="12" font-weight="bold">Attendance</text>
+                            <text x="355" y="195" font-size="12" font-weight="bold">Behavior</text>
+                          </g>
+                        </svg>
                     </div>
                 </div>
 
@@ -759,10 +820,11 @@
                     return 0;
                 });
 
-                // Calculate Risk Metrics
-                let gpaHigh = 0, gpaOk = 0;
-                let attHigh = 0, attOk = 0;
-                let behHigh = 0, behOk = 0;
+                // Calculate Venn Metrics
+                let vG_Ok = 0, vA_Ok = 0, vB_Ok = 0;
+                let vG_Only = 0, vA_Only = 0, vB_Only = 0;
+                let vGA = 0, vGB = 0, vAB = 0;
+                let vGAB = 0;
                 
                 const localGab = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
 
@@ -779,21 +841,34 @@
                         behavior = parseInt(latest.behavior || 0);
                     }
                     
-                    if (gpa > 0 && gpa < 2.0) gpaHigh++; else gpaOk++;
-                    if (absent > 4) attHigh++; else attOk++;
-                    if (behavior > 0) behHigh++; else behOk++;
+                    const hasG = (gpa > 0 && gpa < 2.0);
+                    const hasA = (absent > 4);
+                    const hasB = (behavior > 0);
+
+                    // Oks (No risk in that category)
+                    if (!hasG) vG_Ok++;
+                    if (!hasA) vA_Ok++;
+                    if (!hasB) vB_Ok++;
+
+                    // Risk Intersections
+                    if (hasG && hasA && hasB) { vGAB++; }
+                    else if (hasG && hasA) { vGA++; }
+                    else if (hasG && hasB) { vGB++; }
+                    else if (hasA && hasB) { vAB++; }
+                    else if (hasG) { vG_Only++; }
+                    else if (hasA) { vA_Only++; }
+                    else if (hasB) { vB_Only++; }
                 });
 
                 const rCountEl = document.getElementById('risk-n-count');
                 if (rCountEl) {
                     rCountEl.innerText = `(N=${filtered.length})`;
-                    document.getElementById('risk-gpa-high').innerText = gpaHigh;
-                    document.getElementById('risk-att-high').innerText = attHigh;
-                    document.getElementById('risk-beh-high').innerText = behHigh;
                     
-                    document.getElementById('risk-gpa-ok').innerText = gpaOk;
-                    document.getElementById('risk-att-ok').innerText = attOk;
-                    document.getElementById('risk-beh-ok').innerText = behOk;
+                    const el = (id, val) => { const e = document.getElementById(id); if(e) e.innerText = val; };
+                    el('venn-g-ok', vG_Ok); el('venn-a-ok', vA_Ok); el('venn-b-ok', vB_Ok);
+                    el('venn-g-only', vG_Only); el('venn-a-only', vA_Only); el('venn-b-only', vB_Only);
+                    el('venn-ga', vGA); el('venn-gb', vGB); el('venn-ab', vAB);
+                    el('venn-gab', vGAB);
                 }
 
                 if (filtered.length === 0) {
@@ -868,12 +943,23 @@
                         behavior = parseInt(latest.behavior || 0);
                     }
 
-                    if (riskType === 'gpa-high') return gpa > 0 && gpa < 2.0;
-                    if (riskType === 'att-high') return absent > 4;
-                    if (riskType === 'beh-high') return behavior > 0;
-                    if (riskType === 'gpa-ok') return !(gpa > 0 && gpa < 2.0);
-                    if (riskType === 'att-ok') return absent <= 4;
-                    if (riskType === 'beh-ok') return behavior === 0;
+                    const hasG = (gpa > 0 && gpa < 2.0);
+                    const hasA = (absent > 4);
+                    const hasB = (behavior > 0);
+
+                    if (riskType === 'g-ok') return !hasG;
+                    if (riskType === 'a-ok') return !hasA;
+                    if (riskType === 'b-ok') return !hasB;
+                    
+                    if (riskType === 'g-only') return hasG && !hasA && !hasB;
+                    if (riskType === 'a-only') return hasA && !hasG && !hasB;
+                    if (riskType === 'b-only') return hasB && !hasG && !hasA;
+
+                    if (riskType === 'ga-risk') return hasG && hasA && !hasB;
+                    if (riskType === 'gb-risk') return hasG && hasB && !hasA;
+                    if (riskType === 'ab-risk') return hasA && hasB && !hasG;
+                    
+                    if (riskType === 'gab-risk') return hasG && hasA && hasB;
 
                     return true;
                 });
