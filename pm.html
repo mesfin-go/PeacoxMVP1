@@ -236,7 +236,7 @@
             <div class="col-1 row-2" style="display: flex; flex-direction: column; gap: var(--grid-gap); overflow: hidden;">
                 
                 <!-- Risk Matrix -->
-                <div class="card" style="flex: 1; min-height: 0; display: flex; flex-direction: column;">
+                <div class="card" style="flex: 4; min-height: 0; display: flex; flex-direction: column;">
                     <div style="display: flex; justify-content: space-between; align-items: center;" class="card-header">
                         <h3 style="margin: 0; padding: 0; border: none; font-size: inherit;">GAB Risk Matrix <span id="risk-n-count">(N=0)</span></h3>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
@@ -413,7 +413,7 @@
                 </div>
 
                 <!-- Student Inbox -->
-                <div class="card" style="border-left: 4px solid var(--peacox-purple); flex: 1; min-height: 0; display: flex; flex-direction: column;">
+                <div class="card" style="border-left: 4px solid var(--peacox-purple); flex: 5; min-height: 0; display: flex; flex-direction: column;">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0;">
                         <h3 style="margin: 0; color: var(--peacox-purple);">Student Inbox</h3>
                         <div style="display: flex; gap: 0.5rem; font-weight: normal; align-items: center;">
@@ -1952,15 +1952,15 @@
                 if(snippet.length > 50) snippet = snippet.substring(0, 50) + '...';
 
                 return `
-                    <div class="escalation-item" style="flex-direction: column; align-items: flex-start; gap: 0.25rem; padding: 0.5rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer;" onclick="openInboxItem('${m.id}')">
+                    <div class="escalation-item" style="flex-direction: column; align-items: flex-start; gap: 0.15rem; padding: 0.3rem 0.4rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer;" onclick="openInboxItem('${m.id}')">
                         <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                            <span style="font-size: 0.75rem; font-weight: ${isUnread ? '900' : 'bold'}; color: var(--text-main);"><span style="color: ${statusColor}; margin-right: 4px;">●</span>${m.student_name || 'Student'}</span>
-                            <span style="font-size: 0.65rem; color: var(--text-muted);">${dateStr}</span>
+                            <span style="font-size: 0.7rem; font-weight: ${isUnread ? '900' : 'bold'}; color: var(--text-main);"><span style="color: ${statusColor}; margin-right: 4px;">●</span>${m.student_name || 'Student'}</span>
+                            <span style="font-size: 0.6rem; color: var(--text-muted);">${dateStr}</span>
                         </div>
                         <div style="display: flex; gap: 0.25rem; flex-wrap: nowrap; align-items: center; width: 100%;">
-                            <span class="badge" style="background: ${badgeColor}; flex-shrink: 0;">${titleStr}</span>
-                            <span class="badge" style="background: ${statusBadgeColor}; flex-shrink: 0;">${statusBadgeText}</span>
-                            <span style="font-size: 0.75rem; color: ${isUnread ? 'var(--text-main)' : 'var(--text-muted)'}; margin-left: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${snippet}</span>
+                            <span class="badge" style="background: ${badgeColor}; flex-shrink: 0; padding: 0.1rem 0.3rem; font-size: 0.6rem;">${titleStr}</span>
+                            <span class="badge" style="background: ${statusBadgeColor}; flex-shrink: 0; padding: 0.1rem 0.3rem; font-size: 0.6rem;">${statusBadgeText}</span>
+                            <span style="font-size: 0.7rem; color: ${isUnread ? 'var(--text-main)' : 'var(--text-muted)'}; margin-left: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${snippet}</span>
                         </div>
                     </div>
                 `;
