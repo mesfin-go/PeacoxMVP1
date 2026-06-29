@@ -1762,6 +1762,21 @@
                 const badgeColor = isRequest ? '#F59E0B' : '#10B981';
                 const titleStr = isRequest ? m.category : m.reason.toUpperCase();
                 
+                let statusBadgeText = "";
+                let statusBadgeColor = "";
+                
+                if (isRequest) {
+                    statusBadgeText = m.status.toUpperCase();
+                    if (m.status === 'pending') statusBadgeColor = '#F59E0B';
+                    else if (m.status === 'approved') statusBadgeColor = '#10B981';
+                    else statusBadgeColor = '#EF4444';
+                } else {
+                    statusBadgeText = m.status === 'unread' ? 'UNREAD' : (m.status === 'read' ? 'UNRESOLVED' : 'RESOLVED');
+                    if (m.status === 'unread') statusBadgeColor = '#EF4444';
+                    else if (m.status === 'read') statusBadgeColor = '#F59E0B';
+                    else statusBadgeColor = '#10B981';
+                }
+                
                 let snippet = m.message;
                 if(snippet.length > 50) snippet = snippet.substring(0, 50) + '...';
 
@@ -1771,7 +1786,10 @@
                             <span style="font-size: 0.75rem; font-weight: ${isUnread ? '900' : 'bold'}; color: var(--text-main);"><span style="color: ${statusColor}; margin-right: 4px;">●</span>${m.student_name || 'Student'}</span>
                             <span style="font-size: 0.65rem; color: var(--text-muted);">${dateStr}</span>
                         </div>
-                        <span class="badge" style="background: ${badgeColor}; align-self: flex-start;">${titleStr}</span>
+                        <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                            <span class="badge" style="background: ${badgeColor};">${titleStr}</span>
+                            <span class="badge" style="background: ${statusBadgeColor};">${statusBadgeText}</span>
+                        </div>
                         <p style="font-size: 0.75rem; color: ${isUnread ? 'var(--text-main)' : 'var(--text-muted)'}; margin: 0; line-height: 1.3;">${snippet}</p>
                     </div>
                 `;
