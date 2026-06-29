@@ -130,7 +130,7 @@
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-add-user" id="add-user-btn" onclick="openModal('add-user')" style="display: none;">+ Add System User</button>
+            <button class="btn-add-user" id="add-user-btn" onclick="openModal('add-user')">+ Add System User</button>
             <button class="logout-btn" id="logout-btn">Sign Out</button>
         </div>
     </header>
@@ -982,6 +982,22 @@
                 if (window.currentRiskFilter && window.renderVennTable) window.renderVennTable();
 
                 setTimeout(() => { closeModal(); msg.style.display = 'none'; }, 1500);
+            });
+
+            // Listen for changes from mentor or student tabs in real-time
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'pm_local_gab' || e.key === 'pm_local_students') {
+                    if (e.key === 'pm_local_students') {
+                        const localStudents = JSON.parse(localStorage.getItem('pm_local_students') || '[]');
+                        localStudents.forEach(ls => {
+                            const idx = ALL_STUDENTS.findIndex(s => s.id === ls.id);
+                            if (idx >= 0) ALL_STUDENTS[idx] = Object.assign(ALL_STUDENTS[idx], ls);
+                            else ALL_STUDENTS.push(ls);
+                        });
+                    }
+                    if (window.renderStudentTable) window.renderStudentTable();
+                    if (window.currentRiskFilter && window.renderVennTable) window.renderVennTable();
+                }
             });
 
             window.currentRiskFilter = null;
