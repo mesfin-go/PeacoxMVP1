@@ -185,77 +185,95 @@
                 <!-- Risk Matrix -->
                 <div class="card" style="min-height: max-content;">
                     <h3 class="card-header">GAB Risk Matrix <span id="risk-n-count">(N=0)</span></h3>
-                    <div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 0.5rem; overflow: visible;">
-                        <svg viewBox="0 0 400 320" style="width: 100%; max-height: 250px; font-family: Inter, sans-serif;">
-                          <defs>
-                            <circle id="cG" cx="200" cy="128" r="90" />
-                            <circle id="cA" cx="155" cy="206" r="90" />
-                            <circle id="cB" cx="245" cy="206" r="90" />
-                            
-                            <mask id="mask-G-only"><rect width="400" height="320" fill="white"/><use href="#cA" fill="black"/><use href="#cB" fill="black"/></mask>
-                            <mask id="mask-A-only"><rect width="400" height="320" fill="white"/><use href="#cG" fill="black"/><use href="#cB" fill="black"/></mask>
-                            <mask id="mask-B-only"><rect width="400" height="320" fill="white"/><use href="#cG" fill="black"/><use href="#cA" fill="black"/></mask>
-                            <mask id="mask-GA"><rect width="400" height="320" fill="white"/><use href="#cB" fill="black"/></mask>
-                            <mask id="mask-GB"><rect width="400" height="320" fill="white"/><use href="#cA" fill="black"/></mask>
-                            <mask id="mask-AB"><rect width="400" height="320" fill="white"/><use href="#cG" fill="black"/></mask>
-                            <clipPath id="clipG"><use href="#cG"/></clipPath>
-                            <clipPath id="clipA"><use href="#cA"/></clipPath>
-                            <clipPath id="clipB"><use href="#cB"/></clipPath>
-                          </defs>
+                    <div style="display: flex; flex-direction: row; gap: 1rem; margin-top: 0.5rem; max-height: 250px;">
+                        <div style="flex: 0 0 60%; display: flex; justify-content: center; align-items: center; overflow: visible;">
+                            <svg viewBox="0 0 400 320" style="width: 100%; max-height: 250px; font-family: Inter, sans-serif;">
+                              <defs>
+                                <circle id="cG" cx="200" cy="128" r="90" />
+                                <circle id="cA" cx="155" cy="206" r="90" />
+                                <circle id="cB" cx="245" cy="206" r="90" />
+                                
+                                <mask id="mask-G-only"><rect width="400" height="320" fill="white"/><use href="#cA" fill="black"/><use href="#cB" fill="black"/></mask>
+                                <mask id="mask-A-only"><rect width="400" height="320" fill="white"/><use href="#cG" fill="black"/><use href="#cB" fill="black"/></mask>
+                                <mask id="mask-B-only"><rect width="400" height="320" fill="white"/><use href="#cG" fill="black"/><use href="#cA" fill="black"/></mask>
+                                <mask id="mask-GA"><rect width="400" height="320" fill="white"/><use href="#cB" fill="black"/></mask>
+                                <mask id="mask-GB"><rect width="400" height="320" fill="white"/><use href="#cA" fill="black"/></mask>
+                                <mask id="mask-AB"><rect width="400" height="320" fill="white"/><use href="#cG" fill="black"/></mask>
+                                <clipPath id="clipG"><use href="#cG"/></clipPath>
+                                <clipPath id="clipA"><use href="#cA"/></clipPath>
+                                <clipPath id="clipB"><use href="#cB"/></clipPath>
+                              </defs>
 
-                          <style>
-                            .venn-region { cursor: pointer; transition: filter 0.2s; }
-                            .venn-region:hover { filter: brightness(0.9); }
-                          </style>
+                              <style>
+                                .venn-region { cursor: pointer; transition: filter 0.2s; }
+                                .venn-region:hover { filter: brightness(0.9); }
+                              </style>
 
-                          <!-- Outer Crescents -->
-                          <path id="crescentG" class="venn-region" d="M 110 128 A 115 115 0 0 1 290 128 A 90 90 0 0 0 110 128 Z" fill="#387635" onclick="window.openRiskTable('g-ok', 'Grade OK')"><title>Grade OK</title></path>
-                          <path id="crescentA" class="venn-region" d="M 200 283.94 A 115 115 0 0 1 110 128 A 90 90 0 0 0 200 283.94 Z" fill="#387635" onclick="window.openRiskTable('a-ok', 'Attendance OK')"><title>Attendance OK</title></path>
-                          <path id="crescentB" class="venn-region" d="M 290 128 A 115 115 0 0 1 200 283.94 A 90 90 0 0 0 290 128 Z" fill="#387635" onclick="window.openRiskTable('b-ok', 'Behavior OK')"><title>Behavior OK</title></path>
+                              <!-- Outer Crescents -->
+                              <path id="crescentG" class="venn-region" d="M 110 128 A 115 115 0 0 1 290 128 A 90 90 0 0 0 110 128 Z" fill="#387635" onclick="window.openRiskTable('g-ok', 'Grade OK')"><title>Grade OK</title></path>
+                              <path id="crescentA" class="venn-region" d="M 200 283.94 A 115 115 0 0 1 110 128 A 90 90 0 0 0 200 283.94 Z" fill="#387635" onclick="window.openRiskTable('a-ok', 'Attendance OK')"><title>Attendance OK</title></path>
+                              <path id="crescentB" class="venn-region" d="M 290 128 A 115 115 0 0 1 200 283.94 A 90 90 0 0 0 290 128 Z" fill="#387635" onclick="window.openRiskTable('b-ok', 'Behavior OK')"><title>Behavior OK</title></path>
 
-                          <!-- Inner Venn Regions -->
-                          <use href="#cG" fill="#9CD273" mask="url(#mask-G-only)" class="venn-region" onclick="window.openRiskTable('g-only', 'Grade Risk')"><title>Grade Risk</title></use>
-                          <use href="#cA" fill="#9CD273" mask="url(#mask-A-only)" class="venn-region" onclick="window.openRiskTable('a-only', 'Attendance Risk')"><title>Attendance Risk</title></use>
-                          <use href="#cB" fill="#9CD273" mask="url(#mask-B-only)" class="venn-region" onclick="window.openRiskTable('b-only', 'Behavior Risk')"><title>Behavior Risk</title></use>
+                              <!-- Inner Venn Regions -->
+                              <use href="#cG" fill="#9CD273" mask="url(#mask-G-only)" class="venn-region" onclick="window.openRiskTable('g-only', 'Grade Risk')"><title>Grade Risk</title></use>
+                              <use href="#cA" fill="#9CD273" mask="url(#mask-A-only)" class="venn-region" onclick="window.openRiskTable('a-only', 'Attendance Risk')"><title>Attendance Risk</title></use>
+                              <use href="#cB" fill="#9CD273" mask="url(#mask-B-only)" class="venn-region" onclick="window.openRiskTable('b-only', 'Behavior Risk')"><title>Behavior Risk</title></use>
 
-                          <use href="#cG" fill="#FEE372" clip-path="url(#clipA)" mask="url(#mask-GA)" class="venn-region" onclick="window.openRiskTable('ga-risk', 'Grade &amp; Att Risk')"><title>Grade &amp; Att Risk</title></use>
-                          <use href="#cG" fill="#FEE372" clip-path="url(#clipB)" mask="url(#mask-GB)" class="venn-region" onclick="window.openRiskTable('gb-risk', 'Grade &amp; Beh Risk')"><title>Grade &amp; Beh Risk</title></use>
-                          <use href="#cA" fill="#FEE372" clip-path="url(#clipB)" mask="url(#mask-AB)" class="venn-region" onclick="window.openRiskTable('ab-risk', 'Att &amp; Beh Risk')"><title>Att &amp; Beh Risk</title></use>
+                              <use href="#cG" fill="#FEE372" clip-path="url(#clipA)" mask="url(#mask-GA)" class="venn-region" onclick="window.openRiskTable('ga-risk', 'Grade &amp; Att Risk')"><title>Grade &amp; Att Risk</title></use>
+                              <use href="#cG" fill="#FEE372" clip-path="url(#clipB)" mask="url(#mask-GB)" class="venn-region" onclick="window.openRiskTable('gb-risk', 'Grade &amp; Beh Risk')"><title>Grade &amp; Beh Risk</title></use>
+                              <use href="#cA" fill="#FEE372" clip-path="url(#clipB)" mask="url(#mask-AB)" class="venn-region" onclick="window.openRiskTable('ab-risk', 'Att &amp; Beh Risk')"><title>Att &amp; Beh Risk</title></use>
 
-                          <g clip-path="url(#clipG)"><g clip-path="url(#clipA)">
-                             <use href="#cB" fill="#F99C31" class="venn-region" onclick="window.openRiskTable('gab-risk', 'Grade, Att &amp; Beh Risk')"><title>G, A, B Risk</title></use>
-                          </g></g>
+                              <g clip-path="url(#clipG)"><g clip-path="url(#clipA)">
+                                 <use href="#cB" fill="#F99C31" class="venn-region" onclick="window.openRiskTable('gab-risk', 'Grade, Att &amp; Beh Risk')"><title>G, A, B Risk</title></use>
+                              </g></g>
 
-                          <!-- Strokes -->
-                          <use href="#crescentG" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
-                          <use href="#crescentA" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
-                          <use href="#crescentB" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
-                          
-                          <use href="#cG" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
-                          <use href="#cA" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
-                          <use href="#cB" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
+                              <!-- Strokes -->
+                              <use href="#crescentG" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
+                              <use href="#crescentA" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
+                              <use href="#crescentB" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
+                              
+                              <use href="#cG" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
+                              <use href="#cA" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
+                              <use href="#cB" fill="none" stroke="#1F2937" stroke-width="1.5" pointer-events="none" />
 
-                          <!-- Text Labels -->
-                          <g text-anchor="middle" font-size="9" fill="#1F2937" pointer-events="none">
-                            <text x="200" y="40"><tspan id="venn-g-ok" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G. Ok</tspan></text>
-                            <text x="80" y="250"><tspan id="venn-a-ok" x="80" font-weight="bold">0</tspan><tspan x="80" dy="12">A. Ok</tspan></text>
-                            <text x="320" y="250"><tspan id="venn-b-ok" x="320" font-weight="bold">0</tspan><tspan x="320" dy="12">B. Ok</tspan></text>
+                              <!-- Text Labels -->
+                              <g text-anchor="middle" font-size="9" fill="#1F2937" pointer-events="none">
+                                <text x="200" y="40"><tspan id="venn-g-ok" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G. Ok</tspan></text>
+                                <text x="80" y="250"><tspan id="venn-a-ok" x="80" font-weight="bold">0</tspan><tspan x="80" dy="12">A. Ok</tspan></text>
+                                <text x="320" y="250"><tspan id="venn-b-ok" x="320" font-weight="bold">0</tspan><tspan x="320" dy="12">B. Ok</tspan></text>
 
-                            <text x="200" y="90"><tspan id="venn-g-only" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G. Risk</tspan></text>
-                            <text x="125" y="215"><tspan id="venn-a-only" x="125" font-weight="bold">0</tspan><tspan x="125" dy="12">A. Risk</tspan></text>
-                            <text x="275" y="215"><tspan id="venn-b-only" x="275" font-weight="bold">0</tspan><tspan x="275" dy="12">B. Risk</tspan></text>
+                                <text x="200" y="90"><tspan id="venn-g-only" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G. Risk</tspan></text>
+                                <text x="125" y="215"><tspan id="venn-a-only" x="125" font-weight="bold">0</tspan><tspan x="125" dy="12">A. Risk</tspan></text>
+                                <text x="275" y="215"><tspan id="venn-b-only" x="275" font-weight="bold">0</tspan><tspan x="275" dy="12">B. Risk</tspan></text>
 
-                            <text x="150" y="150"><tspan id="venn-ga" x="150" font-weight="bold">0</tspan><tspan x="150" dy="12">G.A. Risk</tspan></text>
-                            <text x="250" y="150"><tspan id="venn-gb" x="250" font-weight="bold">0</tspan><tspan x="250" dy="12">G.B. Risk</tspan></text>
-                            <text x="200" y="240"><tspan id="venn-ab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">A.B Risk</tspan></text>
+                                <text x="150" y="150"><tspan id="venn-ga" x="150" font-weight="bold">0</tspan><tspan x="150" dy="12">G.A. Risk</tspan></text>
+                                <text x="250" y="150"><tspan id="venn-gb" x="250" font-weight="bold">0</tspan><tspan x="250" dy="12">G.B. Risk</tspan></text>
+                                <text x="200" y="240"><tspan id="venn-ab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">A.B Risk</tspan></text>
 
-                            <text x="200" y="175" fill="white"><tspan id="venn-gab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G.A.B. Risk</tspan></text>
-                            
-                            <text x="200" y="15" font-size="14" font-weight="bold">Grade</text>
-                            <text x="30" y="195" font-size="14" font-weight="bold">Attendance</text>
-                            <text x="370" y="195" font-size="14" font-weight="bold">Behavior</text>
-                          </g>
-                        </svg>
+                                <text x="200" y="175" fill="white"><tspan id="venn-gab" x="200" font-weight="bold">0</tspan><tspan x="200" dy="12">G.A.B. Risk</tspan></text>
+                                
+                                <text x="200" y="15" font-size="14" font-weight="bold">Grd.</text>
+                                <text x="40" y="195" font-size="14" font-weight="bold">Att.</text>
+                                <text x="360" y="195" font-size="14" font-weight="bold">Bhv.</text>
+                              </g>
+                            </svg>
+                        </div>
+                        <div style="flex: 0 0 40%; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid var(--border-color); padding-left: 1rem; max-height: 250px;">
+                            <h4 id="venn-table-title" style="margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: bold; color: var(--text-color);">Select a category</h4>
+                            <div style="overflow-y: auto; flex: 1;">
+                                <table class="data-table" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Student Name</th>
+                                            <th style="text-align: center;">Risk Level</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="venn-student-list">
+                                        <tr><td colspan="2" style="text-align: center; color: var(--text-muted); font-size: 0.75rem; padding: 1rem;">Click a region in the Venn diagram to view students.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -912,9 +930,75 @@
             window.currentRiskFilter = null;
             window.openRiskTable = function(type, label) {
                 window.currentRiskFilter = type;
-                document.getElementById('modal-title').innerText = `Risk Matrix: ${label}`;
-                openModal('risk-table');
-                window.renderRiskTable();
+                document.getElementById('venn-table-title').innerText = label;
+                window.renderVennTable();
+            };
+
+            window.renderVennTable = function() {
+                const tbody = document.getElementById('venn-student-list');
+                if(!tbody) return;
+
+                const riskType = window.currentRiskFilter;
+                const localGab = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
+
+                let filtered = ALL_STUDENTS.filter(s => {
+                    if (!s.is_active) return false;
+
+                    let gpa = s.gpa || 0;
+                    let absent = 0;
+                    let behavior = 0;
+                    
+                    const history = localGab[s.id] || [];
+                    if (history.length > 0) {
+                        const latest = history[history.length - 1];
+                        gpa = parseFloat(latest.gpa || gpa);
+                        absent = parseInt(latest.absent || 0);
+                        behavior = parseInt(latest.behavior || 0);
+                    }
+
+                    const hasG = (gpa > 0 && gpa < 2.0);
+                    const hasA = (absent > 4);
+                    const hasB = (behavior > 0);
+
+                    if (riskType === 'g-ok') return !hasG;
+                    if (riskType === 'a-ok') return !hasA;
+                    if (riskType === 'b-ok') return !hasB;
+                    
+                    if (riskType === 'g-only') return hasG && !hasA && !hasB;
+                    if (riskType === 'a-only') return hasA && !hasG && !hasB;
+                    if (riskType === 'b-only') return hasB && !hasG && !hasA;
+
+                    if (riskType === 'ga-risk') return hasG && hasA && !hasB;
+                    if (riskType === 'gb-risk') return hasG && hasB && !hasA;
+                    if (riskType === 'ab-risk') return hasA && hasB && !hasG;
+                    
+                    if (riskType === 'gab-risk') return hasG && hasA && hasB;
+
+                    return true;
+                });
+
+                filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+                if (filtered.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="2" style="text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.75rem;">No students found in this category.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = filtered.map(s => {
+                    let gpaColor = 'var(--text-main)';
+                    if (s.gpa < 2.0) gpaColor = '#EF4444';
+                    else if (s.gpa < 3.0) gpaColor = '#F59E0B';
+                    else gpaColor = '#10B981';
+
+                    return `
+                        <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;">
+                            <td style="padding: 0.25rem;">
+                                <a href="student.html?student_id=${s.id}" style="text-decoration: none; color: var(--peacox-purple); font-weight: bold; font-size: 0.75rem;">${s.name}</a>
+                            </td>
+                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${gpaColor}; font-size: 0.75rem;">${s.gpa.toFixed(1)} / ${s.attendance}%</td>
+                        </tr>
+                    `;
+                }).join('');
             };
 
             window.renderRiskTable = function() {
