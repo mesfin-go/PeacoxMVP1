@@ -815,13 +815,21 @@
             document.getElementById('side-pane').classList.remove('active'); 
             document.getElementById('side-overlay').classList.remove('active');
             
-            ['basic-info', 'add-user', 'edit-user', 'risk-table', 'thresholds'].forEach(id => {
+            ['basic-info', 'add-user', 'edit-user', 'risk-table', 'thresholds', 'manage-curriculum', 'assign-curriculum'].forEach(id => {
                 const el = document.getElementById(`content-${id}`);
                 if(el) el.style.display = 'none';
             });
-            document.getElementById(`content-${type}`).style.display = (type === 'risk-table') ? 'flex' : 'block';
+            document.getElementById(`content-${type}`).style.display = (type === 'risk-table' || type === 'manage-curriculum' || type === 'assign-curriculum') ? 'flex' : 'block';
             
-            const titles = {'basic-info': 'Manager Details', 'add-user': 'Add System User', 'edit-user': 'Edit Student Profile', 'risk-table': 'Risk Matrix Details', 'thresholds': 'Compound Risk Thresholds'};
+            const titles = {
+                'basic-info': 'Manager Details', 
+                'add-user': 'Add System User', 
+                'edit-user': 'Edit Student Profile', 
+                'risk-table': 'Risk Matrix Details', 
+                'thresholds': 'Compound Risk Thresholds',
+                'manage-curriculum': 'Manage Curriculum Elements',
+                'assign-curriculum': 'Bulk Assign Curriculum'
+            };
             if (titles[type]) document.getElementById('modal-title').innerText = titles[type];
             document.getElementById('modal-header-controls').style.display = (type === 'add-user') ? 'block' : 'none';
             document.getElementById('master-modal').style.display = 'flex';
