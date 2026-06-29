@@ -288,6 +288,11 @@
                                 .venn-region:hover { filter: brightness(0.9); }
                               </style>
 
+                              <!-- Inner Venn Regions -->
+                              <use href="#cG" fill="#9CD273" mask="url(#mask-G-only)" class="venn-region" onclick="window.openRiskTable('g-only', 'Grade Risk')"><title>Grade Risk</title></use>
+                              <use href="#cA" fill="#9CD273" mask="url(#mask-A-only)" class="venn-region" onclick="window.openRiskTable('a-only', 'Attendance Risk')"><title>Attendance Risk</title></use>
+                              <use href="#cB" fill="#9CD273" mask="url(#mask-B-only)" class="venn-region" onclick="window.openRiskTable('b-only', 'Behavior Risk')"><title>Behavior Risk</title></use>
+
                               <!-- Ok crescents — angled clip-path boundaries -->
                               <g clip-path="url(#clipGok)">
                                   <use href="#cG" fill="#387635" mask="url(#mask-G-only)"
@@ -310,11 +315,6 @@
                                       <title>Behavior OK</title>
                                   </use>
                               </g>
-
-                              <!-- Inner Venn Regions -->
-                              <use href="#cG" fill="#9CD273" mask="url(#mask-G-only)" class="venn-region" onclick="window.openRiskTable('g-only', 'Grade Risk')"><title>Grade Risk</title></use>
-                              <use href="#cA" fill="#9CD273" mask="url(#mask-A-only)" class="venn-region" onclick="window.openRiskTable('a-only', 'Attendance Risk')"><title>Attendance Risk</title></use>
-                              <use href="#cB" fill="#9CD273" mask="url(#mask-B-only)" class="venn-region" onclick="window.openRiskTable('b-only', 'Behavior Risk')"><title>Behavior Risk</title></use>
 
                               <use href="#cG" fill="#FEE372" clip-path="url(#clipA)" mask="url(#mask-GA)" class="venn-region" onclick="window.openRiskTable('ga-risk', 'Grade &amp; Att Risk')"><title>Grade &amp; Att Risk</title></use>
                               <use href="#cG" fill="#FEE372" clip-path="url(#clipB)" mask="url(#mask-GB)" class="venn-region" onclick="window.openRiskTable('gb-risk', 'Grade &amp; Beh Risk')"><title>Grade &amp; Beh Risk</title></use>
