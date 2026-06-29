@@ -168,7 +168,9 @@
                             <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
                                 <th style="padding: 0.5rem;">Student Name</th>
                                 <th style="padding: 0.5rem;">Date Enrolled</th>
-                                <th style="padding: 0.5rem; text-align: center;">GAB Score</th>
+                                <th style="padding: 0.5rem; text-align: center;" title="Grade (GPA)">Grd.</th>
+                                <th style="padding: 0.5rem; text-align: center;" title="Absences">Att.</th>
+                                <th style="padding: 0.5rem; text-align: center;" title="Behavior Incidents">Bhv.</th>
                                 <th style="padding: 0.5rem; text-align: center;">Status</th>
                             </tr>
                         </thead>
@@ -284,7 +286,9 @@
                                         <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
                                             <th style="padding: 0.5rem;">Student Name</th>
                                             <th style="padding: 0.5rem;">Date Enrolled</th>
-                                            <th style="padding: 0.5rem; text-align: center;">GAB Score</th>
+                                            <th style="padding: 0.5rem; text-align: center;" title="Grade (GPA)">Grd.</th>
+                                            <th style="padding: 0.5rem; text-align: center;" title="Absences">Att.</th>
+                                            <th style="padding: 0.5rem; text-align: center;" title="Behavior Incidents">Bhv.</th>
                                             <th style="padding: 0.5rem; text-align: center;">Status</th>
                                         </tr>
                                     </thead>
@@ -945,10 +949,10 @@
                 tbody.innerHTML = filtered.map(s => {
                     const dateStr = new Date(s.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                     
-                    let gpaColor = 'var(--text-main)';
-                    if (s.gpa < 2.0) gpaColor = '#EF4444';
-                    else if (s.gpa < 3.0) gpaColor = '#F59E0B';
-                    else gpaColor = '#10B981';
+                    const t = window.GAB_THRESHOLDS || { gpa: 2.0, absent: 4, behavior: 0 };
+                    let gpaColor = (s.gpa <= t.gpa) ? '#EF4444' : 'var(--text-main)';
+                    let attColor = ((s.absent || 0) > t.absent) ? '#EF4444' : 'var(--text-main)';
+                    let bhvColor = ((s.behavior || 0) > t.behavior) ? '#EF4444' : 'var(--text-main)';
 
                     return `
                         <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;">
@@ -956,7 +960,9 @@
                                 <a href="student.html?student_id=${s.id}" style="text-decoration: none; color: var(--peacox-purple); font-weight: bold; font-size: 0.85rem;">${s.name}</a>
                             </td>
                             <td style="padding: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">${dateStr}</td>
-                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${gpaColor}; font-size: 0.8rem;">${s.gpa.toFixed(1)} / ${s.attendance}%</td>
+                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${gpaColor}; font-size: 0.8rem;">${s.gpa.toFixed(1)}</td>
+                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${attColor}; font-size: 0.8rem;">${s.absent || 0}</td>
+                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${bhvColor}; font-size: 0.8rem;">${s.behavior || 0}</td>
                             <td style="padding: 0.25rem; text-align: center;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
                                     <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; margin: 0;" onclick="event.stopPropagation();">
@@ -1067,10 +1073,10 @@
                 tbody.innerHTML = filtered.map(s => {
                     const dateStr = new Date(s.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                     
-                    let gpaColor = 'var(--text-main)';
-                    if (s.gpa < 2.0) gpaColor = '#EF4444';
-                    else if (s.gpa < 3.0) gpaColor = '#F59E0B';
-                    else gpaColor = '#10B981';
+                    const t = window.GAB_THRESHOLDS || { gpa: 2.0, absent: 4, behavior: 0 };
+                    let gpaColor = (s.gpa <= t.gpa) ? '#EF4444' : 'var(--text-main)';
+                    let attColor = ((s.absent || 0) > t.absent) ? '#EF4444' : 'var(--text-main)';
+                    let bhvColor = ((s.behavior || 0) > t.behavior) ? '#EF4444' : 'var(--text-main)';
 
                     return `
                         <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;">
@@ -1078,7 +1084,9 @@
                                 <a href="student.html?student_id=${s.id}" style="text-decoration: none; color: var(--peacox-purple); font-weight: bold; font-size: 0.85rem;">${s.name}</a>
                             </td>
                             <td style="padding: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">${dateStr}</td>
-                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${gpaColor}; font-size: 0.8rem;">${s.gpa.toFixed(1)} / ${s.attendance}%</td>
+                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${gpaColor}; font-size: 0.8rem;">${s.gpa.toFixed(1)}</td>
+                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${attColor}; font-size: 0.8rem;">${s.absent || 0}</td>
+                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${bhvColor}; font-size: 0.8rem;">${s.behavior || 0}</td>
                             <td style="padding: 0.25rem; text-align: center;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
                                     <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; margin: 0;" onclick="event.stopPropagation();">
@@ -1113,15 +1121,17 @@
                 const rows = Array.from(tbody.querySelectorAll('tr'));
                 if (rows.length === 0 || rows[0].querySelector('td[colspan]')) return alert("No students in the selected category.");
                 
-                let csvContent = "data:text/csv;charset=utf-8,Student Name,Date Enrolled,GAB Score,Status\n";
+                let csvContent = "data:text/csv;charset=utf-8,Student Name,Date Enrolled,Grd.,Att.,Bhv.,Status\n";
                 
                 rows.forEach(row => {
                     const name = row.querySelector('a')?.textContent || "";
                     const date = row.cells[1]?.textContent || "";
-                    const score = row.cells[2]?.textContent || "";
+                    const grd = row.cells[2]?.textContent || "";
+                    const att = row.cells[3]?.textContent || "";
+                    const bhv = row.cells[4]?.textContent || "";
                     const isActive = row.querySelector('input[type="checkbox"]')?.checked ? "Active" : "Inactive";
                     
-                    csvContent += `"${name}","${date}","${score}","${isActive}"\n`;
+                    csvContent += `"${name}","${date}","${grd}","${att}","${bhv}","${isActive}"\n`;
                 });
                 
                 const encodedUri = encodeURI(csvContent);
