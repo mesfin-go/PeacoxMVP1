@@ -186,13 +186,25 @@
                 <div class="card" style="min-height: max-content;">
                     <div style="display: flex; justify-content: space-between; align-items: center;" class="card-header">
                         <h3 style="margin: 0; padding: 0; border: none; font-size: inherit;">GAB Risk Matrix <span id="risk-n-count">(N=0)</span></h3>
-                        <button class="btn-secondary" onclick="window.openThresholdModal()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem; height: max-content;">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                            Thresholds
-                        </button>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <div style="display: flex; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.25rem; overflow: hidden;">
+                                <button onclick="window.copyVennList()" style="background: none; border: none; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer; border-right: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.25rem;" title="Copy list to clipboard">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    Copy
+                                </button>
+                                <button onclick="window.exportVennList()" style="background: none; border: none; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;" title="Export as CSV">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    Export
+                                </button>
+                            </div>
+                            <button class="btn-secondary" onclick="window.openThresholdModal()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem; height: max-content;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                Thresholds
+                            </button>
+                        </div>
                     </div>
                     <div style="display: flex; flex-direction: row; gap: 1rem; margin-top: 0.5rem; max-height: 250px;">
-                        <div style="flex: 0 0 60%; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: visible;">
+                        <div style="flex: 0 0 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: visible;">
                             <svg viewBox="0 0 400 320" style="width: 100%; max-height: 250px; font-family: Inter, sans-serif;">
                               <defs>
                                 <circle id="cG" cx="200" cy="128" r="90" />
@@ -264,18 +276,20 @@
                               </g>
                             </svg>
                         </div>
-                        <div style="flex: 0 0 40%; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid var(--border-color); padding-left: 1rem; max-height: 250px;">
+                        <div style="flex: 0 0 50%; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid var(--border-color); padding-left: 1rem; max-height: 250px;">
                             <h4 id="venn-table-title" style="margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: bold; color: var(--text-color);">Select a category</h4>
                             <div style="overflow-y: auto; flex: 1;">
-                                <table class="data-table" style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Student Name</th>
-                                            <th style="text-align: center;">Risk Level</th>
+                                <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem;">
+                                    <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 10;">
+                                        <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted);">
+                                            <th style="padding: 0.5rem;">Student Name</th>
+                                            <th style="padding: 0.5rem;">Date Enrolled</th>
+                                            <th style="padding: 0.5rem; text-align: center;">GAB Score</th>
+                                            <th style="padding: 0.5rem; text-align: center;">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody id="venn-student-list">
-                                        <tr><td colspan="2" style="text-align: center; color: var(--text-muted); font-size: 0.75rem; padding: 1rem;">Click a region in the Venn diagram to view students.</td></tr>
+                                        <tr><td colspan="4" style="text-align: center; color: var(--text-muted); font-size: 0.75rem; padding: 1rem;">Click a region in the Venn diagram to view students.</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -1017,27 +1031,14 @@
                 if(!tbody) return;
 
                 const riskType = window.currentRiskFilter;
-                const localGab = JSON.parse(localStorage.getItem('pm_local_gab') || '{}');
 
                 let filtered = ALL_STUDENTS.filter(s => {
                     if (!s.is_active) return false;
 
-                    let gpa = s.gpa;
-                    let absent = s.absent || 0;
-                    let behavior = s.behavior || 0;
-                    
-                    const history = localGab[s.id] || [];
-                    if (history.length > 0) {
-                        const latest = history[history.length - 1];
-                        if (latest.gpa !== undefined) gpa = parseFloat(latest.gpa);
-                        if (latest.absent !== undefined) absent = parseInt(latest.absent);
-                        if (latest.behavior !== undefined) behavior = parseInt(latest.behavior);
-                    }
-
                     const t = window.GAB_THRESHOLDS || { gpa: 2.0, absent: 4, behavior: 0 };
-                    const hasG = (gpa <= t.gpa);
-                    const hasA = (absent > t.absent);
-                    const hasB = (behavior > t.behavior);
+                    const hasG = (s.gpa <= t.gpa);
+                    const hasA = ((s.absent || 0) > t.absent);
+                    const hasB = ((s.behavior || 0) > t.behavior);
 
                     if (riskType === 'g-ok') return !hasG;
                     if (riskType === 'a-ok') return !hasA;
@@ -1059,11 +1060,13 @@
                 filtered.sort((a, b) => a.name.localeCompare(b.name));
 
                 if (filtered.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="2" style="text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.75rem;">No students found in this category.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.75rem;">No students found in this category.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = filtered.map(s => {
+                    const dateStr = new Date(s.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    
                     let gpaColor = 'var(--text-main)';
                     if (s.gpa < 2.0) gpaColor = '#EF4444';
                     else if (s.gpa < 3.0) gpaColor = '#F59E0B';
@@ -1072,12 +1075,62 @@
                     return `
                         <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;">
                             <td style="padding: 0.25rem;">
-                                <a href="student.html?student_id=${s.id}" style="text-decoration: none; color: var(--peacox-purple); font-weight: bold; font-size: 0.75rem;">${s.name}</a>
+                                <a href="student.html?student_id=${s.id}" style="text-decoration: none; color: var(--peacox-purple); font-weight: bold; font-size: 0.85rem;">${s.name}</a>
                             </td>
-                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${gpaColor}; font-size: 0.75rem;">${s.gpa.toFixed(1)} / ${s.attendance}%</td>
+                            <td style="padding: 0.25rem; color: var(--text-muted); font-size: 0.75rem;">${dateStr}</td>
+                            <td style="padding: 0.25rem; text-align: center; font-weight: bold; color: ${gpaColor}; font-size: 0.8rem;">${s.gpa.toFixed(1)} / ${s.attendance}%</td>
+                            <td style="padding: 0.25rem; text-align: center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                                    <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; margin: 0;" onclick="event.stopPropagation();">
+                                        <input type="checkbox" ${s.is_active ? 'checked' : ''} onchange="toggleStudentStatus('${s.id}', this.checked)" style="cursor: pointer;" title="Toggle Active Status">
+                                    </label>
+                                    <button onclick="window.openEditModal('${s.id}')" style="background: none; border: none; cursor: pointer; color: var(--peacox-purple); padding: 0.25rem; border-radius: 4px;" title="Edit Profile">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     `;
                 }).join('');
+            };
+
+            window.copyVennList = function() {
+                const tbody = document.getElementById('venn-student-list');
+                if(!tbody || !window.currentRiskFilter) return alert("Please select a category first.");
+                
+                const names = Array.from(tbody.querySelectorAll('a')).map(a => a.textContent).join('\n');
+                if (!names) return alert("No students in the selected category.");
+                
+                navigator.clipboard.writeText(names)
+                    .then(() => alert("Copied " + Array.from(tbody.querySelectorAll('a')).length + " student names to clipboard!"))
+                    .catch(err => alert("Failed to copy: " + err));
+            };
+
+            window.exportVennList = function() {
+                const tbody = document.getElementById('venn-student-list');
+                if(!tbody || !window.currentRiskFilter) return alert("Please select a category first.");
+                
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                if (rows.length === 0 || rows[0].querySelector('td[colspan]')) return alert("No students in the selected category.");
+                
+                let csvContent = "data:text/csv;charset=utf-8,Student Name,Date Enrolled,GAB Score,Status\n";
+                
+                rows.forEach(row => {
+                    const name = row.querySelector('a')?.textContent || "";
+                    const date = row.cells[1]?.textContent || "";
+                    const score = row.cells[2]?.textContent || "";
+                    const isActive = row.querySelector('input[type="checkbox"]')?.checked ? "Active" : "Inactive";
+                    
+                    csvContent += `"${name}","${date}","${score}","${isActive}"\n`;
+                });
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `GAB_Risk_Category_${window.currentRiskFilter}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             };
 
             window.renderRiskTable = function() {
